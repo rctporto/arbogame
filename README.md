@@ -78,3 +78,10 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - `src/ui.js`: carregado por último; monta o menu lateral, o novo painel (`homeNovo`), a biblioteca, o fim de missão e o pódio. Reaproveita a lógica existente (jogos, missões, perfis, ranking real); nada de dados demonstrativos.
 - Imagens de corpo inteiro: `personagens/corpo-*.webp` e `catarina-busto.webp`.
 - Pendente: cenários finais 1600×1000 e objetos 512×512 do guia.
+
+## Estúdio: personagens que atuam (`src/estudio.js`)
+
+- O motor dos minijogos emite eventos (`G.emit`: acerto, erro, tempo, fala, fim). `ATOR` coloca o mascote do jogo ao lado da tela (embaixo no celular), troca a pose, anima (pula, treme, gira, alerta, festa) e fala frases curtas.
+- Contagem 3-2-1 antes de começar, carimbo de sequência (x3, x5…), aviso nos 10 segundos finais.
+- Fim de jogo com 1 a 3 estrelas e o personagem comemorando ou desanimado; no quiz o personagem pula no acerto e se assusta no erro.
+- Respeita "reduzir movimento" do sistema.

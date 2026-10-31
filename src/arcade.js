@@ -79,12 +79,13 @@ function arcade(cfg){
   const cv=$("#cv"), ctx=cv.getContext("2d");
   const G = {W,H,t:0,time:dur,score:0,lives:cfg.lives||3,parts:[],texts:[],ptr:{x:W/2,y:H/2,down:false},keys:{},over:false,combo:0,lvl:S.idade};
   ARC = {stop:false};
+  G.emit=(ev,d)=>{ try{ window.ATOR && ATOR.ev(ev,d,G,cfg); }catch(e){} };
   const hud=()=>{ $("#hs").textContent=G.score+" pts"; $("#hl").textContent="❤️".repeat(Math.max(0,G.lives))+"🤍".repeat(Math.max(0,(cfg.lives||3)-G.lives)); $("#ht").textContent=Math.ceil(G.time)+"s"; };
   G.pop=(x,y,txt,cor)=>G.texts.push({x,y,txt,cor:cor||"#1B8566",a:1});
   G.burst=(x,y,cor,n=14,sp=260,em)=>{ for(let i=0;i<n;i++){ const a=rnd(0,Math.PI*2), v=rnd(sp*.3,sp); G.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,life:rnd(.4,.9),max:.9,cor,r:rnd(3,7),em}); } };
-  G.add=(n,x,y)=>{ anel(G,x,y+40,"#FFC23D"); G.combo++; const bonus = G.combo>=5?2:1; G.score+=n*bonus; G.pop(x,y,`+${n*bonus}${bonus>1?" combo!":""}`); sfx("pop"); hud(); };
-  G.hurt=(x,y,txt)=>{ G.lives--; G.combo=0; G.pop(x,y,txt||"Ai!","#D9482B"); sfx("bad"); hud(); cv.classList.remove("shake"); void cv.offsetWidth; cv.classList.add("shake"); };
-  G.say=(html,mood)=>{ $("#tip").innerHTML=guide(cfg.who,mood||"",html); };
+  G.add=(n,x,y)=>{ anel(G,x,y+40,"#FFC23D"); G.combo++; const bonus = G.combo>=5?2:1; G.score+=n*bonus; G.pop(x,y,`+${n*bonus}${bonus>1?" combo!":""}`); sfx("pop"); hud(); G.emit("acerto"); };
+  G.hurt=(x,y,txt)=>{ G.lives--; G.combo=0; G.pop(x,y,txt||"Ai!","#D9482B"); sfx("bad"); hud(); cv.classList.remove("shake"); void cv.offsetWidth; cv.classList.add("shake"); G.emit("erro"); };
+  G.say=(html,mood)=>{ $("#tip").innerHTML=guide(cfg.who,mood||"",html); G.emit("fala",{html,mood}); };
   cfg.init(G);
   hud();
   const toXY=e=>{ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*H/r.height}; };
@@ -100,7 +101,7 @@ function arcade(cfg){
     if(ARC===null||ARC.stop) return;
     const dt=Math.min(.05,(ts-(last||ts))/1000); last=ts;
     if(G.run && !G.over){
-      G.t+=dt; G.time-=dt; if(Math.ceil(G.time)!==Math.ceil(G.time+dt)) hud();
+      G.t+=dt; G.time-=dt; if(Math.ceil(G.time)!==Math.ceil(G.time+dt)){ hud(); if(Math.ceil(G.time)===10) G.emit("tempo"); }
       cfg.update(G,dt);
       if(G.time<=0||G.lives<=0) end();
     }
@@ -114,9 +115,9 @@ function arcade(cfg){
     ARC.raf=requestAnimationFrame(frame);
   }
   ARC.raf=requestAnimationFrame(frame);
-  $("#play").onclick=()=>{ sfx("swoosh"); $("#cover").hidden=true; $("#stg").hidden=false; $("#tip").hidden=false; $("#stg").scrollIntoView({block:"nearest"}); G.run=true; };
+  $("#play").onclick=()=>{ sfx("swoosh"); $("#cover").hidden=true; $("#stg").hidden=false; $("#tip").hidden=false; $("#stg").scrollIntoView({block:"nearest"}); if(window.ATOR) ATOR.largada(G,cfg,()=>{ G.run=true; }); else G.run=true; };
   function end(){
-    G.over=true; sfx(G.score>=150?"win":"swoosh");
+    G.over=true; sfx(G.score>=150?"win":"swoosh"); G.emit("fim",{venceu:G.score>=150});
     const pts=Math.min(80,Math.round(G.score/3));
     addPts(pts); finish(cfg.id); Ranking.salvar(cfg.id, G.score);
     if(G.score>=150) medal(cfg.id);
@@ -357,7 +358,7 @@ GAMES.memoria = ()=>{
     moves++; $("#mv").textContent=moves+(moves===1?" jogada":" jogadas");
     const [a,c]=open.map(x=>cards[+x.dataset.i]);
     if(a.k===c.k){ found++; open.forEach(x=>x.classList.add("ok")); open=[]; sfx("pop"); $("#pr").textContent=`${found}/${n} pares`;
-      $("#fb").innerHTML=guide(a.k==="pintas"?"P":"L","ok",a.d);
+      $("#fb").innerHTML=guide(a.k==="pintas"?"P":"L","ok",a.d); window.ATOR&&ATOR.pulso("#fb .guide","pula");
       if(found===n){ const sc=Math.max(40,200-(moves-n)*10); const pts=Math.min(80,Math.round(sc/3)); addPts(pts); finish("memoria"); medal("memoria"); confetti(true); sfx("win");
         setTimeout(()=>{ endScreen("Jogo da Memória", `Todos os pares em ${moves} jogadas!`, sc, null, pts, "L").onclick=GAMES.memoria; }, 1600); }
     } else { lock=true; setTimeout(()=>{ open.forEach(x=>{ x.classList.remove("up"); x.setAttribute("aria-label","Carta virada"); }); open=[]; lock=false; }, 900); }

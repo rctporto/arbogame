@@ -256,3 +256,102 @@ body.semnav .side,body.semnav .menubtn{display:none}
   .podio .lugar{width:100px}
 }
 @media (prefers-reduced-motion:reduce){.herocard .mascotes img,.cena .turma img,.fimcard .turma img,.capahero > img{animation:none}}
+
+/* ================== ESTÚDIO (versão 3: personagens atuando, acabamento) ================== */
+/* acabamento geral */
+.btn{box-shadow:0 4px 0 color-mix(in srgb,var(--leaf) 55%,#000);transition:transform .08s,box-shadow .08s,filter .15s}
+.btn.sun{box-shadow:0 4px 0 #C98F12}
+.btn.ghost{box-shadow:none}
+.btn:not(:disabled):hover{filter:brightness(1.05)}
+.btn:not(:disabled):active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--leaf) 55%,#000)}
+.btn.ghost:not(:disabled):active{box-shadow:none}
+h1,h2{letter-spacing:-.01em}
+.pill{font-variant-numeric:tabular-nums}
+.fcard,.mscard,.livro{transition:transform .18s ease,box-shadow .18s ease}
+.fcard:hover,.mscard:not(.lock):hover,.livro:hover{transform:translateY(-4px);box-shadow:0 14px 28px rgba(18,48,42,.14)}
+
+/* arena: jogo + personagem */
+.arena{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:stretch}
+.arena:has(.ator[hidden]){grid-template-columns:minmax(0,1fr)}
+.arena .stage{border:0;border-radius:24px;box-shadow:0 0 0 4px var(--card),0 0 0 6px var(--line),0 18px 36px rgba(18,48,42,.18);align-self:start}
+.arena .stage.urgente{animation:urg 1s ease-in-out infinite}
+@keyframes urg{50%{box-shadow:0 0 0 4px var(--card),0 0 0 7px var(--coral),0 18px 36px rgba(217,72,43,.3)}}
+.pill.urgente{background:var(--coral);color:#fff;border-color:var(--coral);animation:tic 1s steps(2) infinite}
+@keyframes tic{50%{transform:scale(1.08)}}
+
+.ator{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-radius:24px;padding:14px 12px 12px;
+  background:radial-gradient(120% 70% at 50% 85%,#fff 0%,var(--sky-soft) 60%,color-mix(in srgb,var(--sky-soft) 70%,var(--sky)) 100%);border:2px solid var(--line);overflow:hidden}
+.ator.P{background:radial-gradient(120% 70% at 50% 85%,#fff 0%,var(--sun-soft) 60%,color-mix(in srgb,var(--sun-soft) 60%,var(--sun)) 100%)}
+.ator .palco{position:relative;height:190px;width:100%;display:grid;place-items:end center}
+.ator .palco img{position:relative;z-index:1;height:180px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 6px rgba(0,0,0,.18));animation:respira 2.8s ease-in-out infinite;transform-origin:50% 100%}
+.ator .chao{position:absolute;bottom:2px;left:50%;width:120px;height:16px;margin-left:-60px;border-radius:50%;background:rgba(18,48,42,.16)}
+.ator .fala{position:relative;width:100%;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px 12px;font-weight:700;font-size:.92rem;line-height:1.3;color:var(--ink);min-height:74px}
+.ator .fala::after{content:"";position:absolute;left:50%;bottom:-9px;width:14px;height:14px;margin-left:-7px;background:inherit;border:inherit;border-top:0;border-left:0;transform:rotate(45deg)}
+.ator .fala b{display:block;font-family:var(--display);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ator .fala.ok{background:var(--leaf-soft);border-color:var(--leaf)}
+.ator .fala.no{background:var(--coral-soft);border-color:var(--coral)}
+.ator .fala.alerta{background:var(--sun-soft);border-color:var(--sun)}
+.ator .fala.nova{animation:balao .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes balao{from{transform:scale(.85) translateY(6px);opacity:.3}}
+.ator .seq{width:100%;display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ator .seq div{flex:1;display:flex;gap:4px}
+.ator .seq i{flex:1;height:8px;border-radius:99px;background:color-mix(in srgb,var(--line) 70%,transparent);transition:background .2s}
+.ator .seq i.on{background:var(--sun);box-shadow:0 0 8px color-mix(in srgb,var(--sun) 70%,transparent)}
+
+/* atuações */
+@keyframes respira{50%{transform:translateY(-4px) scale(1.02,.98)}}
+.pula{animation:pula .55s cubic-bezier(.3,1.5,.5,1)!important}
+@keyframes pula{30%{transform:translateY(-26px) scale(.94,1.08)}60%{transform:translateY(0) scale(1.08,.92)}}
+.treme{animation:treme .5s!important}
+@keyframes treme{15%,55%{transform:translateX(-8px) rotate(-6deg)}35%,75%{transform:translateX(8px) rotate(6deg)}}
+.gira{animation:gira .8s cubic-bezier(.3,1.3,.5,1)!important}
+@keyframes gira{40%{transform:translateY(-30px) rotate(-12deg) scale(1.1)}70%{transform:translateY(-8px) rotate(8deg)}}
+.alerta{animation:alerta .7s!important}
+@keyframes alerta{20%{transform:scale(1.15) translateY(-10px)}40%{transform:scale(1.1) rotate(-5deg)}60%{transform:scale(1.1) rotate(5deg)}}
+.festa{animation:festa 1s ease-in-out 3!important}
+@keyframes festa{25%{transform:translateY(-22px) rotate(-8deg)}50%{transform:translateY(0)}75%{transform:translateY(-14px) rotate(8deg)}}
+
+/* contagem e carimbo sobre o jogo */
+.largada{position:absolute;inset:0;z-index:3;display:grid;place-items:center;background:rgba(15,77,60,.45);backdrop-filter:blur(2px)}
+.largada b{font-family:var(--display);font-weight:800;font-size:clamp(4rem,14vw,8rem);color:#fff;-webkit-text-stroke:3px #0F4D3C;paint-order:stroke;animation:conta .6s cubic-bezier(.3,1.6,.5,1)}
+.largada b.vai{color:var(--sun);font-size:clamp(2.6rem,9vw,5rem)}
+@keyframes conta{from{transform:scale(2.2);opacity:0}}
+.carimbo{position:absolute;top:14%;left:50%;z-index:2;pointer-events:none;opacity:0;font-family:var(--display);font-weight:800;font-size:clamp(1.4rem,4vw,2.4rem);color:#fff;background:var(--coral);padding:4px 18px;border-radius:12px;border:3px solid #fff;box-shadow:0 6px 0 rgba(0,0,0,.18);white-space:nowrap}
+.carimbo.on{animation:carimbo 1.3s ease-out}
+@keyframes carimbo{0%{opacity:0;transform:translateX(-50%) scale(2.4) rotate(-14deg)}15%{opacity:1;transform:translateX(-50%) scale(1) rotate(-6deg)}75%{opacity:1;transform:translateX(-50%) scale(1) rotate(-6deg)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) rotate(-6deg)}}
+
+/* fim de jogo */
+.estrelas{display:flex;justify-content:center;gap:10px;margin:14px 0 4px}
+.estrelas span{width:58px;height:58px;display:grid;place-items:center}
+.estrelas span:nth-child(2){transform:translateY(-10px);width:70px;height:70px}
+.estrelas svg{width:100%;height:100%;fill:rgba(255,255,255,.18);stroke:rgba(255,255,255,.35);stroke-width:1.2}
+.estrelas span.on{animation:estrela .5s cubic-bezier(.3,1.7,.5,1) both}
+.estrelas span.on svg{fill:var(--sun);stroke:#fff;stroke-width:1.4;filter:drop-shadow(0 3px 0 rgba(0,0,0,.2))}
+@keyframes estrela{from{transform:scale(0) rotate(-40deg)}}
+.estrelas span.on:nth-child(2){animation-name:estrela2}
+@keyframes estrela2{from{transform:translateY(-10px) scale(0) rotate(-40deg)}}
+.fimcard.comator{padding-inline:clamp(24px,22%,260px)}
+.fimator{position:absolute;right:3%;top:50%;height:min(240px,38%);width:auto;margin-top:-140px;filter:drop-shadow(0 10px 10px rgba(0,0,0,.3))}
+.fimator.festa{animation:festa 1s ease-in-out infinite!important}
+.fimator.triste{animation:respira 3s ease-in-out infinite}
+
+/* quiz */
+.qcard.certo{animation:certo .6s}
+.qcard.errado{animation:shake .4s}
+@keyframes certo{30%{box-shadow:0 0 0 6px color-mix(in srgb,var(--leaf) 45%,transparent)}}
+.guide .av.pula,.guide .av.treme{animation-duration:.6s}
+
+@media (max-width:1000px){
+  .arena{grid-template-columns:minmax(0,1fr)}
+  .ator{display:grid;grid-template-columns:110px minmax(0,1fr);grid-template-areas:"palco fala" "palco seq";align-items:center;padding:10px 14px;gap:6px 12px}
+  .ator .palco{grid-area:palco;height:110px}
+  .ator .palco img{height:104px}
+  .ator .chao{width:80px;margin-left:-40px}
+  .ator .fala{grid-area:fala;min-height:0}
+  .ator .fala::after{left:-9px;top:50%;bottom:auto;margin:-7px 0 0;transform:rotate(135deg)}
+  .ator .seq{grid-area:seq}
+  .fimcard.comator{padding-inline:24px;padding-top:120px}
+  .fimator{right:50%;top:12px;margin:0 -50px 0 0;height:110px}
+}
+@media (prefers-reduced-motion:reduce){.ator .palco img,.fimator,.fcard,.mscard,.livro{animation:none!important;transition:none!important}}
+.conteudo{overflow-x:clip}
