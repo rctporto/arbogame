@@ -9,16 +9,16 @@
   --leaf:#1B8566; --leaf-soft:#D6EFE5; --sun:#FFC23D; --sun-soft:#FFF1CC;
   --coral:#D9482B; --coral-soft:#FBE0D8; --sky:#2F6FB5; --sky-soft:#DCE9F7;
   --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
-  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif; --logo-l:inline-block; --logo-d:none;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#0E1D1A; --card:#162B26; --ink:#E4F1EC; --muted:#93B2A9; --line:#284540;
   --leaf:#3CC79F; --leaf-soft:#173F34; --sun:#FFD166; --sun-soft:#3D3318;
-  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; color-scheme:dark}}
+  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; --logo-l:none; --logo-d:inline-block; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0E1D1A; --card:#162B26; --ink:#E4F1EC; --muted:#93B2A9; --line:#284540;
   --leaf:#3CC79F; --leaf-soft:#173F34; --sun:#FFD166; --sun-soft:#3D3318;
-  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; color-scheme:dark}
+  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; --logo-l:none; --logo-d:inline-block; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
@@ -164,6 +164,9 @@ section > h2{margin-bottom:12px}
 @media (max-width:420px){ .yard{grid-template-columns:repeat(2,1fr)} .ages{grid-template-columns:1fr} }
 .foot{margin-top:40px;border-top:2px solid var(--line);padding-block:16px 8px;font-size:.9rem}
 .foot .wrap{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
+.foot .by{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.foot .by img{height:16px;width:auto}
+.logo-l{display:var(--logo-l)}.logo-d{display:var(--logo-d)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -177,7 +180,7 @@ section > h2{margin-bottom:12px}
   </div>
 </header>
 <main class="wrap" id="app"></main>
-<footer class="foot"><div class="wrap"><span><b>ArboGame</b> é um produto da <b>Nório</b></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz</span></div></footer>
+<footer class="foot"><div class="wrap"><span class="by"><b>ArboGame</b> é um produto da <img class="logo-l" src="%%NORIO_MARINHO%%" alt="Nório"><img class="logo-d" src="%%NORIO_CREME%%" alt="Nório"></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz</span></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>

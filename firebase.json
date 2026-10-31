@@ -2,7 +2,7 @@
   "hosting": {
     "site": "arbogame",
     "public": ".",
-    "ignore": ["firebase.json", "**/.*", "**/.*/**", "src/**", "personagens/**", "build.py", "scripts/**", "README.md", "**/node_modules/**"],
+    "ignore": ["firebase.json", "**/.*", "**/.*/**", "src/**", "personagens/**", "marca/**", "build.py", "scripts/**", "README.md", "**/node_modules/**"],
     "headers": [
       { "source": "**/*.@(html|js)", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] }
     ]

@@ -17,6 +17,7 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 | `index.html` | O site publicado (gerado, não edite à mão) |
 | `src/jogo.html` | Código-fonte do jogo (estilos, dados e lógica) |
 | `personagens/` | Poses do Listras e do Pintas (embutidas no `index.html`) |
+| `marca/` | Logo da Nório para o rodapé (embutido no `index.html`) |
 | `build.py` | Gera o `index.html`: `python3 build.py` |
 | `firebase.json` | Publicação no Firebase Hosting da Nório |
 | `.github/workflows/deploy.yml` | Publica sozinho a cada push na `main` |
