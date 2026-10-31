@@ -131,7 +131,13 @@ function casaBonita(ctx,cx,top,w,h,tarde){
 function janela(ctx,x,y,tarde,quem,ai=0){
   ctx.fillStyle=tarde?"#FFE29A":"#C9ECFF"; rr(ctx,x-44,y-38,88,76,6); ctx.fill();
   ctx.fillStyle="rgba(255,255,255,.45)"; ctx.beginPath(); ctx.moveTo(x-40,y+30); ctx.lineTo(x-10,y-34); ctx.lineTo(x+4,y-34); ctx.lineTo(x-26,y+30); ctx.fill();
-  if(quem){ ctx.save(); rr(ctx,x-44,y-38,88,76,6); ctx.clip(); pessoa(ctx,quem,x,y+4,G_t(),ai); ctx.restore(); }
+  if(quem){ ctx.save(); rr(ctx,x-44,y-38,88,76,6); ctx.clip();
+    const im = IMG[quem] && spr(quem);
+    if(im && im.complete && im.naturalWidth){ const sh = ai>0 ? Math.sin(G_t()*40)*3 : Math.sin(G_t()*2+x*.05)*1.5;
+      ctx.drawImage(im, x-42+sh, y-42, 84, 84);
+      if(ai>0){ ctx.fillStyle="rgba(231,76,60,.25)"; ctx.fillRect(x-44,y-38,88,76); ctx.fillStyle="#E74C3C"; ctx.beginPath(); ctx.arc(x+18,y-8,5,0,7); ctx.fill(); } }
+    else if(PELE[quem]) pessoa(ctx,quem,x,y+4,G_t(),ai);
+    ctx.restore(); }
   ctx.fillStyle="#E74C3C"; ctx.beginPath(); ctx.moveTo(x-44,y-38); ctx.quadraticCurveTo(x-30,y,x-44,y+20); ctx.fill(); ctx.beginPath(); ctx.moveTo(x+44,y-38); ctx.quadraticCurveTo(x+30,y,x+44,y+20); ctx.fill();
   ctx.strokeStyle="#6D4C2F"; ctx.lineWidth=6; rr(ctx,x-44,y-38,88,76,6); ctx.stroke();
   ctx.fillStyle="#6D4C2F"; ctx.fillRect(x-52,y+38,104,8);

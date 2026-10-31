@@ -186,5 +186,5 @@ GAMES.dev = telaDev;
 (function rotaDev(){
   const abre = ()=>{ if(location.hash==="#dev" || new URLSearchParams(location.search).get("dev")==="1" || (DEV && DEV.temLink())) telaDev(); };
   window.addEventListener("hashchange", abre);
-  abre();
+  setTimeout(abre, 0);   // depois da tela inicial
 })();
