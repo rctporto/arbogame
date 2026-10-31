@@ -23,6 +23,8 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 | `personagens/` | Poses do Listras e do Pintas (embutidas no `index.html`) |
 | `marca/` | Logo da Nório para o rodapé (embutido no `index.html`) |
 | `build.py` | Gera o `index.html`: `python3 build.py` |
+| `config.js` | Endereço e chave pública do Supabase (ranking online) |
+| `supabase/01_ranking.sql` | Tabela e funções do ranking online |
 | `firebase.json` | Publicação no Firebase Hosting da Nório |
 | `.github/workflows/deploy.yml` | Publica sozinho a cada push na `main` |
 | `scripts/configurar-publicacao.sh` | Configuração única da publicação automática (Cloud Shell) |
@@ -33,6 +35,15 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 2. Depois disso, cada push na `main` publica o site em <https://arbogame.web.app>.
 
 Para publicar manualmente: `firebase deploy --only hosting --project norio-pd-os`.
+
+## Ranking online (Supabase)
+
+1. Crie um projeto em <https://supabase.com> (região São Paulo).
+2. **SQL Editor → New query:** cole `supabase/01_ranking.sql` e clique em **Run**.
+3. **Project Settings → API:** copie a **Project URL** e a chave **anon / public** para o `config.js`. **Nunca** use a chave `service_role`.
+4. Faça push na `main`: o site é publicado com o ranking online ligado.
+
+Enquanto o `config.js` estiver vazio, o jogo mostra só o ranking do aparelho. No ranking online aparecem só apelidos (com filtro de palavrões no site e no banco), a faixa de idade e o código opcional da turma. O banco fica fechado e só aceita as funções `enviar_pontos` e `top_ranking`, que validam apelido, jogo e pontuação.
 
 ## Conteúdo
 

@@ -387,3 +387,71 @@ function telaRanking(aba){
     $("#nao").onclick=()=>{ $("#conf").innerHTML=""; }; $("#sim").onclick=()=>{ Ranking.gravar({j:{}}); toast("Ranking apagado"); telaRanking(aba); }; };
 }
 GAMES.ranking = telaRanking;
+
+/* ================== RANKING ONLINE (Supabase, opcional) ================== */
+const ONLINE = (()=>{
+  const c = window.ARBO_CONFIG || {};
+  if(!c.supabaseUrl || !c.supabaseAnonKey) return null;
+  const rpc = async (fn, body)=>{
+    const r = await fetch(`${c.supabaseUrl.replace(/\/$/,"")}/rest/v1/rpc/${fn}`, {method:"POST",
+      headers:{"Content-Type":"application/json", apikey:c.supabaseAnonKey, Authorization:`Bearer ${c.supabaseAnonKey}`}, body:JSON.stringify(body)});
+    if(!r.ok) throw new Error((await r.text().catch(()=>""))||r.statusText);
+    const t = await r.text(); return t ? JSON.parse(t) : null;
+  };
+  return {
+    enviar:(jogo,pontos)=>rpc("enviar_pontos",{p_jogador:S.uid,p_apelido:apelidoOnline(),p_faixa:S.idade||1,p_turma:S.turma||"",p_jogo:jogo,p_pontos:Math.round(pontos)}),
+    top:(jogo,turma)=>rpc("top_ranking",{p_jogo:jogo,p_turma:turma||null,p_limite:10}),
+  };
+})();
+function uuid(){ try{ return crypto.randomUUID(); }catch(e){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return (c==="x"?r:(r&3|8)).toString(16); }); } }
+const BLOQ = ["merda","porra","caralho","buceta","puta","puto","viado","fdp","pqp","vsf","foda","bosta","idiota","burro","otario","arrombado","corno","vagabund","piroca","xoxota","cacete","desgraca","imbecil","retardado","macaco","nazi","sexo","porn"];
+function apelidoValido(t){
+  t=(t||"").trim().replace(/\s+/g," ");
+  if(!/^[A-Za-zÀ-ÿ0-9 ]{2,20}$/.test(t)) return false;
+  const n=(t.toLowerCase()+" ").normalize("NFD").replace(/[̀-ͯ]/g,"");
+  return !BLOQ.some(w=>n.includes(w)) && !/(^|\s)cu\s/.test(" "+n);
+}
+function apelidoOnline(){ const n=Ranking.nome(); return apelidoValido(n) ? n.trim().replace(/\s+/g," ") : "Agente "+(S.uid||"").slice(0,4).toUpperCase(); }
+if(!S.uid){ S.uid=uuid(); save(); }
+let filaOnline={};
+function enviarOnline(jogo,pontos){
+  if(!ONLINE||!S.idade||!(pontos>0)) return;
+  filaOnline[jogo]=Math.max(filaOnline[jogo]||0,pontos);
+  clearTimeout(enviarOnline.t);
+  enviarOnline.t=setTimeout(()=>{ const f=filaOnline; filaOnline={}; Object.entries(f).forEach(([j,p])=>ONLINE.enviar(j,p).catch(()=>{})); }, 1500);
+}
+const _salvarLocal = Ranking.salvar;
+Ranking.salvar = function(jogo, placar){ _salvarLocal(jogo, placar); enviarOnline("geral", S.pts); if(jogo && jogo!=="memoria") enviarOnline(jogo, placar); };
+
+/* tela do ranking com abas "Este aparelho" e "Online" */
+const _telaLocal = telaRanking;
+let rankModo = "local";
+telaRanking = function(aba){
+  if(!ONLINE || rankModo==="local"){ _telaLocal(aba); if(ONLINE) modoBar(aba); return; }
+  stopArcade(); clearTimer();
+  aba = aba || "geral";
+  const abas=[["geral","Geral"],...ARCADE.filter(a=>a.id!=="memoria").map(a=>[a.id,a.nome])];
+  app.innerHTML = head("Ranking") + `
+    <div class="tabs" role="tablist">${abas.map(([id,n])=>`<button class="tab" role="tab" aria-selected="${id===aba}" data-aba="${id}">${n}</button>`).join("")}</div>
+    <div class="row" style="margin-bottom:12px"><label for="turma" class="tag">Código da turma</label><input type="text" id="turma" maxlength="12" placeholder="Ex.: 5A-ESCOLA" value="${esc(S.turma||"")}" style="max-width:200px;text-transform:uppercase"><button class="btn ghost" id="filtra">Ver só a turma</button><button class="btn ghost" id="todas">Todas as escolas</button></div>
+    <div class="rank panel" id="rk"><p class="muted">Carregando…</p></div>
+    <p class="muted" style="margin-top:12px">Ranking online: aparecem só apelidos. Seu apelido online é <b>${esc(apelidoOnline())}</b>.</p>`;
+  bindBack(); modoBar(aba);
+  app.querySelectorAll(".tab").forEach(b=>b.onclick=()=>telaRanking(b.dataset.aba));
+  const salvaTurma=()=>{ const v=$("#turma").value.toUpperCase().replace(/[^A-Z0-9-]/g,"").slice(0,12); S.turma=v; save(); return v; };
+  const carregar=(turma)=>{ $("#rk").innerHTML='<p class="muted">Carregando…</p>';
+    ONLINE.top(aba,turma).then(l=>{ const eu=apelidoOnline().toLowerCase(); const pod=["🥇","🥈","🥉"];
+      $("#rk").innerHTML = l && l.length ? `<ol class="rlist">${l.map((p,i)=>`<li class="${p.apelido.toLowerCase()===eu?"me":""}${i<3?" top":""}"><span class="pos">${i<3?pod[i]:i+1}</span><span class="rn">${esc(p.apelido)}<small>${AGES[(p.faixa||1)-1].nome}${p.turma?" · "+esc(p.turma):""}</small></span><span class="rv">${p.pontos} pts</span></li>`).join("")}</ol>`
+        : `<div class="empty">${av("L","oi","coverav")}<p class="q">Ninguém pontuou aqui ainda.</p><p class="muted">Seja o primeiro!</p></div>`;
+    }).catch(()=>{ $("#rk").innerHTML='<p class="alert">Não foi possível carregar o ranking online. Confira a internet e tente de novo.</p>'; }); };
+  $("#filtra").onclick=()=>carregar(salvaTurma());
+  $("#todas").onclick=()=>{ salvaTurma(); carregar(null); };
+  carregar(null);
+};
+function modoBar(aba){
+  const h=app.querySelector(".gamehead"); if(!h) return;
+  const d=document.createElement("div"); d.className="tabs"; d.setAttribute("role","tablist");
+  d.innerHTML=`<button class="tab" role="tab" aria-selected="${rankModo==="local"}" data-m="local">📱 Este aparelho</button><button class="tab" role="tab" aria-selected="${rankModo==="online"}" data-m="online">🌎 Online</button>`;
+  h.after(d); d.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{ rankModo=b.dataset.m; telaRanking(aba); });
+}
+GAMES.ranking = (aba)=>telaRanking(aba);
