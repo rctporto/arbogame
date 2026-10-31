@@ -162,6 +162,8 @@ section > h2{margin-bottom:12px}
   .cycle{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:420px){ .yard{grid-template-columns:repeat(2,1fr)} .ages{grid-template-columns:1fr} }
+.foot{margin-top:40px;border-top:2px solid var(--line);padding-block:16px 8px;font-size:.9rem}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -175,6 +177,7 @@ section > h2{margin-bottom:12px}
   </div>
 </header>
 <main class="wrap" id="app"></main>
+<footer class="foot"><div class="wrap"><span><b>ArboGame</b> é um produto da <b>Nório</b></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz</span></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
