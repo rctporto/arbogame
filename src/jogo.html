@@ -135,6 +135,21 @@ section > h2{margin-bottom:12px}
 .alert{border-left:6px solid var(--coral);background:var(--coral-soft);border-radius:12px;padding:12px 14px;font-weight:600}
 
 
+
+/* ranking */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.tab{flex:none;border:2px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-weight:800}
+.tab[aria-selected="true"]{background:var(--leaf);border-color:var(--leaf);color:var(--card)}
+.rlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rlist li{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--bg);font-variant-numeric:tabular-nums}
+.rlist li.top{background:var(--sun-soft)}
+.rlist li.me{outline:3px solid var(--leaf)}
+.rlist .pos{font-family:var(--display);font-weight:800;font-size:1.4rem;text-align:center}
+.rlist .rn{font-weight:800;min-width:0;overflow-wrap:anywhere}
+.rlist .rn small{display:block;font-weight:600;color:var(--muted)}
+.rlist .rv{font-family:var(--display);font-weight:800;font-size:1.2rem}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px}
+.mart{width:80%;height:auto}
 /* fliperama */
 .arcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .arc{text-align:left;border:3px solid var(--line);background:var(--c);border-radius:22px;padding:14px;display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center;transition:transform .15s,border-color .15s;color:var(--ink)}
@@ -418,7 +433,7 @@ function home(){
         ${duo()}
         <span class="tag">Seu progresso</span>
         <p><b style="font-family:var(--display);font-size:2.2rem">${feitas}</b> <span class="muted">de ${MISSIONS.length} missões concluídas</span></p>
-        <div class="row"><button class="btn ghost" id="trocar">Trocar jogador</button></div>
+        <div class="row"><button class="btn sun" data-go="ranking">🏆 Ranking</button><button class="btn ghost" id="trocar">Trocar jogador</button></div>
       </div>
     </div>
     <section><h2>Fliperama</h2><p class="muted" style="margin:-6px 0 12px">Jogos rápidos e animados. Bons para os menores!</p><div class="arcs">${ARCADE.map(a=>`
@@ -491,9 +506,9 @@ function endScreen(titulo, msg, acertos, total, pts, who){
       <p style="font-family:var(--display);font-size:3rem;font-weight:800;line-height:1">${total==null?`${acertos} <small style="font-size:1.2rem">pts no jogo</small>`:`${acertos}/${total}`}</p>
       <p class="q">${msg}</p>
       <p class="muted">+${pts} pontos nesta rodada</p>
-      <div class="row" style="justify-content:center"><button class="btn" id="again">Jogar de novo</button><button class="btn ghost" id="mapa">Voltar às missões</button></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="again">Jogar de novo</button><button class="btn sun" id="rk">🏆 Ranking</button><button class="btn ghost" id="mapa">Voltar às missões</button></div>
     </div>`;
-  bindBack(); $("#mapa").onclick=home;
+  bindBack(); $("#mapa").onclick=home; $("#rk").onclick=()=>GAMES.ranking();
   return $("#again");
 }
 
