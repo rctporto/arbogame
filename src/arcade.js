@@ -128,7 +128,7 @@ function mosquitinho(ctx,x,y,t,s=1,cor="#3a2a1a"){ ctx.save(); ctx.translate(x,y
 
 /* ---------- 1. Esvazia Já! ---------- */
 GAMES.esvazia = ()=>{
-  const TIPOS=[["balde","balde"],["pneu","pneu"],["vaso","vaso"],["garrafa","garrafa"],["lata","lata"],["pote","pote do pet"]];
+  const TIPOS=[["balde","balde"],["pneu","pneu"],["vaso","vaso"],["caixadagua","caixa d'água"],["lata","lata"],["pote","pote do pet"]];
   arcade({id:"esvazia", titulo:"Esvazia Já!", who:"L", dur:60,
     intro:"A chuva enche os recipientes do quintal. Toque neles para esvaziar antes que as larvas virem mosquitos!",
     tip:"Água parada vira berçário de mosquito em cerca de 7 dias. Esvaziar e esfregar quebra o ciclo!",
@@ -179,16 +179,16 @@ GAMES.esvazia = ()=>{
 
 /* ---------- 2. Varre-Varre ---------- */
 GAMES.varre = ()=>{
-  const LIXO=["folha","banana","folhaverde","coco","folha","maca"];
+  const FOLHAS=["folha","folhaverde","folha"], FRUTAS=["banana","coco","maca"];
   arcade({id:"varre", titulo:"Varre-Varre", who:"P", dur:60,
-    intro:"Folhas e cascas de fruta no chão úmido viram berçário de maruim. Arraste o dedo por cima para varrer tudo para a compostagem!",
+    intro:"Montes de folhas e montes de frutas apodrecendo no chão úmido viram berçário de maruim. Arraste o dedo por cima para varrer tudo para a compostagem!",
     tip:"Eu, o Pintas, nasço em lugares úmidos com folhas e frutas apodrecendo. Quintal limpo, nada de maruim!",
     win:"Que vassoura! O quintal ficou limpinho e nenhum maruim nasceu.", lose:"Alguns maruins nasceram. Varra os montinhos mais cedo!",
     init(G){ G.piles=[]; G.spawn=.5; G.trail=[]; G.swarms=[]; },
     update(G,dt){
       const speed=1+G.t/45+(G.lvl-1)*.15;
       G.spawn-=dt*speed;
-      if(G.spawn<=0 && G.piles.length<7){ G.spawn=rnd(1,1.8); G.piles.push({x:rnd(80,G.W-160),y:rnd(220,G.H-60),hp:100,age:0,items:Array.from({length:4},()=>({e:pick(LIXO),dx:rnd(-26,26),dy:rnd(-14,14),r:rnd(-.6,.6)}))}); }
+      if(G.spawn<=0 && G.piles.length<7){ G.spawn=rnd(1,1.8); const fr=Math.random()<.5, tipos=fr?FRUTAS:FOLHAS; G.piles.push({x:rnd(80,G.W-160),y:rnd(220,G.H-60),hp:100,age:0,fruta:fr,items:Array.from({length:fr?3:5},()=>({e:pick(tipos),dx:rnd(-26,26),dy:rnd(-14,14),r:rnd(-.6,.6)}))}); }
       G.piles.forEach(p=>{ p.age+=dt*speed; if(p.age>8){ p.dead=true; G.swarms.push({x:p.x,y:p.y,t:0}); G.hurt(p.x,p.y-40,"Nasceram maruins!"); } });
       G.piles=G.piles.filter(p=>!p.dead);
       G.swarms.forEach(s=>s.t+=dt); G.swarms=G.swarms.filter(s=>s.t<2.5);
@@ -198,7 +198,7 @@ GAMES.varre = ()=>{
       if(!G.ptr.down) return;
       G.trail.push({x,y,a:1});
       const d=Math.hypot(x-G.ptr.px,y-G.ptr.py);
-      G.piles.forEach(p=>{ if(Math.hypot(p.x-x,p.y-y)<60){ p.hp-=d*1.1; p.shake=.15; if(Math.random()<.3) G.burst(p.x,p.y,"#8B5A2B",3,150); if(p.hp<=0 && !p.dead){ p.dead=true; G.add(p.age>5?15:10,p.x,p.y-40); sfx("swoosh"); anel(G,p.x,p.y,"#FFD93D"); for(let i=0;i<6;i++) G.parts.push({x:p.x,y:p.y,vx:(G.W-70-p.x)*rnd(.9,1.3),vy:(G.H-70-p.y)*1.2-250,life:1,max:1,r:9,art:pick(LIXO)}); } } });
+      G.piles.forEach(p=>{ if(Math.hypot(p.x-x,p.y-y)<60){ p.hp-=d*1.1; p.shake=.15; if(Math.random()<.3) G.burst(p.x,p.y,"#8B5A2B",3,150); if(p.hp<=0 && !p.dead){ p.dead=true; G.add(p.age>5?15:10,p.x,p.y-40); sfx("swoosh"); anel(G,p.x,p.y,"#FFD93D"); for(let i=0;i<6;i++) G.parts.push({x:p.x,y:p.y,vx:(G.W-70-p.x)*rnd(.9,1.3),vy:(G.H-70-p.y)*1.2-250,life:1,max:1,r:9,art:pick(p.fruta?FRUTAS:FOLHAS)}); } } });
       G.piles=G.piles.filter(p=>!p.dead);
     },
     draw(G,ctx){
@@ -214,6 +214,11 @@ GAMES.varre = ()=>{
       G.piles.forEach(p=>{ const sh=p.shake>0?(p.shake-=1/60,rnd(-4,4)):0; const sc=Math.max(.4,p.hp/100);
         ctx.fillStyle="rgba(40,20,5,.3)"; ctx.beginPath(); ctx.ellipse(p.x,p.y+18,50*sc+10,14*sc+4,0,0,7); ctx.fill();
         p.items.forEach(it=>art(ctx,it.e,p.x+it.dx*sc+sh,p.y+it.dy*sc,.55*sc+.15,it.r));
+        if(p.fruta){ // frutas apodrecendo: manchas escuras e cheirinho
+          ctx.fillStyle="rgba(70,45,10,.55)"; p.items.forEach((it,k)=>{ ctx.beginPath(); ctx.arc(p.x+it.dx*sc+sh+5-k*4,p.y+it.dy*sc+4,4+k,0,7); ctx.fill(); });
+          ctx.strokeStyle="rgba(120,160,60,.7)"; ctx.lineWidth=3; for(let k=0;k<3;k++){ const xx=p.x-14+k*14, yy=p.y-26; ctx.beginPath(); ctx.moveTo(xx,yy); for(let j=1;j<=4;j++) ctx.lineTo(xx+Math.sin(G.t*4+j+k)*4,yy-j*6); ctx.stroke(); } }
+        { const rot=p.fruta?"frutas podres":"folhas"; ctx.font='800 13px "Baloo 2",sans-serif'; const lw=ctx.measureText(rot).width+18;
+          ctx.fillStyle="rgba(255,255,255,.88)"; rr(ctx,p.x-lw/2,p.y+24,lw,19,9.5); ctx.fill(); ctx.fillStyle=p.fruta?"#8E4B1F":"#3B6B22"; ctx.textAlign="center"; ctx.fillText(rot,p.x,p.y+38); }
         if(p.age>4){ for(let i=0;i<3;i++) ctx.fillStyle="#333", ctx.beginPath(), ctx.arc(p.x+Math.sin(G.t*8+i*2)*30,p.y-30+Math.cos(G.t*7+i)*12,2.5,0,7), ctx.fill(); }
         const pct=Math.min(1,p.age/8); ctx.fillStyle=pct>.6?"#D9482B":"#FFC23D"; ctx.beginPath(); ctx.arc(p.x+40,p.y-34,8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2); ctx.lineTo(p.x+40,p.y-34); ctx.fill(); });
       G.swarms.forEach(s=>{ for(let i=0;i<14;i++){ const a=i+s.t*4; ctx.fillStyle="#222"; ctx.beginPath(); ctx.arc(s.x+Math.cos(a)*(20+s.t*60),s.y-s.t*80+Math.sin(a*1.3)*20,2.5,0,7); ctx.fill(); } drawSpr(ctx,"pintas-bravo",s.x,s.y-s.t*60-30,54); });
@@ -225,10 +230,10 @@ GAMES.varre = ()=>{
 
 /* ---------- 3. Coleta Certa ---------- */
 GAMES.coleta = ()=>{
-  const LIXO=[["lata","Lata"],["tampinha","Tampinha"],["garrafa","Garrafa"],["pneu","Pneu"],["copo","Copo"],["balde","Balde velho"]];
+  const LIXO=[["lata","Lata"],["tampinha","Tampinha"],["iogurte","Potinho"],["pneu","Pneu"],["copo","Copo"],["balde","Balde velho"]];
   arcade({id:"coleta", titulo:"Coleta Certa", who:"L", dur:60,
     intro:"Lixo jogado no chão junta água da chuva. Mova a lixeira (dedo, mouse ou setas) e pegue tudo que cair!",
-    tip:"Latas, tampinhas e garrafas jogadas no quintal viram criadouros. Lugar de lixo é na lixeira!",
+    tip:"Latas, tampinhas e potinhos jogados no quintal viram criadouros. Lugar de lixo é na lixeira!",
     win:"Coleta perfeita! Nada de lixo virando criadouro.", lose:"Muito lixo caiu no chão. Tente de novo!",
     init(G){ G.bin={x:G.W/2,w:120}; G.items=[]; G.spawn=.6; G.poças=[]; },
     update(G,dt){
@@ -269,10 +274,11 @@ GAMES.espanta = ()=>{
     intro:"Toque nos insetos para borrifar repelente antes que cheguem às janelas. Fique de olho no céu: a hora do dia muda quem aparece!",
     tip:"O Listras (Aedes) pica mais de dia. Eu, o Pintas (maruim), apareço mais no amanhecer e no entardecer.",
     win:"Família protegida! Você sabe quando cada inseto aparece.", lose:"Muitas picadas! Repelente, roupa comprida e tela ajudam.",
-    init(G){ G.bugs=[]; G.spawn=1; G.fase=0; G.wins=[{x:250,y:250},{x:400,y:250},{x:550,y:250},{x:250,y:370},{x:550,y:370}]; G.rost=["👧","👦","👵","👨","👩"]; },
+    init(G){ G.bugs=[]; G.spawn=1; G.fase=0; G.wins=[{x:250,y:250},{x:400,y:250},{x:550,y:250},{x:250,y:370},{x:550,y:370}]; G.rost=["menina","menino","avo","pai","mae"]; G.wins.forEach(w=>w.ai=0); },
     update(G,dt){
       const f=Math.floor(G.t/15)%2; if(f!==G.fase){ G.fase=f; G.say(f?"Entardeceu! Agora é a hora do maruim. Eles são pequenos e vêm em grupo!":"Amanheceu o dia! É a hora do Aedes. Ele é maior e tem listras.", ""); }
       const speed=1+G.t/50+(G.lvl-1)*.15;
+      G.wins.forEach(w=>{ if(w.ai>0) w.ai-=dt; });
       G.spawn-=dt*speed;
       if(G.spawn<=0){ G.spawn=G.fase?rnd(1.2,1.8):rnd(.9,1.4);
         const n=G.fase?3:1;
@@ -281,7 +287,7 @@ GAMES.espanta = ()=>{
       G.bugs.forEach(b=>{ const dx=b.w.x-b.x, dy=b.w.y-b.y, d=Math.hypot(dx,dy);
         if(b.fug){ b.y-=260*dt; b.x+=b.vx*dt; return; }
         b.x+=dx/d*b.sp*dt; b.y+=dy/d*b.sp*dt+Math.sin(G.t*6+b.ph)*1.5;
-        if(d<20){ b.done=true; G.hurt(b.w.x,b.w.y-40,b.tipo==="m"?"Picada de maruim!":"Picada de Aedes!"); } });
+        if(d<20){ b.done=true; b.w.ai=1.5; G.hurt(b.w.x,b.w.y-40,b.tipo==="m"?"Picada de maruim!":"Picada de Aedes!"); } });
       G.bugs=G.bugs.filter(b=>!b.done && b.y>-60);
     },
     down(G,x,y){
@@ -299,7 +305,7 @@ GAMES.espanta = ()=>{
       arvore(ctx,80,G.H-40,1,G.t); arvore(ctx,G.W-70,G.H-40,.9,G.t+2);
       ctx.fillStyle=tarde?"#4E6B3E":"#6CC24A"; ctx.fillRect(0,G.H-44,G.W,44);
       casaBonita(ctx,400,170,460,286,tarde);
-      G.wins.forEach((w,i)=>janela(ctx,w.x,w.y,tarde,G.rost[i]));
+      _gt=G.t; G.wins.forEach((w,i)=>janela(ctx,w.x,w.y,tarde,G.rost[i],w.ai));
       G.bugs.forEach(b=>{ const flip=b.x>b.w.x;
         if(b.tipo==="a") drawSpr(ctx,"listras-voando",b.x,b.y,70,flip); else drawSpr(ctx,"pintas-ola",b.x,b.y,42,flip); });
       ctx.fillStyle="rgba(0,0,0,.35)"; rr(ctx,10,10,250,36,18); ctx.fill(); ctx.fillStyle="#fff"; ctx.font='800 20px "Baloo 2",sans-serif'; ctx.textAlign="left"; ctx.fillText(tarde?"🌇 Entardecer: maruins":"🌞 Dia: Aedes",22,35);
@@ -312,11 +318,11 @@ const PARES = [
   {k:"listras", img:"listras-ola", n:"Listras", d:"O Listras é um Aedes aegypti: escuro, com listras brancas, e pica mais de dia."},
   {k:"pintas", img:"pintas-piscando", n:"Pintas", d:"O Pintas é um maruim: minúsculo, nasce em folhas e frutas úmidas."},
   {k:"pneu", a:"pneu", n:"Pneu", d:"Pneu velho junta água da chuva. Guarde seco e coberto."},
-  {k:"garrafa", a:"garrafa", n:"Garrafa", d:"Garrafa sempre de boca para baixo!"},
+  {k:"caixadagua", a:"caixadagua", n:"Caixa d'água", d:"Caixa d'água destampada é um dos maiores criadouros. Sempre bem tampada!"},
   {k:"vaso", a:"vaso", n:"Pratinho", d:"Coloque areia no pratinho do vaso."},
   {k:"repelente", a:"repelente", n:"Repelente", d:"Repelente protege contra o Aedes e o maruim."},
   {k:"tela", e:"🪟", n:"Tela", d:"Tela nas janelas ajuda. Para o maruim, precisa ser de malha fina."},
-  {k:"caixa", e:"📦", n:"Caixa tampada", d:"Caixa d'água sempre bem tampada."},
+  {k:"tampinha", a:"tampinha", n:"Tampinha", d:"Até uma tampinha com água vira criadouro. Lixo no lixo!"},
 ];
 GAMES.memoria = ()=>{
   stopArcade(); clearTimer();

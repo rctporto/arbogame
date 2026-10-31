@@ -30,6 +30,21 @@ const ART = {
     rr(ctx,-9,-54,18,8,2); ctx.fillStyle="#E74C3C"; ctx.fill(); ctx.stroke();
     rr(ctx,-20,4,40,18,2); ctx.fillStyle="#FFF3D6"; ctx.fill(); ctx.stroke();
     shine(ctx,-11,-4,4,18,.5); },
+  caixadagua(ctx,s){ ol(ctx,s);
+    ctx.beginPath(); ctx.moveTo(-40,-26); ctx.lineTo(40,-26); ctx.lineTo(32,36); ctx.quadraticCurveTo(0,44,-32,36); ctx.closePath();
+    ctx.fillStyle=grad(ctx,-40,0,40,0,["#1F6FB8","#3E9BE6","#185A96"]); ctx.fill(); ctx.stroke();
+    ctx.lineWidth=2.2*s; [-6,10,26].forEach(y=>{ ctx.beginPath(); ctx.moveTo(-38+(y+26)*.12,y); ctx.quadraticCurveTo(0,y+6,38-(y+26)*.12,y); ctx.stroke(); });
+    ctx.lineWidth=3.2*s; ctx.beginPath(); ctx.ellipse(0,-26,42,10,0,0,7); ctx.fillStyle="#9CCBF2"; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0,-26,34,7,0,0,7); ctx.fillStyle="#2C5E8C"; ctx.fill();
+    ctx.save(); ctx.translate(46,-34); ctx.rotate(.9); ctx.beginPath(); ctx.ellipse(0,0,26,7,0,0,7); ctx.fillStyle="#3E9BE6"; ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0,-3,8,3,0,0,7); ctx.fillStyle="#9CCBF2"; ctx.fill(); ctx.stroke(); ctx.restore();
+    shine(ctx,-24,4,5,16,.35); },
+  iogurte(ctx,s){ ol(ctx,s);
+    ctx.beginPath(); ctx.moveTo(-22,-26); ctx.lineTo(22,-26); ctx.lineTo(16,30); ctx.quadraticCurveTo(0,34,-16,30); ctx.closePath();
+    ctx.fillStyle="#FFFFFF"; ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#F78FB3"; ctx.beginPath(); ctx.moveTo(-20,-8); ctx.lineTo(20,-8); ctx.lineTo(18,10); ctx.lineTo(-18,10); ctx.closePath(); ctx.fill();
+    ctx.fillStyle="#C0392B"; ctx.beginPath(); ctx.arc(-6,1,4,0,7); ctx.arc(7,1,4,0,7); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(0,-26,22,6,0,0,7); ctx.fillStyle="#DDE6EF"; ctx.fill(); ctx.stroke(); },
   lata(ctx,s){ ol(ctx,s);
     rr(ctx,-24,-34,48,70,6); ctx.fillStyle=grad(ctx,-24,0,24,0,["#B0B7BF","#E9EDF1","#9AA3AD"]); ctx.fill(); ctx.stroke();
     ctx.fillStyle="#E74C3C"; ctx.fillRect(-24,-16,48,30); ctx.strokeRect(-24,-16,48,30);
@@ -113,13 +128,49 @@ function casaBonita(ctx,cx,top,w,h,tarde){
   ctx.fillStyle="rgba(0,0,0,.14)"; for(let r=0;r<5;r++){ for(let c=-r;c<=r;c++){ ctx.beginPath(); ctx.arc(cx+c*36,top-90+r*22,10,0,Math.PI); ctx.fill(); } }
   ctx.fillStyle="#8B5A2B"; rr(ctx,cx-26,top+h-104,52,104,6); ctx.fill(); ctx.fillStyle="#FFC23D"; ctx.beginPath(); ctx.arc(cx+14,top+h-52,4,0,7); ctx.fill();
 }
-function janela(ctx,x,y,tarde,emo){
+function janela(ctx,x,y,tarde,quem,ai=0){
   ctx.fillStyle=tarde?"#FFE29A":"#C9ECFF"; rr(ctx,x-44,y-38,88,76,6); ctx.fill();
   ctx.fillStyle="rgba(255,255,255,.45)"; ctx.beginPath(); ctx.moveTo(x-40,y+30); ctx.lineTo(x-10,y-34); ctx.lineTo(x+4,y-34); ctx.lineTo(x-26,y+30); ctx.fill();
-  if(emo) emoji(ctx,emo,x,y+6,40);
+  if(quem){ ctx.save(); rr(ctx,x-44,y-38,88,76,6); ctx.clip(); pessoa(ctx,quem,x,y+4,G_t(),ai); ctx.restore(); }
   ctx.fillStyle="#E74C3C"; ctx.beginPath(); ctx.moveTo(x-44,y-38); ctx.quadraticCurveTo(x-30,y,x-44,y+20); ctx.fill(); ctx.beginPath(); ctx.moveTo(x+44,y-38); ctx.quadraticCurveTo(x+30,y,x+44,y+20); ctx.fill();
   ctx.strokeStyle="#6D4C2F"; ctx.lineWidth=6; rr(ctx,x-44,y-38,88,76,6); ctx.stroke();
   ctx.fillStyle="#6D4C2F"; ctx.fillRect(x-52,y+38,104,8);
+}
+/* pessoa em desenho (cabeça e ombros), para as janelas. tipo: menina, menino, avo, pai, mae. ai>0 = levou picada */
+let _gt=0; function G_t(){ return _gt; }
+const PELE={menina:"#F1C27D",menino:"#8D5524",avo:"#FFDBAC",pai:"#C68642",mae:"#E0AC69"};
+function pessoa(ctx,tipo,x,y,t,ai){
+  const pele=PELE[tipo]||"#F1C27D", bob=Math.sin(t*2+x*.05)*1.5;
+  const roupa={menina:"#E84393",menino:"#2E86DE",avo:"#8E44AD",pai:"#27AE60",mae:"#F39C12"}[tipo]||"#2E86DE";
+  const cab={menina:"#4A2C17",menino:"#1E130C",avo:"#D5D8DC",pai:"#2C1A0E",mae:"#6B3A1E"}[tipo]||"#333";
+  ctx.save(); ctx.translate(x,y+bob); ctx.lineWidth=2.6; ctx.strokeStyle=INK; ctx.lineJoin="round";
+  // tronco
+  ctx.beginPath(); ctx.moveTo(-26,40); ctx.quadraticCurveTo(-26,14,0,12); ctx.quadraticCurveTo(26,14,26,40); ctx.closePath(); ctx.fillStyle=roupa; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-6,13); ctx.lineTo(0,20); ctx.lineTo(6,13); ctx.strokeStyle="rgba(0,0,0,.25)"; ctx.stroke(); ctx.strokeStyle=INK;
+  // cabelo de trás
+  ctx.fillStyle=cab;
+  if(tipo==="mae"){ ctx.beginPath(); ctx.ellipse(0,0,19,22,0,0,7); ctx.fill(); ctx.stroke(); }
+  if(tipo==="menina"){ [-18,18].forEach(dx=>{ ctx.beginPath(); ctx.ellipse(dx,-2,6,9,dx<0?.4:-.4,0,7); ctx.fill(); ctx.stroke(); }); }
+  if(tipo==="avo"){ ctx.beginPath(); ctx.arc(0,-20,8,0,7); ctx.fill(); ctx.stroke(); }
+  // cabeça
+  ctx.beginPath(); ctx.arc(0,-4,15,0,7); ctx.fillStyle=pele; ctx.fill(); ctx.stroke();
+  // franja / cabelo da frente
+  ctx.fillStyle=cab; ctx.beginPath(); ctx.arc(0,-4,15,Math.PI*1.05,Math.PI*1.95);
+  if(tipo==="menino"||tipo==="pai"){ ctx.quadraticCurveTo(6,-14,-14,-8); } else { ctx.quadraticCurveTo(0,-10,-14,-8); }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  if(tipo==="pai"){ ctx.beginPath(); ctx.arc(0,2,13,Math.PI*.1,Math.PI*.9); ctx.lineTo(-8,4); ctx.quadraticCurveTo(0,8,8,4); ctx.closePath(); ctx.fill(); }
+  // rosto
+  const pisca = (Math.sin(t*1.3+x)>.97);
+  ctx.fillStyle=INK;
+  if(pisca){ ctx.lineWidth=2; [-5,5].forEach(dx=>{ ctx.beginPath(); ctx.moveTo(dx-2.5,-4); ctx.lineTo(dx+2.5,-4); ctx.stroke(); }); }
+  else [-5,5].forEach(dx=>{ ctx.beginPath(); ctx.arc(dx,-4,2.2,0,7); ctx.fill(); });
+  if(tipo==="avo"){ ctx.lineWidth=1.6; [-5,5].forEach(dx=>{ ctx.beginPath(); ctx.arc(dx,-4,4.5,0,7); ctx.stroke(); }); ctx.beginPath(); ctx.moveTo(-.5,-4); ctx.lineTo(.5,-4); ctx.stroke(); }
+  ctx.fillStyle="rgba(255,110,110,.35)"; [-9,9].forEach(dx=>{ ctx.beginPath(); ctx.arc(dx,2,3,0,7); ctx.fill(); });
+  ctx.lineWidth=2; ctx.strokeStyle=INK; ctx.beginPath();
+  if(ai>0){ ctx.arc(0,7,4,Math.PI*1.15,Math.PI*1.85); } else { ctx.arc(0,2,5,Math.PI*.15,Math.PI*.85); }
+  ctx.stroke();
+  if(ai>0){ ctx.fillStyle="#E74C3C"; ctx.beginPath(); ctx.arc(11,-12,3.5,0,7); ctx.fill(); }
+  ctx.restore();
 }
 function anel(G,x,y,cor){ G.rings=G.rings||[]; G.rings.push({x,y,r:10,a:1,cor}); }
 function desenhaAneis(ctx,G,dt){ (G.rings||[]).forEach(r=>{ r.r+=dt*260; r.a-=dt*2.2; ctx.globalAlpha=Math.max(0,r.a); ctx.strokeStyle=r.cor; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(r.x,r.y,r.r,0,7); ctx.stroke(); }); ctx.globalAlpha=1; G.rings=(G.rings||[]).filter(r=>r.a>0); }

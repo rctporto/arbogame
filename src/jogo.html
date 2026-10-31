@@ -32,6 +32,7 @@ p{margin:0}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--sky);outline-offset:2px}
 .btn{border:0;border-radius:999px;padding:12px 22px;font-weight:800;background:var(--leaf);color:var(--card);font-size:1rem}
+a.btn{text-decoration:none;display:inline-block}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
 .btn.sun{background:var(--sun);color:#3a2a00}
 .btn:disabled{opacity:.45;cursor:default}
@@ -61,7 +62,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .age b{display:block;font-family:var(--display);font-size:1.05rem}
 .age small{color:var(--muted)}
 .age[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-soft)}
-input[type=text]{font:inherit;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=text],input[type=email]{font:inherit;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
 .missions{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
 .mission{text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;transition:transform .15s,border-color .15s}
 .mission:hover:not(:disabled){transform:translateY(-2px);border-color:var(--leaf)}
@@ -219,6 +220,19 @@ button.pill{cursor:pointer}
 .foot .wrap{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:space-between}
 .foot .by{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .foot .by img{height:16px;width:auto}
+.foot a.devlink{color:var(--muted);font-size:.8rem}
+.devnums{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.devnums .panel{padding:14px}
+.devnums b{display:block;font-family:var(--display);font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.devnums span{color:var(--muted);font-size:.9rem}
+.devcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.devt{width:100%;border-collapse:collapse;font-size:.9rem;font-variant-numeric:tabular-nums}
+.devt th{text-align:left;color:var(--muted);font-weight:800;font-size:.8rem;padding:6px 8px;border-bottom:2px solid var(--line)}
+.devt td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+.devscroll{overflow-x:auto;margin-top:10px}
+.devscroll td:last-child{white-space:nowrap}
+.btn.mini{padding:4px 10px;font-size:.8rem;border-width:1px}
+.devpre{background:var(--bg);border-radius:12px;padding:12px;overflow:auto;max-height:300px;font-size:.8rem}
 .logo-l{display:var(--logo-l)}.logo-d{display:var(--logo-d)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -233,7 +247,7 @@ button.pill{cursor:pointer}
   </div>
 </header>
 <main class="wrap" id="app"></main>
-<footer class="foot"><div class="wrap"><span class="by"><b>ArboGame</b> é um produto da <img class="logo-l" src="%%NORIO_MARINHO%%" alt="Nório"><img class="logo-d" src="%%NORIO_CREME%%" alt="Nório"></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz</span></div></footer>
+<footer class="foot"><div class="wrap"><span class="by"><b>ArboGame</b> é um produto da <img class="logo-l" src="%%NORIO_MARINHO%%" alt="Nório"><img class="logo-d" src="%%NORIO_CREME%%" alt="Nório"></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz · <a class="devlink" href="#dev">Desenvolvedor</a></span></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -282,7 +296,7 @@ const VETOR_Q = [
 const YARD_BAD = [
   {e:"🛞", n:"Pneu velho com água", dica:"Guarde pneus secos e cobertos, ou entregue para reciclagem."},
   {e:"🪴", n:"Vaso com pratinho cheio", dica:"Coloque areia no pratinho ou lave-o toda semana."},
-  {e:"🍾", n:"Garrafa de boca para cima", dica:"Guarde garrafas sempre de boca para baixo."},
+  {e:"🛁", n:"Banheira velha no quintal", dica:"Banheira, tanque ou bacia fora de uso: vire de boca para baixo ou descarte."},
   {e:"🪣", n:"Balde com água da chuva", dica:"Esvazie e guarde o balde virado."},
   {e:"🛢️", n:"Caixa d'água destampada", dica:"Mantenha a caixa d'água sempre bem tampada."},
   {e:"🥫", n:"Lata jogada no quintal", dica:"Latas vão para o lixo ou reciclagem, não para o quintal."},
@@ -292,7 +306,7 @@ const YARD_BAD = [
   {e:"🌧️", n:"Calha entupida", dica:"Limpe as calhas para a água da chuva escorrer."},
 ];
 const YARD_OK = [
-  {e:"🍾", n:"Garrafa de boca para baixo", flip:true, porque:"De boca para baixo a garrafa não junta água."},
+  {e:"🪣", n:"Balde guardado de boca para baixo", flip:true, porque:"De boca para baixo o balde não junta água."},
   {e:"📦", n:"Caixa d'água tampada", porque:"Bem tampada, o mosquito não entra."},
   {e:"🌵", n:"Vaso com areia no prato", porque:"A areia não deixa a água ficar parada."},
   {e:"🗑️", n:"Lixeira tampada", porque:"Lixo tampado não acumula água."},
