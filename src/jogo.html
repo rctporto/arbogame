@@ -289,19 +289,23 @@ button.pill{cursor:pointer}
 .devpre{background:var(--bg);border-radius:12px;padding:12px;overflow:auto;max-height:300px;font-size:.8rem}
 .logo-l{display:var(--logo-l)}.logo-d{display:var(--logo-d)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/*TEMA*/
 </style>
 
+<div class="shell"><aside class="side" id="side" aria-label="Menu"></aside><div class="conteudo">
 <header class="status">
   <div class="wrap">
+    <button class="menubtn" id="menubtn" aria-label="Abrir o menu" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <div class="brand">
-      <svg width="30" height="34" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 2C15 2 3 15 3 22a12 12 0 0 0 24 0C27 15 15 2 15 2z" fill="var(--sky)"/><path d="M6 30L25 9" stroke="var(--coral)" stroke-width="4" stroke-linecap="round"/></svg>
-      ArboGame
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
+      <span><b>ArboGame <i>•</i> BugKids</b><small>Ciência, aventura e prevenção</small></span>
     </div>
     <div class="stats" id="stats"></div>
   </div>
 </header>
 <main class="wrap" id="app"></main>
 <footer class="foot"><div class="wrap"><span class="by"><b>ArboGame</b> é um produto da <img class="logo-l" src="%%NORIO_MARINHO%%" alt="Nório"><img class="logo-d" src="%%NORIO_CREME%%" alt="Nório"></span><span class="muted">Conteúdo baseado no Ministério da Saúde e na Fiocruz · <a class="devlink" href="#dev">Desenvolvedor</a></span></div></footer>
+</div></div><div class="sidefundo" id="sidefundo"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -419,14 +423,14 @@ const FINAL = [
 ];
 
 const HOME = [
-  "Virei garrafas de boca para baixo",
+  "Virei garrafas e baldes de boca para baixo",
   "Coloquei areia nos pratinhos dos vasos",
-  "Conferi se a caixa d'água está tampada",
+  "Pedi a um adulto para conferir se a caixa d'água está tampada",
   "Esvaziei baldes e potes com água",
   "Lavei com bucha o pote de água do pet",
-  "Joguei no lixo latas, tampinhas e plásticos",
-  "Recolhi folhas e cascas de frutas acumuladas",
-  "Verifiquei calhas e ralos",
+  "Joguei no lixo latas, tampinhas e plásticos (nada de vidro ou objeto cortante: isso é com um adulto)",
+  "Recolhi folhas e cascas de frutas acumuladas, de luvas ou com uma pá",
+  "Avisei um adulto sobre calhas e ralos entupidos (lugares altos são com os adultos)",
 ];
 
 const MISSIONS = [
@@ -590,7 +594,7 @@ function runQuiz({id, titulo, itens, render, check, explain, onEnd, who}){
   function step(){
     if(i>=itens.length){ finish(id); return onEnd(ok, itens.length, pts); }
     const it = itens[i];
-    app.innerHTML = head(titulo, prog(i,itens.length)) + `<div class="stack">${render(it)}<div id="fb"></div></div>`;
+    app.innerHTML = head(titulo, prog(i,itens.length)) + `<div class="stack qcard">${render(it)}<div id="fb"></div></div>`;
     bindBack();
     let usouDica=false;
     const opts=[...app.querySelectorAll(".opt")];

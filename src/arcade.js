@@ -61,11 +61,20 @@ function arcade(cfg){
   const W=800, H=500;
   const dur = cfg.dur || 60;
   app.innerHTML = head(cfg.titulo, `<div class="row hud"><span class="pill" id="hs">0 pts</span><span class="pill" id="hl"></span><span class="pill" id="ht">${dur}s</span></div>`) + `
-    <div class="stage">
-      <canvas id="cv" width="${W}" height="${H}" aria-label="${esc(cfg.titulo)}"></canvas>
-      <div class="cover" id="cover">${av(cfg.who,"oi","coverav")}<p class="q">${cfg.intro}</p>${DICAS[cfg.id]?dicaCatarina(DICAS[cfg.id]):""}<button class="btn sun big" id="play">▶ Jogar</button></div>
+    <div class="capa" id="cover">
+      <section class="capahero">
+        <div><div class="row" style="gap:8px"><span class="chip">Minijogo educativo</span><span class="chip">Até +80 pontos</span></div>
+          <h2>${cfg.titulo}</h2><p>${cfg.intro}</p>
+          <button class="btn sun big" id="play">▶ Jogar agora</button></div>
+        <img src="${IMG[POSE[cfg.who].oi]}" alt="${WHO[cfg.who].nome}">
+      </section>
+      <div class="capacards">${DICAS[cfg.id]?dicaCatarina(DICAS[cfg.id]):""}
+        <div class="panel"><h3>O desafio</h3><p>${cfg.tip}</p><p class="nota">Os jogos são de mentirinha. Na vida real, peça ajuda e orientação a um adulto.</p></div></div>
     </div>
-    <div id="tip" style="margin-top:12px">${guide(cfg.who,"",cfg.tip)}</div>`;
+    <div class="stage" id="stg" hidden>
+      <canvas id="cv" width="${W}" height="${H}" aria-label="${esc(cfg.titulo)}"></canvas>
+    </div>
+    <div id="tip" style="margin-top:12px" hidden>${guide(cfg.who,"",cfg.tip)}</div>`;
   bindBack();
   const cv=$("#cv"), ctx=cv.getContext("2d");
   const G = {W,H,t:0,time:dur,score:0,lives:cfg.lives||3,parts:[],texts:[],ptr:{x:W/2,y:H/2,down:false},keys:{},over:false,combo:0,lvl:S.idade};
@@ -105,7 +114,7 @@ function arcade(cfg){
     ARC.raf=requestAnimationFrame(frame);
   }
   ARC.raf=requestAnimationFrame(frame);
-  $("#play").onclick=()=>{ sfx("swoosh"); $("#cover").hidden=true; G.run=true; };
+  $("#play").onclick=()=>{ sfx("swoosh"); $("#cover").hidden=true; $("#stg").hidden=false; $("#tip").hidden=false; $("#stg").scrollIntoView({block:"nearest"}); G.run=true; };
   function end(){
     G.over=true; sfx(G.score>=150?"win":"swoosh");
     const pts=Math.min(80,Math.round(G.score/3));

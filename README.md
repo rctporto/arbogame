@@ -71,3 +71,10 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - **Professora Catarina** dá dicas na capa de cada minijogo, no início do site e no botão "Pedir dica" das perguntas (risca uma alternativa errada; com dica o acerto vale 5 pontos a partir de 11 anos).
 - **BugKids** (Ana, Pedro, Júlia e Guto) aparecem como personagens para escolher, nas janelas do Espanta-Mosquito, no Jogo da Memória e nas comemorações.
 - Os retratos foram recortados dos livros e ficam em `personagens/` (`bugkid-*.webp`, `catarina*.webp`, `bugkids-turma.webp`).
+
+## Visual novo (protótipo "ArboGame • BugKids" v1.0)
+
+- `src/tema.css`: tokens e componentes do protótipo (menu lateral, painel, capas dos minijogos, quiz em cartão, fim de missão, pódio do ranking). Celular: menu vira gaveta (botão ☰).
+- `src/ui.js`: carregado por último; monta o menu lateral, o novo painel (`homeNovo`), a biblioteca, o fim de missão e o pódio. Reaproveita a lógica existente (jogos, missões, perfis, ranking real); nada de dados demonstrativos.
+- Imagens de corpo inteiro: `personagens/corpo-*.webp` e `catarina-busto.webp`.
+- Pendente: cenários finais 1600×1000 e objetos 512×512 do guia.
