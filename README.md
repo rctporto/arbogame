@@ -38,12 +38,12 @@ Para publicar manualmente: `firebase deploy --only hosting --project norio-pd-os
 
 ## Ranking online (Supabase)
 
-1. Crie um projeto em <https://supabase.com> (região São Paulo).
+1. Use um projeto Supabase que já existe (o plano grátis permite poucos projetos) ou crie um novo. Tudo do ArboGame tem o prefixo `arbogame_` e não mexe nas outras tabelas.
 2. **SQL Editor → New query:** cole `supabase/01_ranking.sql` e clique em **Run**.
 3. **Project Settings → API:** copie a **Project URL** e a chave **anon / public** para o `config.js`. **Nunca** use a chave `service_role`.
 4. Faça push na `main`: o site é publicado com o ranking online ligado.
 
-Enquanto o `config.js` estiver vazio, o jogo mostra só o ranking do aparelho. No ranking online aparecem só apelidos (com filtro de palavrões no site e no banco), a faixa de idade e o código opcional da turma. O banco fica fechado e só aceita as funções `enviar_pontos` e `top_ranking`, que validam apelido, jogo e pontuação.
+Enquanto o `config.js` estiver vazio, o jogo mostra só o ranking do aparelho. No ranking online aparecem só apelidos (com filtro de palavrões no site e no banco), a faixa de idade e o código opcional da turma. O banco fica fechado e só aceita as funções `arbogame_enviar_pontos` e `arbogame_top_ranking`, que validam apelido, jogo e pontuação.
 
 ## Conteúdo
 

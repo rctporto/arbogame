@@ -1197,8 +1197,8 @@ const ONLINE = (()=>{
     const t = await r.text(); return t ? JSON.parse(t) : null;
   };
   return {
-    enviar:(jogo,pontos)=>rpc("enviar_pontos",{p_jogador:S.uid,p_apelido:apelidoOnline(),p_faixa:S.idade||1,p_turma:S.turma||"",p_jogo:jogo,p_pontos:Math.round(pontos)}),
-    top:(jogo,turma)=>rpc("top_ranking",{p_jogo:jogo,p_turma:turma||null,p_limite:10}),
+    enviar:(jogo,pontos)=>rpc("arbogame_enviar_pontos",{p_jogador:S.uid,p_apelido:apelidoOnline(),p_faixa:S.idade||1,p_turma:S.turma||"",p_jogo:jogo,p_pontos:Math.round(pontos)}),
+    top:(jogo,turma)=>rpc("arbogame_top_ranking",{p_jogo:jogo,p_turma:turma||null,p_limite:10}),
   };
 })();
 function uuid(){ try{ return crypto.randomUUID(); }catch(e){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return (c==="x"?r:(r&3|8)).toString(16); }); } }
