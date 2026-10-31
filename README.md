@@ -63,3 +63,11 @@ cd ~/arbogame && git pull && bash scripts/ligar-dev.sh seu@email.com
 ```
 
 Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script grava. O código está em `src/dev.js` e as permissões em `ranking/firestore.rules`.
+
+## Login, livros, BugKids e Professora Catarina
+
+- **Tela de entrada:** ao abrir o site, cada criança escolhe o seu jogador ou cria um novo (apelido, faixa etária, personagem e código da turma opcional). Vários jogadores ficam salvos no mesmo aparelho, sem senha. O código está em `src/extra.js`.
+- **Biblioteca:** os livros "Listras e os BugKids" e "Pintas e os BugKids" ficam em `livros/<livro>/NN.webp` (páginas) e `tNN.webp` (miniaturas). Ler até o fim dá uma medalha e 30 pontos.
+- **Professora Catarina** dá dicas na capa de cada minijogo, no início do site e no botão "Pedir dica" das perguntas (risca uma alternativa errada; com dica o acerto vale 5 pontos a partir de 11 anos).
+- **BugKids** (Ana, Pedro, Júlia e Guto) aparecem como personagens para escolher, nas janelas do Espanta-Mosquito, no Jogo da Memória e nas comemorações.
+- Os retratos foram recortados dos livros e ficam em `personagens/` (`bugkid-*.webp`, `catarina*.webp`, `bugkids-turma.webp`).

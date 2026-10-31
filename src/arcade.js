@@ -45,6 +45,13 @@ function drawSpr(ctx, nome, x, y, h, flip=false, rot=0){
 const rnd = (a,b)=>a+Math.random()*(b-a);
 const pick = a=>a[Math.floor(Math.random()*a.length)];
 
+const DICAS = {
+  esvazia:"Olhe a barrinha embaixo de cada recipiente. Toque primeiro nos que estão no vermelho: as larvas já estão quase virando mosquito!",
+  varre:"Passe o dedo várias vezes sobre o monte, como uma vassoura de verdade. Montes de folhas e de frutas podres, todos vão para a compostagem.",
+  coleta:"Fique embaixo do lixo antes de ele cair. Se aparecer um repelente, pegue: ele devolve uma vida!",
+  espanta:"Os maruins chegam em grupo. Toque bem no meio deles: um só borrifo espanta vários!",
+  memoria:"Vire cartas de cantos diferentes e tente lembrar onde cada desenho estava.",
+};
 /* ---------- motor ---------- */
 let ARC = null;
 function stopArcade(){ if(ARC){ ARC.stop=true; cancelAnimationFrame(ARC.raf); window.removeEventListener("keydown",ARC.kd); window.removeEventListener("keyup",ARC.ku); ARC=null; } }
@@ -56,7 +63,7 @@ function arcade(cfg){
   app.innerHTML = head(cfg.titulo, `<div class="row hud"><span class="pill" id="hs">0 pts</span><span class="pill" id="hl"></span><span class="pill" id="ht">${dur}s</span></div>`) + `
     <div class="stage">
       <canvas id="cv" width="${W}" height="${H}" aria-label="${esc(cfg.titulo)}"></canvas>
-      <div class="cover" id="cover">${av(cfg.who,"oi","coverav")}<p class="q">${cfg.intro}</p><button class="btn sun big" id="play">▶ Jogar</button></div>
+      <div class="cover" id="cover">${av(cfg.who,"oi","coverav")}<p class="q">${cfg.intro}</p>${DICAS[cfg.id]?dicaCatarina(DICAS[cfg.id]):""}<button class="btn sun big" id="play">▶ Jogar</button></div>
     </div>
     <div id="tip" style="margin-top:12px">${guide(cfg.who,"",cfg.tip)}</div>`;
   bindBack();
@@ -274,7 +281,7 @@ GAMES.espanta = ()=>{
     intro:"Toque nos insetos para borrifar repelente antes que cheguem às janelas. Fique de olho no céu: a hora do dia muda quem aparece!",
     tip:"O Listras (Aedes) pica mais de dia. Eu, o Pintas (maruim), apareço mais no amanhecer e no entardecer.",
     win:"Família protegida! Você sabe quando cada inseto aparece.", lose:"Muitas picadas! Repelente, roupa comprida e tela ajudam.",
-    init(G){ G.bugs=[]; G.spawn=1; G.fase=0; G.wins=[{x:250,y:250},{x:400,y:250},{x:550,y:250},{x:250,y:370},{x:550,y:370}]; G.rost=["menina","menino","avo","pai","mae"]; G.wins.forEach(w=>w.ai=0); },
+    init(G){ G.bugs=[]; G.spawn=1; G.fase=0; G.wins=[{x:250,y:250},{x:400,y:250},{x:550,y:250},{x:250,y:370},{x:550,y:370}]; G.rost=["bugkid-ana","bugkid-pedro","catarina","bugkid-julia","bugkid-guto"]; G.wins.forEach(w=>w.ai=0); },
     update(G,dt){
       const f=Math.floor(G.t/15)%2; if(f!==G.fase){ G.fase=f; G.say(f?"Entardeceu! Agora é a hora do maruim. Eles são pequenos e vêm em grupo!":"Amanheceu o dia! É a hora do Aedes. Ele é maior e tem listras.", ""); }
       const speed=1+G.t/50+(G.lvl-1)*.15;
@@ -321,7 +328,7 @@ const PARES = [
   {k:"caixadagua", a:"caixadagua", n:"Caixa d'água", d:"Caixa d'água destampada é um dos maiores criadouros. Sempre bem tampada!"},
   {k:"vaso", a:"vaso", n:"Pratinho", d:"Coloque areia no pratinho do vaso."},
   {k:"repelente", a:"repelente", n:"Repelente", d:"Repelente protege contra o Aedes e o maruim."},
-  {k:"tela", e:"🪟", n:"Tela", d:"Tela nas janelas ajuda. Para o maruim, precisa ser de malha fina."},
+  {k:"tela", img:"bugkid-julia", n:"Júlia", d:"A Júlia lembra: tela nas janelas ajuda. Para o maruim, precisa ser de malha fina."},
   {k:"tampinha", a:"tampinha", n:"Tampinha", d:"Até uma tampinha com água vira criadouro. Lixo no lixo!"},
 ];
 GAMES.memoria = ()=>{
@@ -331,7 +338,7 @@ GAMES.memoria = ()=>{
   let open=[], found=0, moves=0, lock=false;
   app.innerHTML = head("Jogo da Memória", `<div class="row hud"><span class="pill" id="mv">0 jogadas</span><span class="pill" id="pr">0/${n} pares</span></div>`) + `
     <div class="memo" style="--cols:${n===6?4:4}">${cards.map(c=>`<button class="mcard" data-i="${c.i}" aria-label="Carta virada"><span class="mback"><span>?</span></span><span class="mface">${c.img?`<img src="${IMG[c.img]}" alt="">`:c.a?`<canvas class="mart" width="120" height="120" data-a="${c.a}"></canvas>`:`<span class="me">${c.e}</span>`}<b>${c.n}</b></span></button>`).join("")}</div>
-    <div id="fb" style="margin-top:12px">${guide("L","","Vire duas cartas por vez e encontre os pares. Cada par traz uma dica!")}</div>`;
+    <div id="fb" style="margin-top:12px">${guide("C","","Vire duas cartas por vez e encontre os pares. Cada par traz uma dica! "+DICAS.memoria)}</div>`;
   bindBack();
   app.querySelectorAll(".mart").forEach(c=>art(c.getContext("2d"),c.dataset.a,60,64,1));
   app.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{
