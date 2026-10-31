@@ -66,7 +66,7 @@ function arcade(cfg){
   const hud=()=>{ $("#hs").textContent=G.score+" pts"; $("#hl").textContent="❤️".repeat(Math.max(0,G.lives))+"🤍".repeat(Math.max(0,(cfg.lives||3)-G.lives)); $("#ht").textContent=Math.ceil(G.time)+"s"; };
   G.pop=(x,y,txt,cor)=>G.texts.push({x,y,txt,cor:cor||"#1B8566",a:1});
   G.burst=(x,y,cor,n=14,sp=260,em)=>{ for(let i=0;i<n;i++){ const a=rnd(0,Math.PI*2), v=rnd(sp*.3,sp); G.parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,life:rnd(.4,.9),max:.9,cor,r:rnd(3,7),em}); } };
-  G.add=(n,x,y)=>{ G.combo++; const bonus = G.combo>=5?2:1; G.score+=n*bonus; G.pop(x,y,`+${n*bonus}${bonus>1?" combo!":""}`); sfx("pop"); hud(); };
+  G.add=(n,x,y)=>{ anel(G,x,y+40,"#FFC23D"); G.combo++; const bonus = G.combo>=5?2:1; G.score+=n*bonus; G.pop(x,y,`+${n*bonus}${bonus>1?" combo!":""}`); sfx("pop"); hud(); };
   G.hurt=(x,y,txt)=>{ G.lives--; G.combo=0; G.pop(x,y,txt||"Ai!","#D9482B"); sfx("bad"); hud(); cv.classList.remove("shake"); void cv.offsetWidth; cv.classList.add("shake"); };
   G.say=(html,mood)=>{ $("#tip").innerHTML=guide(cfg.who,mood||"",html); };
   cfg.init(G);
@@ -92,8 +92,9 @@ function arcade(cfg){
     G.texts.forEach(t=>{ t.y-=50*dt; t.a-=dt*.9; }); G.texts=G.texts.filter(t=>t.a>0);
     ctx.clearRect(0,0,W,H);
     cfg.draw(G,ctx);
-    G.parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,p.life/p.max); if(p.em) emoji(ctx,p.em,p.x,p.y,p.r*4); else { ctx.fillStyle=p.cor; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); } }); ctx.globalAlpha=1;
-    G.texts.forEach(t=>{ ctx.globalAlpha=Math.max(0,t.a); ctx.font='800 30px "Baloo 2",system-ui,sans-serif'; ctx.textAlign="center"; ctx.lineWidth=6; ctx.strokeStyle="#fff"; ctx.strokeText(t.txt,t.x,t.y); ctx.fillStyle=t.cor; ctx.fillText(t.txt,t.x,t.y); }); ctx.globalAlpha=1;
+    desenhaAneis(ctx,G,dt);
+    G.parts.forEach(p=>{ ctx.globalAlpha=Math.max(0,p.life/p.max); if(p.art) art(ctx,p.art,p.x,p.y,p.r/18,p.life*6); else if(p.em) emoji(ctx,p.em,p.x,p.y,p.r*4); else { ctx.fillStyle=p.cor; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,7); ctx.fill(); } }); ctx.globalAlpha=1;
+    G.texts.forEach(t=>{ ctx.globalAlpha=Math.max(0,t.a); const sc=t.a>.85?1+(1-t.a)*3:1.45-.45*Math.min(1,(1-t.a)*2); ctx.font=`800 ${Math.round(30*sc)}px "Baloo 2",system-ui,sans-serif`; ctx.textAlign="center"; ctx.lineWidth=6; ctx.strokeStyle="#fff"; ctx.strokeText(t.txt,t.x,t.y); ctx.fillStyle=t.cor; ctx.fillText(t.txt,t.x,t.y); }); ctx.globalAlpha=1;
     ARC.raf=requestAnimationFrame(frame);
   }
   ARC.raf=requestAnimationFrame(frame);
@@ -101,7 +102,7 @@ function arcade(cfg){
   function end(){
     G.over=true; sfx(G.score>=150?"win":"swoosh");
     const pts=Math.min(80,Math.round(G.score/3));
-    addPts(pts); finish(cfg.id);
+    addPts(pts); finish(cfg.id); Ranking.salvar(cfg.id, G.score);
     if(G.score>=150) medal(cfg.id);
     setTimeout(()=>{ stopArcade(); confetti(G.score>=150);
       const msg = G.score>=150 ? cfg.win : cfg.lose;
@@ -127,7 +128,7 @@ function mosquitinho(ctx,x,y,t,s=1,cor="#3a2a1a"){ ctx.save(); ctx.translate(x,y
 
 /* ---------- 1. Esvazia Já! ---------- */
 GAMES.esvazia = ()=>{
-  const TIPOS=[["🪣","balde"],["🛞","pneu"],["🪴","vaso"],["🍾","garrafa"],["🥫","lata"],["🥣","pote do pet"]];
+  const TIPOS=[["balde","balde"],["pneu","pneu"],["vaso","vaso"],["garrafa","garrafa"],["lata","lata"],["pote","pote do pet"]];
   arcade({id:"esvazia", titulo:"Esvazia Já!", who:"L", dur:60,
     intro:"A chuva enche os recipientes do quintal. Toque neles para esvaziar antes que as larvas virem mosquitos!",
     tip:"Água parada vira berçário de mosquito em cerca de 7 dias. Esvaziar e esfregar quebra o ciclo!",
@@ -141,7 +142,7 @@ GAMES.esvazia = ()=>{
       G.nuv.forEach(n=>{ n.x+=20*dt; if(n.x>G.W+60) n.x=-140; });
       G.spawn-=dt*speed;
       if(G.spawn<=0){ G.spawn=rnd(1.4,2.4); const livres=G.pots.filter(p=>!p.on); if(livres.length){ const p=pick(livres); p.on=true; p.w=0; p.age=0; G.gotas.push({x:p.x,y:0,tx:p.x,ty:p.y-30}); } }
-      G.gotas.forEach(g=>{ g.y+=600*dt; }); G.gotas=G.gotas.filter(g=>g.y<g.ty);
+      G.gotas.forEach(g=>{ g.y+=600*dt; if(g.y>=g.ty) G.burst(g.x,g.ty,"#7FC8FF",6,120); }); G.gotas=G.gotas.filter(g=>g.y<g.ty);
       G.pots.forEach(p=>{ if(!p.on) return; p.w=Math.min(1,p.w+dt*.8); p.age+=dt*speed;
         if(p.age>2.5 && !G.avisou){ G.avisou=true; G.say("Olha as larvas se mexendo! Toque rápido antes que virem mosquitos.","no"); }
         if(p.age>7){ p.on=false; p.w=0; G.voo.push({x:p.x,y:p.y-40,vx:rnd(-80,80)}); G.hurt(p.x,p.y-60,"Escapou um mosquito!"); } });
@@ -154,31 +155,31 @@ GAMES.esvazia = ()=>{
       else { G.pop(p.x,p.y-60,"seco ✓","#58766E"); }
     },
     draw(G,ctx){
-      ceu(ctx,G,"#8FD3FF","#DFF4FF");
-      G.nuv.forEach(n=>nuvem(ctx,n.x,n.y,1,"#ffffff"));
-      cerca(ctx,G,250); grama(ctx,G,250);
-      G.gotas.forEach(g=>emoji(ctx,"💧",g.x,g.y,28));
+      ceuBonito(ctx,G,"#6EC6FF","#D8F1FF");
+      G.nuv.forEach((n,i)=>nuvemBonita(ctx,n.x,n.y,.9+i*.15));
+      morros(ctx,G,215); cercaBonita(ctx,G,262); gramado(ctx,G,250);
+      G.gotas.forEach(g=>{ ctx.fillStyle="#4DA8F0"; ctx.beginPath(); ctx.moveTo(g.x,g.y-16); ctx.quadraticCurveTo(g.x+10,g.y,g.x,g.y+8); ctx.quadraticCurveTo(g.x-10,g.y,g.x,g.y-16); ctx.fill(); shine(ctx,g.x-3,g.y-2,2,4,.7); });
       G.pots.forEach(p=>{
         const sq=p.squash>0?(p.squash-=1/60,1+Math.sin(p.squash*30)*.12):1;
         ctx.fillStyle="rgba(0,0,0,.12)"; ctx.beginPath(); ctx.ellipse(p.x,p.y+40,50,12,0,0,7); ctx.fill();
-        ctx.save(); ctx.translate(p.x,p.y); ctx.scale(sq,2-sq); emoji(ctx,p.e,0,0,92); ctx.restore();
+        const bob=p.on&&p.age>4.5?Math.sin(G.t*30)*2:0;
+        ctx.save(); ctx.translate(p.x+bob,p.y); ctx.scale(sq,2-sq); art(ctx,p.e,0,0,1.05); ctx.restore();
         if(p.on){
-          const r=34*p.w;
-          ctx.fillStyle="rgba(70,160,230,.85)"; ctx.beginPath(); ctx.ellipse(p.x,p.y-38,r+6,r*.45+4,0,0,7); ctx.fill();
-          ctx.strokeStyle="#fff"; ctx.lineWidth=2; ctx.stroke();
+          const r=30*p.w;
+          agua(ctx,p.x,p.y-38,r+4,r*.4+3,G.t+p.x);
           if(p.age>2.5){ for(let i=0;i<3;i++) larva(ctx,p.x-14+i*14,p.y-36,G.t+i,.8); }
           if(p.age>4.5){ ctx.fillStyle="#D9482B"; ctx.font='800 22px "Baloo 2",sans-serif'; ctx.textAlign="center"; ctx.fillText("!",p.x+44,p.y-60+Math.sin(G.t*12)*4); }
           const pct=Math.min(1,p.age/7); ctx.fillStyle="rgba(0,0,0,.15)"; ctx.fillRect(p.x-40,p.y+52,80,8); ctx.fillStyle=pct>.64?"#D9482B":pct>.35?"#FFC23D":"#1B8566"; ctx.fillRect(p.x-40,p.y+52,80*pct,8);
         }
       });
-      G.voo.forEach(v=>drawSpr(ctx,"listras-voando",v.x,v.y,60,v.vx<0));
+      G.voo.forEach(v=>drawSpr(ctx,"listras-voando",v.x,v.y,64,v.vx<0,Math.sin(G.t*8)*.15));
     }
   });
 };
 
 /* ---------- 2. Varre-Varre ---------- */
 GAMES.varre = ()=>{
-  const LIXO=["🍂","🍌","🍃","🥥","🍂","🍎"];
+  const LIXO=["folha","banana","folhaverde","coco","folha","maca"];
   arcade({id:"varre", titulo:"Varre-Varre", who:"P", dur:60,
     intro:"Folhas e cascas de fruta no chão úmido viram berçário de maruim. Arraste o dedo por cima para varrer tudo para a compostagem!",
     tip:"Eu, o Pintas, nasço em lugares úmidos com folhas e frutas apodrecendo. Quintal limpo, nada de maruim!",
@@ -197,29 +198,34 @@ GAMES.varre = ()=>{
       if(!G.ptr.down) return;
       G.trail.push({x,y,a:1});
       const d=Math.hypot(x-G.ptr.px,y-G.ptr.py);
-      G.piles.forEach(p=>{ if(Math.hypot(p.x-x,p.y-y)<60){ p.hp-=d*1.1; p.shake=.15; if(Math.random()<.3) G.burst(p.x,p.y,"#8B5A2B",2,150,pick(LIXO)); if(p.hp<=0 && !p.dead){ p.dead=true; G.add(p.age>5?15:10,p.x,p.y-40); sfx("swoosh"); for(let i=0;i<6;i++) G.parts.push({x:p.x,y:p.y,vx:(G.W-70-p.x)*rnd(.9,1.3),vy:(G.H-70-p.y)*1.2-250,life:1,max:1,r:7,em:pick(LIXO)}); } } });
+      G.piles.forEach(p=>{ if(Math.hypot(p.x-x,p.y-y)<60){ p.hp-=d*1.1; p.shake=.15; if(Math.random()<.3) G.burst(p.x,p.y,"#8B5A2B",3,150); if(p.hp<=0 && !p.dead){ p.dead=true; G.add(p.age>5?15:10,p.x,p.y-40); sfx("swoosh"); anel(G,p.x,p.y,"#FFD93D"); for(let i=0;i<6;i++) G.parts.push({x:p.x,y:p.y,vx:(G.W-70-p.x)*rnd(.9,1.3),vy:(G.H-70-p.y)*1.2-250,life:1,max:1,r:9,art:pick(LIXO)}); } } });
       G.piles=G.piles.filter(p=>!p.dead);
     },
     draw(G,ctx){
-      ceu(ctx,G,"#FFE7A3","#FFF6DA");
-      ctx.fillStyle="#7A5230"; ctx.fillRect(40,60,22,150); emoji(ctx,"🌴",52,70,120); emoji(ctx,"🌳",G.W-120,110,150);
-      ctx.fillStyle="#9C6B3F"; ctx.fillRect(0,200,G.W,G.H-200);
-      ctx.fillStyle="#86592F"; for(let i=0;i<40;i++){ ctx.beginPath(); ctx.ellipse((i*97)%G.W,220+(i*53)%(G.H-220),30,8,0,0,7); ctx.fill(); }
-      ctx.fillStyle="#2F8F4E"; ctx.fillRect(G.W-120,G.H-110,100,90); ctx.fillStyle="#fff"; ctx.font='800 16px "Baloo 2",sans-serif'; ctx.textAlign="center"; ctx.fillText("COMPOSTAGEM",G.W-70,G.H-30); emoji(ctx,"♻️",G.W-70,G.H-72,40);
+      ceuBonito(ctx,G,"#FFD98A","#FFF3D1");
+      nuvemBonita(ctx,(G.t*12)%(G.W+200)-150,60,.8);
+      morros(ctx,G,200,"#A8C97F","#8DB866");
+      bananeira(ctx,70,215,1,G.t); arvore(ctx,G.W-200,212,1.1,G.t);
+      ctx.fillStyle=grad(ctx,0,200,0,G.H,["#8E6236","#6E4826"]); ctx.fillRect(0,200,G.W,G.H-200);
+      for(let i=0;i<46;i++){ ctx.fillStyle=i%3?"rgba(60,35,15,.25)":"rgba(255,230,180,.12)"; ctx.beginPath(); ctx.ellipse((i*97)%G.W,214+(i*53)%(G.H-214),18+(i%4)*8,5,0,0,7); ctx.fill(); }
+      ctx.fillStyle="rgba(90,160,220,.45)"; ctx.beginPath(); ctx.ellipse(200,G.H-40,70,14,0,0,7); ctx.fill();
+      ctx.fillStyle="#2F8F4E"; rr(ctx,G.W-124,G.H-116,108,96,10); ctx.fill(); ctx.fillStyle="#256F3D"; rr(ctx,G.W-130,G.H-124,120,16,6); ctx.fill();
+      ctx.fillStyle="#fff"; ctx.font='800 15px "Baloo 2",sans-serif'; ctx.textAlign="center"; ctx.fillText("COMPOSTAGEM",G.W-70,G.H-32); art(ctx,"folhaverde",G.W-70,G.H-74,.7,.4);
       G.piles.forEach(p=>{ const sh=p.shake>0?(p.shake-=1/60,rnd(-4,4)):0; const sc=Math.max(.4,p.hp/100);
-        p.items.forEach(it=>emoji(ctx,it.e,p.x+it.dx*sc+sh,p.y+it.dy*sc,46*sc+10,it.r));
+        ctx.fillStyle="rgba(40,20,5,.3)"; ctx.beginPath(); ctx.ellipse(p.x,p.y+18,50*sc+10,14*sc+4,0,0,7); ctx.fill();
+        p.items.forEach(it=>art(ctx,it.e,p.x+it.dx*sc+sh,p.y+it.dy*sc,.55*sc+.15,it.r));
         if(p.age>4){ for(let i=0;i<3;i++) ctx.fillStyle="#333", ctx.beginPath(), ctx.arc(p.x+Math.sin(G.t*8+i*2)*30,p.y-30+Math.cos(G.t*7+i)*12,2.5,0,7), ctx.fill(); }
         const pct=Math.min(1,p.age/8); ctx.fillStyle=pct>.6?"#D9482B":"#FFC23D"; ctx.beginPath(); ctx.arc(p.x+40,p.y-34,8,-Math.PI/2,-Math.PI/2+pct*Math.PI*2); ctx.lineTo(p.x+40,p.y-34); ctx.fill(); });
       G.swarms.forEach(s=>{ for(let i=0;i<14;i++){ const a=i+s.t*4; ctx.fillStyle="#222"; ctx.beginPath(); ctx.arc(s.x+Math.cos(a)*(20+s.t*60),s.y-s.t*80+Math.sin(a*1.3)*20,2.5,0,7); ctx.fill(); } drawSpr(ctx,"pintas-bravo",s.x,s.y-s.t*60-30,54); });
       if(G.trail.length>1){ ctx.lineCap="round"; for(let i=1;i<G.trail.length;i++){ const a=G.trail[i-1], b=G.trail[i]; ctx.strokeStyle=`rgba(255,220,120,${b.a})`; ctx.lineWidth=26*b.a; ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); } }
-      if(G.ptr.down) emoji(ctx,"🧹",G.ptr.x+20,G.ptr.y-20,54,-.5);
+      if(G.ptr.down){ ctx.save(); ctx.translate(G.ptr.x+18,G.ptr.y-18); ctx.rotate(-.6+Math.sin(G.t*20)*.15); ctx.fillStyle="#A0522D"; ctx.fillRect(-3,-60,6,60); ctx.fillStyle="#F4C542"; ctx.beginPath(); ctx.moveTo(-16,0); ctx.lineTo(16,0); ctx.lineTo(22,28); ctx.lineTo(-22,28); ctx.fill(); ctx.strokeStyle=INK; ctx.lineWidth=2.5; ctx.stroke(); ctx.restore(); }
     }
   });
 };
 
 /* ---------- 3. Coleta Certa ---------- */
 GAMES.coleta = ()=>{
-  const LIXO=[["🥫","Lata"],["🧢","Tampinha"],["🍾","Garrafa"],["🛞","Pneu"],["🥤","Copo"],["🪣","Balde velho"]];
+  const LIXO=[["lata","Lata"],["tampinha","Tampinha"],["garrafa","Garrafa"],["pneu","Pneu"],["copo","Copo"],["balde","Balde velho"]];
   arcade({id:"coleta", titulo:"Coleta Certa", who:"L", dur:60,
     intro:"Lixo jogado no chão junta água da chuva. Mova a lixeira (dedo, mouse ou setas) e pegue tudo que cair!",
     tip:"Latas, tampinhas e garrafas jogadas no quintal viram criadouros. Lugar de lixo é na lixeira!",
@@ -231,7 +237,7 @@ GAMES.coleta = ()=>{
       if(G.ptr.down||matchMedia("(pointer:fine)").matches) G.bin.x+= (G.ptr.x-G.bin.x)*Math.min(1,dt*14);
       G.bin.x=Math.max(60,Math.min(G.W-60,G.bin.x));
       G.spawn-=dt*speed;
-      if(G.spawn<=0){ G.spawn=rnd(.7,1.2); const it=pick(LIXO); const vida=Math.random()<.08 && G.lives<3; G.items.push({e:vida?"🧴":it[0],n:vida?"Repelente: +1 vida":it[1],x:rnd(40,G.W-40),y:-30,vy:rnd(120,170)*speed,r:0,vr:rnd(-3,3),vida}); }
+      if(G.spawn<=0){ G.spawn=rnd(.7,1.2); const it=pick(LIXO); const vida=Math.random()<.08 && G.lives<3; G.items.push({e:vida?"repelente":it[0],n:vida?"Repelente: +1 vida":it[1],x:rnd(40,G.W-40),y:-30,vy:rnd(120,170)*speed,r:0,vr:rnd(-3,3),vida}); }
       G.items.forEach(it=>{ it.y+=it.vy*dt; it.r+=it.vr*dt;
         if(it.y>G.H-80 && it.y<G.H-40 && Math.abs(it.x-G.bin.x)<G.bin.w/2+10){ it.done=true; if(it.vida){ G.lives=Math.min(3,G.lives+1); G.pop(it.x,it.y-30,"+1 ❤️","#D9482B"); sfx("win"); } else { G.add(10,it.x,it.y-40); G.burst(it.x,G.H-80,"#1B8566",10,200); } G.bin.bump=.2; }
         if(it.y>G.H-20 && !it.done){ it.done=true; if(!it.vida){ G.poças.push({x:it.x,e:it.e,t:0}); G.hurt(it.x,G.H-60,`${it.n} no chão!`); } } });
@@ -239,15 +245,20 @@ GAMES.coleta = ()=>{
       G.poças.forEach(p=>p.t+=dt); G.poças=G.poças.filter(p=>p.t<3);
     },
     draw(G,ctx){
-      ceu(ctx,G,"#9FDBFF","#E6F6FF");
-      ctx.fillStyle="#C9B79C"; ctx.fillRect(0,G.H-40,G.W,40);
-      emoji(ctx,"🏠",110,G.H-110,120); emoji(ctx,"🏫",G.W-110,G.H-110,120);
-      G.poças.forEach(p=>{ ctx.fillStyle="rgba(70,160,230,.7)"; ctx.beginPath(); ctx.ellipse(p.x,G.H-22,40,10,0,0,7); ctx.fill(); emoji(ctx,p.e,p.x,G.H-34,34); mosquitinho(ctx,p.x+Math.sin(G.t*6)*20,G.H-60-p.t*40,G.t,1.2); });
-      G.items.forEach(it=>{ emoji(ctx,it.e,it.x,it.y,52,it.r); if(it.vida){ ctx.strokeStyle="#FFC23D"; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(it.x,it.y,34+Math.sin(G.t*10)*3,0,7); ctx.stroke(); } });
+      ceuBonito(ctx,G,"#7CCBFF","#E3F5FF");
+      nuvemBonita(ctx,(G.t*18)%(G.W+200)-160,70,.9); nuvemBonita(ctx,(G.t*10+400)%(G.W+200)-160,120,.7);
+      morros(ctx,G,G.H-60); arvore(ctx,60,G.H-40,.8,G.t); arvore(ctx,G.W-60,G.H-40,.9,G.t+1);
+      ctx.fillStyle=grad(ctx,0,G.H-44,0,G.H,["#D8C7A6","#BFA982"]); ctx.fillRect(0,G.H-44,G.W,44);
+      ctx.fillStyle="rgba(255,255,255,.5)"; for(let x=20;x<G.W;x+=80) ctx.fillRect(x,G.H-24,40,5);
+      G.poças.forEach(p=>{ agua(ctx,p.x,G.H-22,42,10,G.t); art(ctx,p.e,p.x,G.H-34,.45,.5); mosquitinho(ctx,p.x+Math.sin(G.t*6)*20,G.H-60-p.t*40,G.t,1.4); });
+      G.items.forEach(it=>{ ctx.fillStyle="rgba(0,0,0,.08)"; ctx.beginPath(); ctx.ellipse(it.x,G.H-30,Math.max(1,18*(it.y/G.H)),5,0,0,7); ctx.fill(); art(ctx,it.e,it.x,it.y,.62,it.r); if(it.vida){ ctx.strokeStyle="#FFC23D"; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(it.x,it.y,34+Math.sin(G.t*10)*3,0,7); ctx.stroke(); } });
       const b=G.bin, by=G.H-60, bump=b.bump>0?(b.bump-=1/60, Math.sin(b.bump*40)*5):0;
-      ctx.fillStyle="#1B8566"; ctx.beginPath(); ctx.moveTo(b.x-b.w/2,by-30+bump); ctx.lineTo(b.x+b.w/2,by-30+bump); ctx.lineTo(b.x+b.w/2-12,by+30); ctx.lineTo(b.x-b.w/2+12,by+30); ctx.closePath(); ctx.fill();
-      ctx.fillStyle="#156B52"; ctx.fillRect(b.x-b.w/2-6,by-38+bump,b.w+12,12);
-      emoji(ctx,"♻️",b.x,by+2,34);
+      ctx.fillStyle="rgba(0,0,0,.18)"; ctx.beginPath(); ctx.ellipse(b.x,by+32,b.w/2+6,8,0,0,7); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(b.x-b.w/2,by-30+bump); ctx.lineTo(b.x+b.w/2,by-30+bump); ctx.lineTo(b.x+b.w/2-12,by+30); ctx.lineTo(b.x-b.w/2+12,by+30); ctx.closePath();
+      ctx.fillStyle=grad(ctx,b.x-b.w/2,0,b.x+b.w/2,0,["#1B8566","#27AE60","#157A5A"]); ctx.fill(); ol(ctx,1); ctx.stroke();
+      ctx.strokeStyle="rgba(255,255,255,.25)"; ctx.lineWidth=3; for(let i=-2;i<=2;i++){ ctx.beginPath(); ctx.moveTo(b.x+i*20,by-20+bump); ctx.lineTo(b.x+i*17,by+22); ctx.stroke(); }
+      rr(ctx,b.x-b.w/2-8,by-42+bump,b.w+16,14,6); ctx.fillStyle="#156B52"; ctx.fill(); ol(ctx,1); ctx.stroke();
+      ctx.fillStyle="#fff"; ctx.font='800 26px "Baloo 2",sans-serif'; ctx.textAlign="center"; ctx.fillText("♻",b.x,by+12);
     }
   });
 };
@@ -274,22 +285,24 @@ GAMES.espanta = ()=>{
       G.bugs=G.bugs.filter(b=>!b.done && b.y>-60);
     },
     down(G,x,y){
-      G.burst(x,y,"#7DDC9F",10,140);
+      G.burst(x,y,"#7DDC9F",14,160); anel(G,x,y,"rgba(46,204,113,.9)");
       const b=G.bugs.find(b=>!b.fug && Math.hypot(b.x-x,b.y-y)<(b.tipo==="m"?40:50));
       if(b){ b.fug=true; b.vx=rnd(-100,100); G.add(10,b.x,b.y-30); G.bugs.filter(o=>!o.fug && o.tipo==="m" && Math.hypot(o.x-x,o.y-y)<70).forEach(o=>{ o.fug=true; o.vx=rnd(-100,100); G.score+=5; }); }
     },
     draw(G,ctx){
       const tarde=G.fase===1;
-      ceu(ctx,G,tarde?"#FF9A6B":"#7CC8FF",tarde?"#5B3A7A":"#E5F6FF");
-      if(tarde){ ctx.fillStyle="#FFD27A"; ctx.beginPath(); ctx.arc(680,G.H-90,50,0,7); ctx.fill(); } else { emoji(ctx,"☀️",700,70,80); }
-      ctx.fillStyle=tarde?"#5E7F4A":"#6CC24A"; ctx.fillRect(0,G.H-50,G.W,50);
-      ctx.fillStyle="#F2E2C4"; ctx.fillRect(170,170,460,280);
-      ctx.fillStyle="#D9482B"; ctx.beginPath(); ctx.moveTo(150,175); ctx.lineTo(400,60); ctx.lineTo(650,175); ctx.fill();
-      ctx.fillStyle="#8B5A2B"; ctx.fillRect(375,340,50,110);
-      G.wins.forEach((w,i)=>{ ctx.fillStyle=tarde?"#FFE7A3":"#BFE6FF"; ctx.fillRect(w.x-42,w.y-36,84,72); ctx.strokeStyle="#7A5230"; ctx.lineWidth=6; ctx.strokeRect(w.x-42,w.y-36,84,72); emoji(ctx,G.rost[i],w.x,w.y+4,40); });
+      ceuBonito(ctx,G,tarde?"#FF8A65":"#6EC6FF",tarde?"#4A2C6B":"#E3F5FF",!tarde);
+      if(tarde){ const g=ctx.createRadialGradient(690,G.H-80,10,690,G.H-80,90); g.addColorStop(0,"#FFE08A"); g.addColorStop(1,"rgba(255,180,90,0)"); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(690,G.H-80,90,0,7); ctx.fill();
+        ctx.fillStyle="#fff"; for(let i=0;i<20;i++){ ctx.globalAlpha=.4+.4*Math.sin(G.t*3+i); ctx.beginPath(); ctx.arc((i*137)%G.W,(i*53)%140+10,1.8,0,7); ctx.fill(); } ctx.globalAlpha=1; }
+      else { nuvemBonita(ctx,(G.t*15)%(G.W+200)-160,60,.8); }
+      morros(ctx,G,G.H-40,tarde?"#6D5A7A":"#8ED16F",tarde?"#55456A":"#6DBB52");
+      arvore(ctx,80,G.H-40,1,G.t); arvore(ctx,G.W-70,G.H-40,.9,G.t+2);
+      ctx.fillStyle=tarde?"#4E6B3E":"#6CC24A"; ctx.fillRect(0,G.H-44,G.W,44);
+      casaBonita(ctx,400,170,460,286,tarde);
+      G.wins.forEach((w,i)=>janela(ctx,w.x,w.y,tarde,G.rost[i]));
       G.bugs.forEach(b=>{ const flip=b.x>b.w.x;
         if(b.tipo==="a") drawSpr(ctx,"listras-voando",b.x,b.y,70,flip); else drawSpr(ctx,"pintas-ola",b.x,b.y,42,flip); });
-      ctx.fillStyle="rgba(0,0,0,.35)"; ctx.fillRect(10,10,250,36); ctx.fillStyle="#fff"; ctx.font='800 20px "Baloo 2",sans-serif'; ctx.textAlign="left"; ctx.fillText(tarde?"🌇 Entardecer: maruins":"🌞 Dia: Aedes",22,35);
+      ctx.fillStyle="rgba(0,0,0,.35)"; rr(ctx,10,10,250,36,18); ctx.fill(); ctx.fillStyle="#fff"; ctx.font='800 20px "Baloo 2",sans-serif'; ctx.textAlign="left"; ctx.fillText(tarde?"🌇 Entardecer: maruins":"🌞 Dia: Aedes",22,35);
     }
   });
 };
@@ -298,10 +311,10 @@ GAMES.espanta = ()=>{
 const PARES = [
   {k:"listras", img:"listras-ola", n:"Listras", d:"O Listras é um Aedes aegypti: escuro, com listras brancas, e pica mais de dia."},
   {k:"pintas", img:"pintas-piscando", n:"Pintas", d:"O Pintas é um maruim: minúsculo, nasce em folhas e frutas úmidas."},
-  {k:"pneu", e:"🛞", n:"Pneu", d:"Pneu velho junta água da chuva. Guarde seco e coberto."},
-  {k:"garrafa", e:"🍾", n:"Garrafa", d:"Garrafa sempre de boca para baixo!"},
-  {k:"vaso", e:"🪴", n:"Pratinho", d:"Coloque areia no pratinho do vaso."},
-  {k:"repelente", e:"🧴", n:"Repelente", d:"Repelente protege contra o Aedes e o maruim."},
+  {k:"pneu", a:"pneu", n:"Pneu", d:"Pneu velho junta água da chuva. Guarde seco e coberto."},
+  {k:"garrafa", a:"garrafa", n:"Garrafa", d:"Garrafa sempre de boca para baixo!"},
+  {k:"vaso", a:"vaso", n:"Pratinho", d:"Coloque areia no pratinho do vaso."},
+  {k:"repelente", a:"repelente", n:"Repelente", d:"Repelente protege contra o Aedes e o maruim."},
   {k:"tela", e:"🪟", n:"Tela", d:"Tela nas janelas ajuda. Para o maruim, precisa ser de malha fina."},
   {k:"caixa", e:"📦", n:"Caixa tampada", d:"Caixa d'água sempre bem tampada."},
 ];
@@ -311,9 +324,10 @@ GAMES.memoria = ()=>{
   const cards = shuffle([...PARES.slice(0,n), ...PARES.slice(0,n)]).map((p,i)=>({...p,i}));
   let open=[], found=0, moves=0, lock=false;
   app.innerHTML = head("Jogo da Memória", `<div class="row hud"><span class="pill" id="mv">0 jogadas</span><span class="pill" id="pr">0/${n} pares</span></div>`) + `
-    <div class="memo" style="--cols:${n===6?4:4}">${cards.map(c=>`<button class="mcard" data-i="${c.i}" aria-label="Carta virada"><span class="mback"><span>?</span></span><span class="mface">${c.img?`<img src="${IMG[c.img]}" alt="">`:`<span class="me">${c.e}</span>`}<b>${c.n}</b></span></button>`).join("")}</div>
+    <div class="memo" style="--cols:${n===6?4:4}">${cards.map(c=>`<button class="mcard" data-i="${c.i}" aria-label="Carta virada"><span class="mback"><span>?</span></span><span class="mface">${c.img?`<img src="${IMG[c.img]}" alt="">`:c.a?`<canvas class="mart" width="120" height="120" data-a="${c.a}"></canvas>`:`<span class="me">${c.e}</span>`}<b>${c.n}</b></span></button>`).join("")}</div>
     <div id="fb" style="margin-top:12px">${guide("L","","Vire duas cartas por vez e encontre os pares. Cada par traz uma dica!")}</div>`;
   bindBack();
+  app.querySelectorAll(".mart").forEach(c=>art(c.getContext("2d"),c.dataset.a,60,64,1));
   app.querySelectorAll(".mcard").forEach(b=>b.onclick=()=>{
     if(lock||b.classList.contains("up")) return;
     sfx("flip"); b.classList.add("up"); b.setAttribute("aria-label",cards[+b.dataset.i].n); open.push(b);
@@ -327,3 +341,49 @@ GAMES.memoria = ()=>{
     } else { lock=true; setTimeout(()=>{ open.forEach(x=>{ x.classList.remove("up"); x.setAttribute("aria-label","Carta virada"); }); open=[]; lock=false; }, 900); }
   });
 };
+
+/* ================== RANKING (neste aparelho) ================== */
+const RKEY = "arbogame-ranking-v1";
+const Ranking = {
+  ler(){ try{ const r=JSON.parse(localStorage.getItem(RKEY)); if(r && r.j) return r; }catch(e){} return {j:{}}; },
+  gravar(r){ try{ localStorage.setItem(RKEY, JSON.stringify(r)); }catch(e){} },
+  nome(){ return (S.nome||"").trim() || "Agente sem nome"; },
+  /* chamado sempre que o jogador ganha pontos ou termina um minijogo */
+  salvar(jogo, placar){
+    if(!S.idade) return;
+    const r=Ranking.ler(), n=Ranking.nome(), k=n.toLowerCase();
+    const p=r.j[k]||{nome:n,pts:0,best:{},idade:S.idade};
+    p.nome=n; p.pts=Math.max(p.pts,S.pts); p.idade=S.idade; p.quando=Date.now();
+    if(jogo && placar>(p.best[jogo]||0)) p.best[jogo]=placar;
+    r.j[k]=p; Ranking.gravar(r);
+  },
+  lista(jogo){
+    const arr=Object.values(Ranking.ler().j).map(p=>({nome:p.nome,idade:p.idade,v:jogo?(p.best[jogo]||0):p.pts})).filter(p=>p.v>0);
+    return arr.sort((a,b)=>b.v-a.v).slice(0,10);
+  },
+};
+const _addPts = addPts;
+addPts = function(n){ _addPts(n); Ranking.salvar(); };
+
+function telaRanking(aba){
+  stopArcade(); clearTimer();
+  aba = aba || "geral";
+  const abas=[["geral","Geral"],...ARCADE.filter(a=>a.id!=="memoria").map(a=>[a.id,a.nome])];
+  const lista=Ranking.lista(aba==="geral"?null:aba), eu=Ranking.nome().toLowerCase();
+  const pod=["🥇","🥈","🥉"];
+  app.innerHTML = head("Ranking") + `
+    <div class="tabs" role="tablist">${abas.map(([id,n])=>`<button class="tab" role="tab" aria-selected="${id===aba}" data-aba="${id}">${n}</button>`).join("")}</div>
+    <div class="rank panel">
+      ${lista.length ? `<ol class="rlist">${lista.map((p,i)=>`<li class="${p.nome.toLowerCase()===eu?"me":""}${i<3?" top":""}">
+        <span class="pos">${i<3?pod[i]:i+1}</span><span class="rn">${esc(p.nome)}<small>${AGES[(p.idade||1)-1].nome}</small></span><span class="rv">${p.v} pts</span></li>`).join("")}</ol>`
+      : `<div class="empty">${av("P","wow","coverav")}<p class="q">Ainda ninguém pontuou aqui.</p><p class="muted">Jogue uma partida para aparecer no ranking!</p></div>`}
+    </div>
+    <p class="muted" style="margin-top:12px">${aba==="geral"?"Pontos totais de cada jogador":"Melhor partida de cada jogador"} neste aparelho. Ótimo para disputas na sala de aula!</p>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="limpar">Apagar ranking deste aparelho</button></div>
+    <div id="conf"></div>`;
+  bindBack();
+  app.querySelectorAll(".tab").forEach(b=>b.onclick=()=>telaRanking(b.dataset.aba));
+  $("#limpar").onclick=()=>{ $("#conf").innerHTML=`<div class="alert" style="margin-top:12px">Apagar todos os jogadores do ranking deste aparelho? Não dá para desfazer. <div class="row" style="margin-top:8px"><button class="btn" id="sim" style="background:var(--coral)">Apagar</button><button class="btn ghost" id="nao">Cancelar</button></div></div>`;
+    $("#nao").onclick=()=>{ $("#conf").innerHTML=""; }; $("#sim").onclick=()=>{ Ranking.gravar({j:{}}); toast("Ranking apagado"); telaRanking(aba); }; };
+}
+GAMES.ranking = telaRanking;
