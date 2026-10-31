@@ -5,8 +5,9 @@ Jogo educativo para crianças e adolescentes (6 a 17 anos) aprenderem sobre arbo
 Os guias do jogo são o **Listras** (um *Aedes aegypti*) e o **Pintas** (um maruim).
 
 - **Três faixas de idade:** Mirim (6 a 10), Explorador (11 a 14) e Cientista (15 a 17).
+- **Fliperama:** cinco minijogos animados, com som e os personagens: Esvazia Já!, Varre-Varre, Coleta Certa, Espanta-Mosquito e Jogo da Memória.
 - **Sete missões:** Quem é quem?, Caça aos criadouros, Ciclo de vida, Detetive da saúde, Mito ou verdade?, Vistoria em casa e Desafio final.
-- **Gamificação:** pontos, 5 níveis e 8 medalhas. O progresso fica salvo no navegador de quem joga (sem login, sem servidor).
+- **Gamificação:** pontos, 5 níveis e 13 medalhas. O progresso fica salvo no navegador de quem joga (sem login, sem servidor).
 
 O site é estático e fica publicado no **Firebase Hosting** da Nório (site `arbogame`): <https://arbogame.web.app>.
 
@@ -15,7 +16,8 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 | Arquivo | Para quê |
 |---|---|
 | `index.html` | O site publicado (gerado, não edite à mão) |
-| `src/jogo.html` | Código-fonte do jogo (estilos, dados e lógica) |
+| `src/jogo.html` | Código-fonte do jogo (estilos, dados, missões e lógica) |
+| `src/arcade.js` | Fliperama: os minijogos animados em canvas (Esvazia Já!, Varre-Varre, Coleta Certa, Espanta-Mosquito, Memória) |
 | `personagens/` | Poses do Listras e do Pintas (embutidas no `index.html`) |
 | `marca/` | Logo da Nório para o rodapé (embutido no `index.html`) |
 | `build.py` | Gera o `index.html`: `python3 build.py` |
