@@ -1,0 +1,40 @@
+rules_version = '2';
+// ArboGame · regras do ranking online (Firestore)
+// Só existe a coleção "ranking". Cada documento é um jogador num jogo: id = "<jogador>_<jogo>".
+// Qualquer um lê o top; gravar só com dados válidos e a pontuação só pode subir.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function campos() {
+      return ['jogador', 'jogo', 'apelido', 'faixa', 'turma', 'pontos', 'atualizado'];
+    }
+    function valido(d) {
+      return d.keys().hasOnly(campos()) && d.keys().hasAll(campos())
+        && d.jogador is string && d.jogador.matches('^[0-9a-f-]{36}$')
+        && d.jogo in ['geral', 'esvazia', 'varre', 'coleta', 'espanta', 'memoria']
+        && d.apelido is string && d.apelido.matches('^[A-Za-zÀ-ÿ0-9 ]{2,20}$')
+        && !d.apelido.lower().matches('.*(merda|porra|caralho|buceta|puta|puto|viado|fdp|pqp|vsf|foda|bosta|idiota|burro|otario|arrombado|corno|vagabund|piroca|xoxota|cacete|desgraca|imbecil|retardado|macaco|nazi|sexo|porn).*')
+        && d.faixa is int && d.faixa in [1, 2, 3]
+        && d.turma is string && d.turma.matches('^[A-Z0-9-]{0,12}$')
+        && d.pontos is int && d.pontos >= 0 && d.pontos <= (d.jogo == 'geral' ? 5000 : 1500)
+        && d.atualizado == request.time;
+    }
+
+    match /ranking/{id} {
+      allow get: if true;
+      allow list: if request.query.limit <= 50;
+      allow create: if valido(request.resource.data)
+        && id == request.resource.data.jogador + '_' + request.resource.data.jogo;
+      allow update: if valido(request.resource.data)
+        && request.resource.data.jogador == resource.data.jogador
+        && request.resource.data.jogo == resource.data.jogo
+        && request.resource.data.pontos >= resource.data.pontos
+        && request.time > resource.data.atualizado + duration.value(3, 's');
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

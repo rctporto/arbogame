@@ -475,7 +475,7 @@ function onboarding(){
       </div>
       <form class="panel stack" id="f">
         ${duo()}
-        <label class="stack" style="gap:6px"><span class="tag">Seu nome ou apelido</span><input type="text" id="nome" maxlength="24" placeholder="Ex.: Ana, Equipe Azul" autocomplete="off"></label>
+        <label class="stack" style="gap:6px"><span class="tag">Seu nome ou apelido</span><input type="text" id="nome" maxlength="24" placeholder="Ex.: Ana, Equipe Azul" autocomplete="off"><small class="muted">Use só o primeiro nome ou um apelido. Ele aparece no ranking.</small></label>
         <div class="stack" style="gap:6px"><span class="tag">Sua idade</span>
           <div class="ages">${AGES.map(a=>`<button type="button" class="age" data-a="${a.id}" aria-pressed="false"><b>${a.nome}</b><small>${a.faixa}</small></button>`).join("")}</div>
         </div>
