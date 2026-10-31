@@ -1,0 +1,591 @@
+<title>ArboGame</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
+<style>
+/* Layout: mapa de missões em grade de cartões + barra de status fixa; cada missão abre em tela própria */
+:root{
+  --bg:#EEF5F1; --card:#FFFFFF; --ink:#12302A; --muted:#58766E; --line:#D3E3DC;
+  --leaf:#1B8566; --leaf-soft:#D6EFE5; --sun:#FFC23D; --sun-soft:#FFF1CC;
+  --coral:#D9482B; --coral-soft:#FBE0D8; --sky:#2F6FB5; --sky-soft:#DCE9F7;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1D1A; --card:#162B26; --ink:#E4F1EC; --muted:#93B2A9; --line:#284540;
+  --leaf:#3CC79F; --leaf-soft:#173F34; --sun:#FFD166; --sun-soft:#3D3318;
+  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1D1A; --card:#162B26; --ink:#E4F1EC; --muted:#93B2A9; --line:#284540;
+  --leaf:#3CC79F; --leaf-soft:#173F34; --sun:#FFD166; --sun-soft:#3D3318;
+  --coral:#FF7A59; --coral-soft:#45231B; --sky:#7FB2F0; --sky-soft:#1B2F47; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:960px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:800}
+h2{font-size:1.7rem;font-weight:800}
+h3{font-size:1.2rem;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.btn{border:0;border-radius:999px;padding:12px 22px;font-weight:800;background:var(--leaf);color:var(--card);font-size:1rem}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.sun{background:var(--sun);color:#3a2a00}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:16px}
+.muted{color:var(--muted)}
+.tag{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+
+/* status */
+.status{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;border-bottom:2px solid var(--line);margin-bottom:24px}
+.status .wrap{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between}
+.brand{font-family:var(--display);font-weight:800;font-size:1.25rem;display:flex;gap:8px;align-items:center}
+.brand svg{flex:none}
+.stats{display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:var(--card);border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pill.lvl{background:var(--sun-soft);border-color:var(--sun)}
+.xpbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;width:120px;align-self:center}
+.xpbar i{display:block;height:100%;background:var(--leaf);transition:width .4s}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center;margin-bottom:28px}
+.hero > *{min-width:0}
+.hero p.lead{font-size:1.15rem;margin-top:10px;max-width:60ch}
+.panel{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:20px}
+.ages{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.age{border:2px solid var(--line);background:var(--bg);border-radius:14px;padding:10px 8px;text-align:center}
+.age b{display:block;font-family:var(--display);font-size:1.05rem}
+.age small{color:var(--muted)}
+.age[aria-pressed="true"]{border-color:var(--leaf);background:var(--leaf-soft)}
+input[type=text]{font:inherit;width:100%;padding:12px 14px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.missions{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.mission{text-align:left;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:start;transition:transform .15s,border-color .15s}
+.mission:hover:not(:disabled){transform:translateY(-2px);border-color:var(--leaf)}
+.mission:disabled{opacity:.55;cursor:default}
+.mission .ico{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;font-size:30px;background:var(--leaf-soft)}
+.mission p{font-size:.92rem;color:var(--muted);margin-top:2px}
+.mission .done{color:var(--leaf);font-weight:800;font-size:.85rem}
+.medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.medal{text-align:center;padding:12px 8px;border-radius:16px;border:2px dashed var(--line);font-size:.85rem}
+.medal .m{font-size:34px;filter:grayscale(1);opacity:.35}
+.medal.on{border-style:solid;border-color:var(--sun);background:var(--sun-soft)}
+.medal.on .m{filter:none;opacity:1}
+.medal b{display:block;font-family:var(--display);font-size:1rem;line-height:1.1;margin-top:4px}
+section{margin-top:32px}
+section > h2{margin-bottom:12px}
+
+/* game screens */
+.gamehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}
+.q{font-family:var(--display);font-size:1.45rem;font-weight:600;line-height:1.2}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.opt{text-align:left;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:14px 16px;font-weight:600}
+.opt:hover:not(:disabled){border-color:var(--sky)}
+.opt.right{border-color:var(--leaf);background:var(--leaf-soft)}
+.opt.wrong{border-color:var(--coral);background:var(--coral-soft)}
+.opt:disabled{cursor:default}
+.feedback{border-radius:14px;padding:14px 16px;font-weight:600}
+.feedback.ok{background:var(--leaf-soft)}
+.feedback.no{background:var(--coral-soft)}
+.progress{display:flex;gap:4px}
+.progress i{width:18px;height:6px;border-radius:9px;background:var(--line)}
+.progress i.on{background:var(--leaf)}
+
+/* quintal */
+.yard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;background:repeating-linear-gradient(45deg,var(--leaf-soft) 0 14px,transparent 14px 28px),var(--card);border:2px solid var(--line);border-radius:20px;padding:12px}
+.spot{border:2px solid var(--line);background:var(--card);border-radius:14px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.8rem;font-weight:600;text-align:center;min-height:118px;justify-content:center;line-height:1.2}
+.spot .e{font-size:38px;line-height:1}
+.spot.flip .e{transform:rotate(180deg)}
+.spot.hit{background:var(--leaf-soft);border-color:var(--leaf)}
+.spot.miss{background:var(--coral-soft);border-color:var(--coral);animation:shake .3s}
+.spot:disabled{cursor:default}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.timer{font-family:var(--display);font-size:1.6rem;font-weight:800;font-variant-numeric:tabular-nums}
+.timer.low{color:var(--coral)}
+
+/* ciclo */
+.cycle{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.slot{border:2px dashed var(--line);border-radius:14px;min-height:92px;display:grid;place-items:center;text-align:center;padding:8px;font-weight:800}
+.slot.filled{border-style:solid;border-color:var(--leaf);background:var(--leaf-soft)}
+.slot small{display:block;font-weight:600;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:2px solid var(--line);background:var(--card);border-radius:999px;padding:10px 18px;font-weight:800}
+.chip.bad{animation:shake .3s;border-color:var(--coral)}
+
+/* comparativo */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compare > div{min-width:0}
+.compare ul{margin:8px 0 0;padding-left:20px}
+.compare li{margin-bottom:4px}
+.vec-a{border-color:var(--sky)!important}
+.vec-m{border-color:var(--sun)!important}
+
+.checklist label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);font-weight:600;cursor:pointer}
+.checklist input{width:22px;height:22px;accent-color:var(--leaf);flex:none;margin-top:2px}
+.checklist label:has(input:checked){border-color:var(--leaf);background:var(--leaf-soft)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(120px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:999px;font-weight:800;z-index:20;transition:transform .3s;max-width:calc(100% - 32px);text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.teacher{font-size:.95rem}
+.teacher ul{padding-left:20px;margin:8px 0 0}
+.teacher a{color:var(--sky)}
+.alert{border-left:6px solid var(--coral);background:var(--coral-soft);border-radius:12px;padding:12px 14px;font-weight:600}
+
+/* personagens */
+.av{display:grid;place-items:center;border-radius:50%;flex:none;overflow:hidden}
+.av img{width:88%;height:88%;object-fit:contain}
+.av.L{background:#FEFBF2;border:3px solid var(--sky)}
+.av.P{background:#FEC504;border:3px solid #D79A00}
+.guide{display:flex;gap:12px;align-items:flex-end}
+.guide .av{width:84px;height:84px}
+.guide .bubble{position:relative;flex:1;min-width:0;border-radius:16px 16px 16px 4px;padding:12px 16px;font-weight:600;background:var(--card);border:2px solid var(--line)}
+.guide.ok .bubble{background:var(--leaf-soft);border-color:var(--leaf)}
+.guide.no .bubble{background:var(--coral-soft);border-color:var(--coral)}
+.guide .bubble b.who{display:block;font-family:var(--display);font-size:.95rem;color:var(--muted)}
+.duo{display:flex;gap:14px;justify-content:center;align-items:flex-end}
+.duo figure{margin:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.duo .av{width:132px;height:132px}
+.duo figcaption{font-family:var(--display);font-weight:800;line-height:1.1}
+.duo figcaption small{display:block;font-family:var(--body);font-weight:600;color:var(--muted);font-size:.8rem}
+.vechead{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.vechead .av{width:76px;height:76px}
+.opt .mini{width:34px;height:34px;display:inline-grid;vertical-align:middle;margin-right:8px}
+.opt .mini img{width:90%;height:90%}
+.endav{width:150px;height:150px}
+@media (max-width:720px){
+  .hero{grid-template-columns:1fr}
+  .yard{grid-template-columns:repeat(3,1fr)}
+  .compare{grid-template-columns:1fr}
+  .cycle{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:420px){ .yard{grid-template-columns:repeat(2,1fr)} .ages{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="status">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="34" viewBox="0 0 30 34" aria-hidden="true"><path d="M15 2C15 2 3 15 3 22a12 12 0 0 0 24 0C27 15 15 2 15 2z" fill="var(--sky)"/><path d="M6 30L25 9" stroke="var(--coral)" stroke-width="4" stroke-linecap="round"/></svg>
+      ArboGame
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/*SPRITES*/
+const WHO = {L:{nome:"Listras", sobre:"o Aedes aegypti"}, P:{nome:"Pintas", sobre:"o maruim"}};
+const POSE = {L:{oi:"listras-ola", ok:"listras-feliz", no:"listras-lado", top:"listras-voando"},
+              P:{oi:"pintas-ola", ok:"pintas-pulando", no:"pintas-preocupado", top:"pintas-rindo", low:"pintas-triste", wink:"pintas-piscando", leaf:"pintas-folha", wow:"pintas-surpreso"}};
+function av(who, pose, cls=""){ return `<span class="av ${who} ${cls}"><img src="${IMG[POSE[who][pose]||POSE[who].oi]}" alt="${WHO[who].nome}"></span>`; }
+function guide(who, mood, html){ const pose = mood==="ok"?"ok":mood==="no"?"no":"oi";
+  return `<div class="guide ${mood||""}">${av(who,pose)}<div class="bubble"><b class="who">${WHO[who].nome} diz:</b>${html}</div></div>`; }
+/* ================== DADOS ================== */
+const AGES = [
+  {id:1, nome:"Mirim", faixa:"6 a 10 anos"},
+  {id:2, nome:"Explorador", faixa:"11 a 14 anos"},
+  {id:3, nome:"Cientista", faixa:"15 a 17 anos"},
+];
+const LEVELS = [
+  {min:0, nome:"Recruta"},
+  {min:120, nome:"Agente"},
+  {min:300, nome:"Vigilante"},
+  {min:520, nome:"Guardião"},
+  {min:800, nome:"Comandante"},
+];
+const MEDALS = {
+  primeira:{m:"🎖️", nome:"Primeira missão", desc:"Concluiu a 1ª missão"},
+  vetores:{m:"🔬", nome:"Olho de lupa", desc:"Sabe diferenciar Aedes e maruim"},
+  cacador:{m:"🧹", nome:"Caçador de criadouros", desc:"Achou todos os criadouros"},
+  ciclo:{m:"🔄", nome:"Ciclo perfeito", desc:"Montou o ciclo sem errar"},
+  detetive:{m:"🩺", nome:"Detetive da saúde", desc:"Acertou 6+ pistas"},
+  mito:{m:"💡", nome:"Caça-mitos", desc:"8+ acertos em Mito ou Verdade"},
+  casa:{m:"🏠", nome:"Agente em casa", desc:"Fez a vistoria de 10 minutos"},
+  guardiao:{m:"🏆", nome:"Guardião", desc:"Venceu o Desafio Final"},
+};
+
+const VETOR_Q = [
+  {t:"Pica principalmente durante o dia, no começo da manhã e no fim da tarde, e tem listras brancas no corpo escuro.", r:"Aedes", e:"O Aedes aegypti é escuro com listras brancas e pica mais de dia."},
+  {t:"É tão pequeno (1 a 3 mm) que passa pelos buracos de uma tela comum.", r:"Maruim", e:"O maruim, também chamado de mosquito-pólvora, é minúsculo. Mosquiteiro de malha fina ajuda."},
+  {t:"Coloca ovos nas paredes de recipientes com água parada e limpa.", r:"Aedes", e:"Pneus, vasos, garrafas e caixas d'água destampadas são berçários do Aedes."},
+  {t:"As larvas crescem em lugares úmidos com matéria orgânica, como folhas podres, cascas de frutas e lama.", r:"Maruim", e:"O maruim não precisa de água limpa: ele se cria no chão úmido e em restos de plantas."},
+  {t:"Só a fêmea pica, porque precisa de sangue para produzir os ovos.", r:"Ambos", e:"Nos dois casos, só as fêmeas picam."},
+  {t:"Transmite dengue, zika e chikungunya.", r:"Aedes", e:"Essas três doenças são transmitidas principalmente pelo Aedes aegypti."},
+  {t:"É o principal transmissor da febre Oropouche.", r:"Maruim", e:"A espécie Culicoides paraensis é a principal transmissora do vírus Oropouche."},
+  {t:"Repelente e roupas compridas ajudam a evitar a picada.", r:"Ambos", e:"Proteção pessoal funciona contra os dois."},
+];
+
+const YARD_BAD = [
+  {e:"🛞", n:"Pneu velho com água", dica:"Guarde pneus secos e cobertos, ou entregue para reciclagem."},
+  {e:"🪴", n:"Vaso com pratinho cheio", dica:"Coloque areia no pratinho ou lave-o toda semana."},
+  {e:"🍾", n:"Garrafa de boca para cima", dica:"Guarde garrafas sempre de boca para baixo."},
+  {e:"🪣", n:"Balde com água da chuva", dica:"Esvazie e guarde o balde virado."},
+  {e:"🛢️", n:"Caixa d'água destampada", dica:"Mantenha a caixa d'água sempre bem tampada."},
+  {e:"🥫", n:"Lata jogada no quintal", dica:"Latas vão para o lixo ou reciclagem, não para o quintal."},
+  {p:1, e:"🍂", n:"Folhas e cascas apodrecendo", dica:"Restos úmidos de plantas e frutas criam maruins. Recolha e descarte."},
+  {e:"🐶", n:"Pote do pet com água velha", dica:"Troque a água e lave o pote com bucha a cada 2 dias."},
+  {e:"🧢", n:"Tampinha com água", dica:"Até uma tampinha serve de criadouro. Jogue no lixo."},
+  {e:"🌧️", n:"Calha entupida", dica:"Limpe as calhas para a água da chuva escorrer."},
+];
+const YARD_OK = [
+  {e:"🍾", n:"Garrafa de boca para baixo", flip:true, porque:"De boca para baixo a garrafa não junta água."},
+  {e:"📦", n:"Caixa d'água tampada", porque:"Bem tampada, o mosquito não entra."},
+  {e:"🌵", n:"Vaso com areia no prato", porque:"A areia não deixa a água ficar parada."},
+  {e:"🗑️", n:"Lixeira tampada", porque:"Lixo tampado não acumula água."},
+  {e:"🏊", n:"Piscina com cloro e limpa", porque:"Piscina tratada e limpa não vira criadouro."},
+  {e:"🧺", n:"Roupas no varal", porque:"Roupa no varal não guarda água parada."},
+];
+
+const CYCLE = [
+  {id:"ovo", n:"Ovo", info:"Fica grudado na parede do recipiente e resiste mais de um ano no seco, esperando a água."},
+  {id:"larva", n:"Larva", info:"Vive na água e se mexe como uma cobrinha. É aqui que é mais fácil eliminar."},
+  {id:"pupa", n:"Pupa", info:"Fase de transformação, ainda na água. Não se alimenta."},
+  {id:"adulto", n:"Adulto", info:"Sai voando. Do ovo ao adulto leva cerca de 7 a 10 dias."},
+];
+
+const DISEASES = ["Dengue","Chikungunya","Zika","Oropouche"];
+const CLUES = [
+  {t:"Dor muito forte nas articulações (juntas), que pode durar meses.", r:"Chikungunya"},
+  {t:"Febre alta e dor atrás dos olhos. Existem 4 tipos desse vírus.", r:"Dengue"},
+  {t:"Transmitida principalmente pelo maruim (Culicoides paraensis).", r:"Oropouche"},
+  {t:"Na gravidez, pode causar microcefalia no bebê.", r:"Zika"},
+  {t:"Manchas vermelhas com muita coceira e olhos vermelhos.", r:"Zika"},
+  {t:"Os sintomas podem voltar alguns dias depois que a pessoa melhora.", r:"Oropouche"},
+  {t:"O nome vem de uma língua da África e quer dizer \"aquele que se curva\", por causa da dor.", r:"Chikungunya"},
+  {t:"Tem vacina no SUS para algumas faixas de idade.", r:"Dengue"},
+];
+
+const MYTHS = [
+  {t:"O Aedes aegypti só pica à noite.", v:false, e:"Ele pica principalmente de dia, no início da manhã e no fim da tarde."},
+  {t:"Os ovos do Aedes podem sobreviver mais de um ano sem água.", v:true, e:"Por isso é preciso esfregar os recipientes, não só esvaziar."},
+  {t:"Água parada e limpa pode virar criadouro.", v:true, e:"O Aedes prefere justamente água parada e limpa."},
+  {t:"Quem já teve dengue não pega nunca mais.", v:false, e:"Existem 4 tipos de vírus da dengue. Dá para pegar de novo."},
+  {t:"Dengue passa de uma pessoa para outra pelo abraço ou espirro.", v:false, e:"A dengue é transmitida pela picada do mosquito infectado."},
+  {t:"O fumacê sozinho resolve o problema.", v:false, e:"O fumacê atinge só mosquitos adultos. Ovos e larvas continuam nos criadouros."},
+  {p:1, t:"O maruim consegue passar por telas comuns de janela.", v:true, e:"Ele é muito pequeno. Mosquiteiros de malha fina ajudam."},
+  {t:"Dez minutos por semana vistoriando a casa ajudam a combater o mosquito.", v:true, e:"Uma vistoria semanal quebra o ciclo, que leva cerca de 7 a 10 dias."},
+  {t:"Com suspeita de dengue, pode tomar qualquer remédio para dor.", v:false, e:"Alguns remédios, como o AAS, podem piorar sangramentos. Procure um serviço de saúde."},
+  {p:1, t:"Recolher folhas e restos de frutas do quintal ajuda contra o maruim.", v:true, e:"Matéria orgânica úmida é onde as larvas do maruim se desenvolvem."},
+];
+
+const FINAL = [
+  {nivel:1, t:"Qual destes lugares pode virar criadouro do Aedes?", o:["Pneu com água da chuva","Garrafa de boca para baixo","Roupa no varal","Lixeira tampada"], r:0},
+  {nivel:1, t:"Qual mosquito tem listras brancas?", o:["Aedes aegypti","Maruim","Pernilongo comum","Nenhum"], r:0},
+  {nivel:1, t:"Quem pica: o macho ou a fêmea do Aedes?", o:["Só a fêmea","Só o macho","Os dois","Nenhum"], r:0},
+  {nivel:1, t:"O que fazer com o pratinho do vaso de planta?", o:["Colocar areia","Encher de água","Deixar como está","Colocar açúcar"], r:0},
+  {nivel:1, t:"O maruim se cria em...", o:["Folhas e frutas apodrecendo em lugar úmido","Geladeira","Areia seca da praia","Dentro de casa, na cama"], r:0},
+  {nivel:2, t:"Quanto tempo leva, em média, do ovo do Aedes até o mosquito adulto?", o:["7 a 10 dias","1 dia","2 meses","1 ano"], r:0},
+  {nivel:2, t:"Qual doença causa dor intensa e duradoura nas articulações?", o:["Chikungunya","Zika","Gripe","Catapora"], r:0},
+  {nivel:2, t:"Por que é importante esfregar as paredes dos recipientes?", o:["Para remover ovos grudados","Para deixar brilhando","Para esquentar a água","Não é importante"], r:0},
+  {nivel:2, t:"Qual sinal indica que a pessoa com dengue deve procurar atendimento urgente?", o:["Dor forte na barriga e vômitos que não param","Fome","Sono à noite","Vontade de brincar"], r:0},
+  {nivel:2, t:"Qual destas ações protege contra o maruim?", o:["Mosquiteiro de malha fina e repelente","Deixar a janela aberta","Usar só bermuda","Acender a luz"], r:0},
+  {nivel:3, t:"Por que a dengue pode ser pega mais de uma vez?", o:["Existem 4 sorotipos do vírus","O vírus não cria imunidade nenhuma","Porque é bactéria","Ela não pode ser pega de novo"], r:0},
+  {nivel:3, t:"Além da picada, a zika também pode ser transmitida...", o:["Da gestante para o bebê e por via sexual","Pelo ar","Pela água da torneira","Por aperto de mão"], r:0},
+  {nivel:3, t:"Por que o fumacê não é suficiente para controlar o Aedes?", o:["Não atinge ovos e larvas nos criadouros","Mata só os machos","Atrai mais mosquitos","Funciona só de dia"], r:0},
+  {nivel:3, t:"O vírus Oropouche é transmitido principalmente por qual inseto?", o:["Culicoides paraensis (maruim)","Aedes aegypti","Abelha","Barbeiro"], r:0},
+  {nivel:3, t:"Qual estratégia é mais eficaz a longo prazo contra arboviroses?", o:["Eliminar criadouros com participação de toda a comunidade","Só usar inseticida em casa","Fechar as escolas","Esperar o inverno"], r:0},
+];
+
+const HOME = [
+  "Virei garrafas de boca para baixo",
+  "Coloquei areia nos pratinhos dos vasos",
+  "Conferi se a caixa d'água está tampada",
+  "Esvaziei baldes e potes com água",
+  "Lavei com bucha o pote de água do pet",
+  "Joguei no lixo latas, tampinhas e plásticos",
+  "Recolhi folhas e cascas de frutas acumuladas",
+  "Verifiquei calhas e ralos",
+];
+
+const MISSIONS = [
+  {id:"vetores", ico:"🔬", nome:"Quem é quem?", desc:"Aedes ou maruim? Aprenda a diferenciar os dois transmissores."},
+  {id:"quintal", ico:"🏡", nome:"Caça aos criadouros", desc:"Encontre os criadouros no quintal antes que o tempo acabe."},
+  {id:"ciclo", ico:"🔄", nome:"Ciclo de vida", desc:"Coloque as fases do Aedes na ordem certa."},
+  {id:"detetive", ico:"🩺", nome:"Detetive da saúde", desc:"Ligue cada pista à doença certa: dengue, zika, chikungunya ou Oropouche."},
+  {id:"mito", ico:"💡", nome:"Mito ou verdade?", desc:"Descubra o que é fato e o que é boato."},
+  {id:"casa", ico:"🏠", nome:"Vistoria em casa", desc:"Missão da vida real: 10 minutos contra o mosquito."},
+  {id:"final", ico:"🏆", nome:"Desafio final", desc:"Prove que você é um Guardião. Libera após 3 missões.", lock:3},
+];
+
+/* ================== ESTADO ================== */
+const KEY = "arbogame-v1";
+let S = load();
+function fresh(){ return {nome:"", idade:0, pts:0, feitas:{}, medalhas:{}, casa:[]}; }
+function load(){ try{ const s = JSON.parse(localStorage.getItem(KEY)); if(s && typeof s.pts==="number") return Object.assign(fresh(), s);}catch(e){} return fresh(); }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+
+const $ = (s,el=document)=>el.querySelector(s);
+const app = $("#app");
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+let timerId = null;
+function clearTimer(){ if(timerId){ clearInterval(timerId); timerId=null; } }
+
+function level(p){ let i=0; LEVELS.forEach((l,k)=>{ if(p>=l.min) i=k; }); return i; }
+function addPts(n){
+  const before = level(S.pts);
+  S.pts = Math.max(0, S.pts + n);
+  const after = level(S.pts);
+  save(); renderStats();
+  if(after>before) toast(`Subiu de nível: ${LEVELS[after].nome}!`);
+}
+function medal(id){
+  if(S.medalhas[id]) return;
+  S.medalhas[id] = true; save(); renderStats();
+  setTimeout(()=>toast(`Nova medalha: ${MEDALS[id].m} ${MEDALS[id].nome}`), 400);
+}
+function finish(id){
+  if(!Object.keys(S.feitas).length) medal("primeira");
+  S.feitas[id] = true; save();
+}
+let toastT;
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2600); }
+
+function renderStats(){
+  const li = level(S.pts), next = LEVELS[li+1];
+  const pct = next ? ((S.pts-LEVELS[li].min)/(next.min-LEVELS[li].min))*100 : 100;
+  $("#stats").innerHTML = S.idade ? `
+    <span class="pill lvl">${LEVELS[li].nome}</span>
+    <span class="pill">${S.pts} pts</span>
+    <span class="xpbar" title="${next?`Faltam ${next.min-S.pts} pts para ${next.nome}`:"Nível máximo"}"><i style="width:${pct}%"></i></span>
+    <span class="pill">${Object.keys(S.medalhas).length}/${Object.keys(MEDALS).length} medalhas</span>` : "";
+}
+
+/* ================== TELAS ================== */
+function home(){
+  clearTimer();
+  if(!S.idade) return onboarding();
+  const feitas = Object.keys(S.feitas).length;
+  app.innerHTML = `
+    <div class="hero">
+      <div>
+        <span class="tag">Agente ${esc(S.nome||"sem nome")} · ${AGES[S.idade-1].nome} (${AGES[S.idade-1].faixa})</span>
+        <h1>Sem água parada, sem mosquito.</h1>
+        <p class="lead">Complete as missões, ganhe pontos e medalhas, e ajude a proteger sua casa e sua escola da dengue, zika, chikungunya e Oropouche.</p>
+      </div>
+      <div class="panel stack">
+        ${duo()}
+        <span class="tag">Seu progresso</span>
+        <p><b style="font-family:var(--display);font-size:2.2rem">${feitas}</b> <span class="muted">de ${MISSIONS.length} missões concluídas</span></p>
+        <div class="row"><button class="btn ghost" id="trocar">Trocar jogador</button></div>
+      </div>
+    </div>
+    <section><h2>Missões</h2><div class="missions">${MISSIONS.map(m=>{
+      const locked = m.lock && feitas < m.lock && !S.feitas[m.id];
+      return `<button class="mission" data-go="${m.id}" ${locked?"disabled":""}>
+        <span class="ico" aria-hidden="true">${locked?"🔒":m.ico}</span>
+        <span><h3>${m.nome}</h3><p>${m.desc}</p>${S.feitas[m.id]?'<span class="done">✓ Concluída · jogar de novo</span>':""}</span>
+      </button>`;}).join("")}</div></section>
+    <section><h2>Medalhas</h2><div class="medals">${Object.entries(MEDALS).map(([k,v])=>`
+      <div class="medal ${S.medalhas[k]?"on":""}"><div class="m" aria-hidden="true">${v.m}</div><b>${v.nome}</b><span class="muted">${v.desc}</span></div>`).join("")}</div></section>
+    <section class="panel teacher">
+      <h2>Para educadores</h2>
+      <p style="margin-top:8px">Cada missão leva de 3 a 8 minutos. Sugestão: projete o jogo em sala e jogue em equipes, ou use a <b>Vistoria em casa</b> como tarefa semanal. O progresso fica salvo neste navegador.</p>
+      <ul>
+        <li>Faixa Mirim: linguagem simples e mais tempo no Caça aos criadouros.</li>
+        <li>Explorador e Cientista: perguntas sobre ciclo, sinais de alarme, sorotipos e transmissão.</li>
+        <li>Fontes: <a href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dengue" target="_blank" rel="noopener">Ministério da Saúde</a> e <a href="https://portal.fiocruz.br/" target="_blank" rel="noopener">Fiocruz</a>.</li>
+      </ul>
+      <p class="alert" style="margin-top:12px">Febre, dor no corpo, manchas na pele? Procure uma unidade de saúde e não tome remédio por conta própria.</p>
+    </section>`;
+  app.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>GAMES[b.dataset.go]());
+  $("#trocar").onclick=()=>{ S=fresh(); save(); renderStats(); home(); };
+  window.scrollTo(0,0);
+}
+
+function onboarding(){
+  let idade = 0;
+  app.innerHTML = `
+    <div class="hero">
+      <div>
+        <span class="tag">Arboviroses · Aedes aegypti · Maruim</span>
+        <h1>Vire agente contra o mosquito.</h1>
+        <p class="lead">Um jogo de missões para aprender como o Aedes e o maruim transmitem doenças e o que cada um de nós pode fazer para acabar com os criadouros.</p>
+      </div>
+      <form class="panel stack" id="f">
+        ${duo()}
+        <label class="stack" style="gap:6px"><span class="tag">Seu nome ou apelido</span><input type="text" id="nome" maxlength="24" placeholder="Ex.: Ana, Equipe Azul" autocomplete="off"></label>
+        <div class="stack" style="gap:6px"><span class="tag">Sua idade</span>
+          <div class="ages">${AGES.map(a=>`<button type="button" class="age" data-a="${a.id}" aria-pressed="false"><b>${a.nome}</b><small>${a.faixa}</small></button>`).join("")}</div>
+        </div>
+        <button class="btn" id="go" disabled>Começar</button>
+      </form>
+    </div>`;
+  app.querySelectorAll(".age").forEach(b=>b.onclick=()=>{
+    idade=+b.dataset.a; app.querySelectorAll(".age").forEach(x=>x.setAttribute("aria-pressed", x===b));
+    $("#go").disabled=false;
+  });
+  $("#f").onsubmit=e=>{ e.preventDefault(); if(!idade) return; S.nome=$("#nome").value.trim(); S.idade=idade; save(); renderStats(); home(); };
+}
+
+function duo(){ return `<div class="duo"><figure>${av("L","oi")}<figcaption>Listras<small>ensina sobre o Aedes</small></figcaption></figure><figure>${av("P","oi")}<figcaption>Pintas<small>ensina sobre o maruim</small></figcaption></figure></div>`; }
+function head(titulo, extra=""){
+  return `<div class="gamehead"><div class="row"><button class="btn ghost" id="voltar">← Missões</button><h2>${titulo}</h2></div>${extra}</div>`;
+}
+function bindBack(){ $("#voltar").onclick=home; window.scrollTo(0,0); }
+function prog(i,n){ return `<div class="progress" aria-label="Pergunta ${i+1} de ${n}">${Array.from({length:n},(_,k)=>`<i class="${k<i?"on":""}"></i>`).join("")}</div>`; }
+
+function endScreen(titulo, msg, acertos, total, pts, who){
+  clearTimer();
+  const r = total? acertos/total : 1; who = who || (Math.random()<.5?"L":"P");
+  const pose = r>=.85 ? "top" : r>=.5 ? "ok" : (who==="P"?"low":"no");
+  app.innerHTML = head(titulo) + `<div class="panel stack" style="text-align:center;align-items:center;padding:32px 20px">
+      ${av(who,pose,"endav")}
+      <span class="tag">Missão concluída</span>
+      <p style="font-family:var(--display);font-size:3rem;font-weight:800;line-height:1">${acertos}/${total}</p>
+      <p class="q">${msg}</p>
+      <p class="muted">+${pts} pontos nesta rodada</p>
+      <div class="row" style="justify-content:center"><button class="btn" id="again">Jogar de novo</button><button class="btn ghost" id="mapa">Voltar às missões</button></div>
+    </div>`;
+  bindBack(); $("#mapa").onclick=home;
+  return $("#again");
+}
+
+/* Quiz genérico com opções */
+function runQuiz({id, titulo, itens, render, check, explain, onEnd, who}){
+  let i=0, ok=0, pts=0;
+  function step(){
+    if(i>=itens.length){ finish(id); return onEnd(ok, itens.length, pts); }
+    const it = itens[i];
+    app.innerHTML = head(titulo, prog(i,itens.length)) + `<div class="stack">${render(it)}<div id="fb"></div></div>`;
+    bindBack();
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const right = check(it, b.dataset.v);
+      app.querySelectorAll(".opt").forEach(x=>{ x.disabled=true; if(check(it,x.dataset.v)) x.classList.add("right"); });
+      if(!right) b.classList.add("wrong");
+      if(right){ ok++; pts+=10; addPts(10); }
+      $("#fb").innerHTML = `<div class="stack">${guide(who?who(it,i):(i%2?"P":"L"), right?"ok":"no", (right?"Acertou! ":"Quase! ")+explain(it))}<div><button class="btn" id="next">${i+1<itens.length?"Próxima":"Ver resultado"}</button></div></div>`;
+      $("#next").onclick=()=>{ i++; step(); };
+      $("#next").focus();
+    });
+  }
+  step();
+}
+
+const GAMES = {
+  vetores(){
+    app.innerHTML = head("Quem é quem?") + `
+      <div class="compare">
+        <div class="panel vec-a"><div class="vechead">${av("L","ok")}<div><span class="tag">Listras é um</span><h3>Aedes aegypti</h3></div></div>
+          <ul><li>Escuro, com listras brancas nas pernas e no corpo</li><li>Pica mais de dia</li><li>Cria em água parada e limpa</li><li>Transmite dengue, zika e chikungunya</li></ul></div>
+        <div class="panel vec-m"><div class="vechead">${av("P","wink")}<div><span class="tag">Pintas é um</span><h3>Maruim (mosquito-pólvora)</h3></div></div>
+          <ul><li>Minúsculo: 1 a 3 mm, picada que arde</li><li>Ativo ao amanhecer e entardecer</li><li>Cria em solo úmido, folhas e frutas apodrecendo</li><li>Transmite a febre Oropouche</li></ul></div>
+      </div>
+      <div class="row" style="margin-top:16px"><button class="btn" id="start">Começar o desafio</button></div>`;
+    bindBack();
+    $("#start").onclick=()=>runQuiz({
+      id:"vetores", titulo:"Quem é quem?", itens:shuffle(VETOR_Q).slice(0, S.idade===1?6:8),
+      render:it=>`<p class="tag">Sobre qual inseto é esta frase?</p><p class="q">${it.t}</p>
+        <div class="opts">${["Aedes","Maruim","Ambos"].map(o=>`<button class="opt" data-v="${o}">${o==="Aedes"?av("L","oi","mini")+"Aedes (Listras)":o==="Maruim"?av("P","oi","mini")+"Maruim (Pintas)":"Os dois"}</button>`).join("")}</div>`,
+      who:(it,i)=>it.r==="Aedes"?"L":it.r==="Maruim"?"P":(i%2?"P":"L"),
+      check:(it,v)=>it.r===v, explain:it=>it.e,
+      onEnd:(ok,n,p)=>{ if(ok>=n-1) medal("vetores"); endScreen("Quem é quem?", ok>=n-1?"Olho de lupa! Você sabe diferenciar o Listras do Pintas.":"Releia as fichas e tente de novo.", ok,n,p).onclick=GAMES.vetores; }
+    });
+  },
+
+  quintal(){
+    const nBad = S.idade===1?6:8, nOk = S.idade===1?6:4;
+    const items = shuffle([...shuffle(YARD_BAD).slice(0,nBad).map(x=>({...x,bad:true})), ...shuffle(YARD_OK).slice(0,nOk).map(x=>({...x,bad:false}))]);
+    let t = S.idade===1?60:S.idade===2?45:35, found=0, erros=0, pts=0, ended=false;
+    app.innerHTML = head("Caça aos criadouros", `<div class="timer" id="tm">${t}s</div>`) + `
+      <div style="margin-bottom:12px">${guide("L","","Toque em tudo que pode virar <b>criadouro</b> de mosquito, meu ou do Pintas. Cuidado: alguns objetos já estão seguros!")}</div>
+      <div class="yard">${items.map((it,k)=>`<button class="spot ${it.flip?"flip":""}" data-k="${k}"><span class="e" aria-hidden="true">${it.e}</span>${it.n}</button>`).join("")}</div>
+      <div id="fb" style="margin-top:12px"></div>`;
+    bindBack();
+    const fb = $("#fb");
+    function end(){
+      if(ended) return; ended=true; clearTimer();
+      finish("quintal");
+      if(found===nBad && erros===0) medal("cacador");
+      const msg = found===nBad ? (erros?"Quintal limpo! Mas atenção aos objetos seguros.":"Quintal 100% livre de criadouros!") : "O tempo acabou. Ainda havia criadouros escondidos.";
+      setTimeout(()=>{ endScreen("Caça aos criadouros", msg, found, nBad, pts, "P").onclick=GAMES.quintal; }, 1400);
+    }
+    app.querySelectorAll(".spot").forEach(b=>b.onclick=()=>{
+      if(ended) return;
+      const it = items[+b.dataset.k]; b.disabled=true;
+      if(it.bad){ b.classList.add("hit"); found++; pts+=10; addPts(10);
+        fb.innerHTML=guide(it.p?"P":"L","ok",`Encontrados: ${found} de ${nBad}. ${it.dica}`);
+        if(found===nBad){ const bonus=Math.min(30,t); pts+=bonus; addPts(bonus); fb.innerHTML=guide("P","ok",`Todos encontrados! Bônus de tempo: +${bonus} pts.`); end(); }
+      } else { b.classList.add("miss"); erros++; pts-=5; addPts(-5);
+        fb.innerHTML=guide("L","no",`Esse está seguro: ${it.porque} (−5 pts)`); }
+    });
+    timerId = setInterval(()=>{ t--; const tm=$("#tm"); if(!tm){clearTimer();return;} tm.textContent=t+"s"; tm.classList.toggle("low",t<=10); if(t<=0) end(); },1000);
+  },
+
+  ciclo(){
+    let pos=0, erros=0;
+    const chips = shuffle(CYCLE);
+    function draw(){
+      app.innerHTML = head("Ciclo de vida do Aedes") + `
+        <div style="margin-bottom:12px">${guide("L","","Assim eu cresci! Toque nas fases na ordem em que acontecem, do começo ao fim.")}</div>
+        <div class="cycle">${CYCLE.map((c,k)=>`<div class="slot ${k<pos?"filled":""}">${k<pos?`${c.n}<small>${c.info}</small>`:`<span class="muted">${k+1}ª fase</span>`}</div>`).join("")}</div>
+        <div class="chips" style="margin-top:16px">${chips.filter(c=>CYCLE.indexOf(c)>=pos).map(c=>`<button class="chip" data-id="${c.id}">${c.n}</button>`).join("")}</div>
+        <div id="fb" style="margin-top:12px"></div>`;
+      bindBack();
+      app.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+        if(b.dataset.id===CYCLE[pos].id){ pos++; addPts(10);
+          if(pos===CYCLE.length){ finish("ciclo"); if(!erros) medal("ciclo");
+            draw(); $("#fb").innerHTML=`<div class="stack">${guide("L","ok","Ciclo completo! Ovo, larva e pupa vivem na água: eliminar a água parada quebra o ciclo antes de eu voar.")}<div><button class="btn" id="fim">Concluir</button></div></div>`;
+            $("#fim").onclick=()=>{ endScreen("Ciclo de vida", erros?`Concluído com ${erros} erro(s).`:"Ciclo perfeito!", CYCLE.length, CYCLE.length, 40, "L").onclick=GAMES.ciclo; };
+          } else draw();
+        } else { erros++; b.classList.remove("bad"); void b.offsetWidth; b.classList.add("bad");
+          $("#fb").innerHTML=guide("L","no",`Ainda não. Pense: o que vem antes de ${b.textContent.toLowerCase()}?`); }
+      });
+    }
+    draw();
+  },
+
+  detetive(){
+    runQuiz({
+      id:"detetive", titulo:"Detetive da saúde", itens:shuffle(CLUES),
+      render:it=>`<p class="tag">De qual doença é esta pista?</p><p class="q">${it.t}</p>
+        <div class="opts">${DISEASES.map(d=>`<button class="opt" data-v="${d}">${d}</button>`).join("")}</div>`,
+      check:(it,v)=>it.r===v, who:it=>it.r==="Oropouche"?"P":"L",
+      explain:it=>`É ${it.r === "Oropouche" ? "a febre Oropouche" : it.r === "Dengue" ? "a dengue" : it.r === "Zika" ? "a zika" : "a chikungunya"}. Com sintomas, procure uma unidade de saúde.`,
+      onEnd:(ok,n,p)=>{ if(ok>=6) medal("detetive"); endScreen("Detetive da saúde", ok>=6?"Excelente investigação!":"Boa! Jogue de novo para fechar o caso.", ok,n,p).onclick=GAMES.detetive; }
+    });
+  },
+
+  mito(){
+    runQuiz({
+      id:"mito", titulo:"Mito ou verdade?", itens:shuffle(MYTHS),
+      render:it=>`<p class="q">${it.t}</p><div class="opts"><button class="opt" data-v="1">Verdade</button><button class="opt" data-v="0">Mito</button></div>`,
+      check:(it,v)=>(v==="1")===it.v, explain:it=>it.e, who:(it,i)=>it.p?"P":(i%3===2?"P":"L"),
+      onEnd:(ok,n,p)=>{ if(ok>=8) medal("mito"); endScreen("Mito ou verdade?", ok>=8?"Nenhum boato engana você!":"Agora você sabe mais. Tente de novo!", ok,n,p).onclick=GAMES.mito; }
+    });
+  },
+
+  casa(){
+    app.innerHTML = head("Vistoria em casa") + `
+      <div style="margin-bottom:12px">${guide("P","","Com a ajuda de um adulto, faça esta vistoria de 10 minutos em casa. Marque cada tarefa feita e repita toda semana! Assim nem eu nem o Listras temos onde nascer.")}</div>
+      <div class="stack checklist" style="gap:8px">${HOME.map((h,k)=>`<label for="h${k}"><input type="checkbox" id="h${k}" ${S.casa.includes(k)?"checked":""}>${h}</label>`).join("")}</div>
+      <div id="fb" style="margin-top:12px"></div>`;
+    bindBack();
+    const upd=()=>{
+      S.casa = HOME.map((_,k)=>k).filter(k=>$("#h"+k).checked); save();
+      const all = S.casa.length===HOME.length;
+      $("#fb").innerHTML = all ? guide("P","ok",`Vistoria completa! Sua casa está mais protegida.${S.medalhas.casa?"":" +50 pts"}`) : `<p class="muted">${S.casa.length} de ${HOME.length} tarefas</p>`;
+      if(all && !S.medalhas.casa){ addPts(50); finish("casa"); medal("casa"); }
+    };
+    app.querySelectorAll(".checklist input").forEach(c=>c.onchange=upd); upd();
+  },
+
+  final(){
+    const pool = FINAL.filter(q=>q.nivel<=S.idade);
+    const itens = shuffle(pool).slice(0,8).map(q=>{ const o=shuffle(q.o.map((t,k)=>({t,ok:k===q.r}))); return {...q, o}; });
+    runQuiz({
+      id:"final", titulo:"Desafio final", itens,
+      render:it=>`<p class="q">${it.t}</p><div class="opts">${it.o.map((o,k)=>`<button class="opt" data-v="${k}">${o.t}</button>`).join("")}</div>`,
+      check:(it,v)=>it.o[+v].ok, explain:it=>`Resposta: ${it.o.find(o=>o.ok).t}.`,
+      onEnd:(ok,n,p)=>{ if(ok>=n-1) medal("guardiao"); endScreen("Desafio final", ok>=n-1?"Você é um Guardião contra as arboviroses!":"Quase lá! Faça mais missões e tente de novo.", ok,n,p).onclick=GAMES.final; }
+    });
+  },
+};
+
+renderStats(); home();
+</script>
