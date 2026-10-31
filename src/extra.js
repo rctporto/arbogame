@@ -42,20 +42,28 @@ function telaLogin(modo){
   app.innerHTML = `
     <div class="login">
       <div class="loginart">
-        <img src="${IMG["bugkids-turma"]}" alt="Professora Catarina, os BugKids e o Listras">
-        <div><span class="tag">Bem-vindo ao ArboGame</span><h1>Entre e jogue com os BugKids!</h1>
-        <p class="lead">Ana, Pedro, Júlia, Guto e a Professora Catarina vão com você nas missões contra o Aedes e o maruim.</p></div>
+        <div class="cena" role="img" aria-label="Ana, Pedro, Listras, Pintas, Júlia e Guto em frente a uma casa">
+          <span class="sol"></span><span class="nuvem"></span><span class="nuvem n2"></span><span class="morro"></span>
+          <svg class="casa" viewBox="0 0 300 150" aria-hidden="true"><path d="M20 70 150 8l130 62z" fill="#C0392B"/><rect x="40" y="66" width="220" height="84" fill="#FFF1D6"/><rect x="132" y="96" width="36" height="54" rx="4" fill="#8B5A2B"/><rect x="62" y="86" width="44" height="34" rx="4" fill="#C9ECFF" stroke="#6D4C2F" stroke-width="5"/><rect x="194" y="86" width="44" height="34" rx="4" fill="#C9ECFF" stroke="#6D4C2F" stroke-width="5"/></svg>
+          <span class="chao"></span>
+          <span class="placa">Uma turma. Uma missão.</span>
+          <div class="turma">${["ana","pedro"].map(k=>`<img src="${IMG[CORPO[k]]}" alt="">`).join("")}<img src="${IMG["listras-ola"]}" alt=""><img src="${IMG["pintas-pulando"]}" alt="">${["julia","guto"].map(k=>`<img src="${IMG[CORPO[k]]}" alt="">`).join("")}</div>
+        </div>
+        <div><span class="eyebrow" style="color:var(--leaf)">Observar · aprender · cuidar</span><h1>Entre e jogue com os BugKids!</h1>
+        <p>Ana, Pedro, Júlia, Guto, Listras e Pintas esperam por você. Desvende os mistérios dos insetos e da saúde com a Professora Catarina.</p>
+        <div class="chips"><span class="chip claro">Missões educativas</span><span class="chip sol">Medalhas</span><span class="chip claro">Jogue em família</span></div></div>
       </div>
       <div class="panel stack" id="lp"></div>
-    </div>
-    <section><h2>📚 Ler os livros</h2><div class="livros">${livros}</div></section>`;
+    </div>`;
   app.querySelectorAll("[data-livro]").forEach(b=>b.onclick=()=>telaLeitor(b.dataset.livro, 0, true));
   const lp = $("#lp");
   const escolher = ()=>{
-    lp.innerHTML = `<h2>Quem vai jogar?</h2>
-      <div class="perfis">${lista.map(p=>`<div class="perfil"><button class="pbtn" data-u="${esc(p.uid)}">${avatar(p.avatar)}<span><b>${esc(p.nome||"Agente")}</b><small>${AGES[(p.idade||1)-1].nome} · ${p.pts} pts</small></span></button><button class="pdel" data-del="${esc(p.uid)}" aria-label="Remover ${esc(p.nome||"jogador")}" title="Remover jogador">✕</button></div>`).join("")}</div>
-      <div><button class="btn" id="novo">+ Novo jogador</button></div><div id="pc"></div>
-      <p class="muted" style="margin:0;font-size:.9rem">Sem senha: cada jogador fica salvo neste aparelho.</p>`;
+    lp.innerHTML = `<div><span class="eyebrow">Seleção do agente</span><h2>Quem vai jogar?</h2><p class="muted" style="font-size:.9rem;margin-top:4px">Cada jogador tem seu próprio progresso neste aparelho.</p></div>
+      <div class="perfis">${lista.map(p=>`<div class="perfil"><button class="pbtn" data-u="${esc(p.uid)}">${avatar(p.avatar)}<span><b>${esc(p.nome||"Agente")}</b><small>${AGES[(p.idade||1)-1].nome} · ${p.pts} pts</small></span><span class="seta">${ic("seta",18)}</span></button><button class="pdel" data-del="${esc(p.uid)}" aria-label="Remover ${esc(p.nome||"jogador")}" title="Remover jogador">✕</button></div>`).join("")}</div>
+      <div><button class="btn" id="novo">${ic("users",18)} Criar novo jogador</button></div><div id="pc"></div>
+      <div><span class="eyebrow">Nossa biblioteca</span><div class="minilivros">${LIVROS.map(l=>`<button data-livro="${l.id}"><img src="livros/${l.id}/t01.webp" alt="">${l.id==="listras"?"Listras":"Pintas"}</button>`).join("")}</div></div>
+      <p class="muted" style="margin:0;font-size:.85rem">Sem senha e sem e-mail: só um apelido, salvo neste aparelho.</p>`;
+    lp.querySelectorAll("[data-livro]").forEach(b=>b.onclick=()=>telaLeitor(b.dataset.livro, 0, true));
     lp.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{ S = Object.assign(fresh(), perfis()[b.dataset.u]); S.ultimo=Date.now(); save(); marcaEntrada(); renderStats(); home(); });
     lp.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ const p=perfis()[b.dataset.del];
       $("#pc").innerHTML=`<div class="alert">Remover <b>${esc(p.nome||"Agente")}</b> deste aparelho? Os pontos e medalhas dele somem. <div class="row" style="margin-top:8px"><button class="btn" id="sim" style="background:var(--coral)">Remover</button><button class="btn ghost" id="nao">Cancelar</button></div></div>`;
@@ -65,19 +73,21 @@ function telaLogin(modo){
   };
   const novo = ()=>{
     let idade=0, av_="ana";
+    const lg=app.querySelector(".login"); if(lg) lg.classList.add("cad");
     lp.innerHTML = `<form class="stack" id="f">
-      <h2>Novo jogador</h2>
+      <div><span class="eyebrow">Criação de jogador</span><h2>Novo agente BugKids</h2></div>
       <div class="stack" style="gap:6px"><span class="tag">Escolha seu personagem</span>
-        <div class="avpick">${Object.keys(KIDS).map(k=>`<button type="button" class="avopt" data-av="${k}" aria-pressed="${k===av_}">${avatar(k)}<small>${KIDS[k].nome}</small></button>`).join("")}</div></div>
+        <div class="avpick">${Object.keys(KIDS).map(k=>`<button type="button" class="avopt" data-av="${k}" aria-pressed="${k===av_}"><span class="corpo"><img src="${IMG[CORPO[k]]}" alt=""></span><small>${KIDS[k].nome}</small></button>`).join("")}</div></div>
       <label class="stack" style="gap:6px"><span class="tag">Seu nome ou apelido</span><input type="text" id="nome" maxlength="20" placeholder="Ex.: Ana, Equipe Azul" autocomplete="off"><small class="muted">Use só o primeiro nome ou um apelido. Ele aparece no ranking.</small></label>
       <div class="stack" style="gap:6px"><span class="tag">Sua idade</span>
         <div class="ages">${AGES.map(a=>`<button type="button" class="age" data-a="${a.id}" aria-pressed="false"><b>${a.nome}</b><small>${a.faixa}</small></button>`).join("")}</div></div>
       <label class="stack" style="gap:6px"><span class="tag">Código da turma (opcional)</span><input type="text" id="turma" maxlength="12" placeholder="Ex.: 5A-ESCOLA" style="text-transform:uppercase" autocomplete="off"><small class="muted">O professor passa o código para a turma aparecer junta no ranking.</small></label>
-      <div class="row"><button class="btn" id="go" disabled>Entrar</button>${lista.length?`<button type="button" class="btn ghost" id="volta">Voltar</button>`:""}</div>
+      <p class="nota">Use um apelido. Não coloque sobrenome, endereço, escola ou telefone.</p>
+      <div class="row"><button class="btn" id="go" disabled>Começar minha missão</button>${lista.length?`<button type="button" class="btn ghost" id="volta">Voltar</button>`:""}</div>
     </form>`;
     lp.querySelectorAll(".avopt").forEach(b=>b.onclick=()=>{ av_=b.dataset.av; lp.querySelectorAll(".avopt").forEach(x=>x.setAttribute("aria-pressed", x===b)); });
     lp.querySelectorAll(".age").forEach(b=>b.onclick=()=>{ idade=+b.dataset.a; lp.querySelectorAll(".age").forEach(x=>x.setAttribute("aria-pressed", x===b)); $("#go").disabled=false; });
-    if($("#volta")) $("#volta").onclick=escolher;
+    if($("#volta")) $("#volta").onclick=()=>{ const lg=app.querySelector(".login"); if(lg) lg.classList.remove("cad"); escolher(); };
     $("#f").onsubmit=e=>{ e.preventDefault(); if(!idade) return;
       S = fresh(); S.uid = uuid(); S.nome = $("#nome").value.trim().replace(/\s+/g," "); S.idade = idade; S.avatar = av_; S.ultimo = Date.now();
       S.turma = $("#turma").value.toUpperCase().replace(/[^A-Z0-9-]/g,"").slice(0,12);
