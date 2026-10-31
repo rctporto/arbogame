@@ -2,11 +2,17 @@ rules_version = '2';
 // ArboGame · regras do ranking online (Firestore)
 // Só existe a coleção "ranking". Cada documento é um jogador num jogo: id = "<jogador>_<jogo>".
 // Qualquer um lê o top; gravar só com dados válidos e a pontuação só pode subir.
+// Desenvolvedores (e-mails em /devs, criados só pelo script scripts/ligar-dev.sh) entram por link
+// no e-mail, veem todos os registros e podem apagar (moderação).
 service cloud.firestore {
   match /databases/{database}/documents {
 
     function campos() {
       return ['jogador', 'jogo', 'apelido', 'faixa', 'turma', 'pontos', 'atualizado'];
+    }
+    function dev() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/devs/$(request.auth.token.email));
     }
     function valido(d) {
       return d.keys().hasOnly(campos()) && d.keys().hasAll(campos())
@@ -22,7 +28,7 @@ service cloud.firestore {
 
     match /ranking/{id} {
       allow get: if true;
-      allow list: if request.query.limit <= 50;
+      allow list: if request.query.limit <= 50 || (dev() && request.query.limit <= 2000);
       allow create: if valido(request.resource.data)
         && id == request.resource.data.jogador + '_' + request.resource.data.jogo;
       allow update: if valido(request.resource.data)
@@ -30,7 +36,11 @@ service cloud.firestore {
         && request.resource.data.jogo == resource.data.jogo
         && request.resource.data.pontos >= resource.data.pontos
         && request.time > resource.data.atualizado + duration.value(3, 's');
-      allow delete: if false;
+      allow delete: if dev();
+    }
+
+    match /devs/{email} {
+      allow get: if request.auth != null && request.auth.token.email == email;
     }
 
     match /{document=**} {

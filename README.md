@@ -51,3 +51,15 @@ As regras (`ranking/firestore.rules`) só aceitam documentos completos e válido
 ## Conteúdo
 
 As informações seguem o Ministério da Saúde e a Fiocruz. O jogo sempre orienta procurar uma unidade de saúde em caso de sintomas.
+
+## Área do desenvolvedor
+
+Link "Desenvolvedor" no rodapé (ou `https://arbogame.web.app/#dev`). O login é por link enviado ao e-mail, sem senha. O painel mostra os números do ranking online (jogadores, turmas, faixas, recordes), permite apagar registros (moderação) e ver ou zerar o progresso do aparelho.
+
+Para ligar e autorizar um e-mail, rode uma vez no Cloud Shell:
+
+```
+cd ~/arbogame && git pull && bash scripts/ligar-dev.sh seu@email.com
+```
+
+Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script grava. O código está em `src/dev.js` e as permissões em `ranking/firestore.rules`.
