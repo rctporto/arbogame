@@ -23,8 +23,9 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 | `personagens/` | Poses do Listras e do Pintas (embutidas no `index.html`) |
 | `marca/` | Logo da Nório para o rodapé (embutido no `index.html`) |
 | `build.py` | Gera o `index.html`: `python3 build.py` |
-| `config.js` | Endereço e chave pública do Supabase (ranking online) |
-| `supabase/01_ranking.sql` | Tabela e funções do ranking online |
+| `config.js` | Projeto e chave pública do Firebase do ranking online |
+| `ranking/` | Regras e índices do Firestore do ranking online |
+| `scripts/criar-ranking.sh` | Cria o projeto Firebase do ranking (Cloud Shell, uma vez) |
 | `firebase.json` | Publicação no Firebase Hosting da Nório |
 | `.github/workflows/deploy.yml` | Publica sozinho a cada push na `main` |
 | `scripts/configurar-publicacao.sh` | Configuração única da publicação automática (Cloud Shell) |
@@ -36,14 +37,16 @@ O site é estático e fica publicado no **Firebase Hosting** da Nório (site `ar
 
 Para publicar manualmente: `firebase deploy --only hosting --project norio-pd-os`.
 
-## Ranking online (Supabase)
+## Ranking online (Firestore)
 
-1. Use um projeto Supabase que já existe (o plano grátis permite poucos projetos) ou crie um novo. Tudo do ArboGame tem o prefixo `arbogame_` e não mexe nas outras tabelas.
-2. **SQL Editor → New query:** cole `supabase/01_ranking.sql` e clique em **Run**.
-3. **Project Settings → API:** copie a **Project URL** e a chave **anon / public** para o `config.js`. **Nunca** use a chave `service_role`.
-4. Faça push na `main`: o site é publicado com o ranking online ligado.
+O ranking online fica num **projeto Firebase separado** (`arbogame-ranking`, plano grátis), para não misturar com o banco do Nório R&D OS.
 
-Enquanto o `config.js` estiver vazio, o jogo mostra só o ranking do aparelho. No ranking online aparecem só apelidos (com filtro de palavrões no site e no banco), a faixa de idade e o código opcional da turma. O banco fica fechado e só aceita as funções `arbogame_enviar_pontos` e `arbogame_top_ranking`, que validam apelido, jogo e pontuação.
+1. No [Cloud Shell](https://shell.cloud.google.com): `git clone https://github.com/rctporto/arbogame && cd arbogame && bash scripts/criar-ranking.sh`. O script cria o projeto, o Firestore em São Paulo, as regras, os índices e o app web, e mostra o `firebaseProjectId` e a `firebaseApiKey`.
+2. Cole os dois valores no `config.js` e faça push na `main`.
+
+Enquanto o `config.js` estiver vazio, o jogo mostra só o ranking do aparelho. No ranking online aparecem só apelidos (com filtro de palavrões no site e nas regras), a faixa de idade e o código opcional da turma.
+
+As regras (`ranking/firestore.rules`) só aceitam documentos completos e válidos, com a pontuação dentro do limite, a pontuação que só sobe, um envio a cada 3 segundos por jogador e jogo, e nenhuma exclusão. Qualquer outra coleção fica fechada. Para testar as regras localmente: `cd ranking && firebase emulators:exec --only firestore --project demo-arbogame "..."`.
 
 ## Conteúdo
 

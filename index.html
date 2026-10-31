@@ -1186,19 +1186,35 @@ function telaRanking(aba){
 }
 GAMES.ranking = telaRanking;
 
-/* ================== RANKING ONLINE (Supabase, opcional) ================== */
+/* ================== RANKING ONLINE (Firestore, opcional) ================== */
 const ONLINE = (()=>{
   const c = window.ARBO_CONFIG || {};
-  if(!c.supabaseUrl || !c.supabaseAnonKey) return null;
-  const rpc = async (fn, body)=>{
-    const r = await fetch(`${c.supabaseUrl.replace(/\/$/,"")}/rest/v1/rpc/${fn}`, {method:"POST",
-      headers:{"Content-Type":"application/json", apikey:c.supabaseAnonKey, Authorization:`Bearer ${c.supabaseAnonKey}`}, body:JSON.stringify(body)});
+  if(!c.firebaseProjectId || !c.firebaseApiKey) return null;
+  const host = (c.firestoreHost || "https://firestore.googleapis.com").replace(/\/$/,"");
+  const raiz = `projects/${c.firebaseProjectId}/databases/(default)/documents`;
+  const call = async (op, body)=>{
+    const r = await fetch(`${host}/v1/${raiz}:${op}?key=${encodeURIComponent(c.firebaseApiKey)}`, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
     if(!r.ok) throw new Error((await r.text().catch(()=>""))||r.statusText);
-    const t = await r.text(); return t ? JSON.parse(t) : null;
+    return r.json();
   };
+  const val = f=>f ? (f.stringValue ?? (f.integerValue!=null ? +f.integerValue : null)) : null;
   return {
-    enviar:(jogo,pontos)=>rpc("arbogame_enviar_pontos",{p_jogador:S.uid,p_apelido:apelidoOnline(),p_faixa:S.idade||1,p_turma:S.turma||"",p_jogo:jogo,p_pontos:Math.round(pontos)}),
-    top:(jogo,turma)=>rpc("arbogame_top_ranking",{p_jogo:jogo,p_turma:turma||null,p_limite:10}),
+    enviar(jogo, pontos){
+      const id = `${S.uid}_${jogo}`;
+      return call("commit", {writes:[{
+        update:{name:`${raiz}/ranking/${id}`, fields:{
+          jogador:{stringValue:S.uid}, jogo:{stringValue:jogo}, apelido:{stringValue:apelidoOnline()},
+          faixa:{integerValue:String(S.idade||1)}, turma:{stringValue:S.turma||""}, pontos:{integerValue:String(Math.round(pontos))}}},
+        updateTransforms:[{fieldPath:"atualizado", setToServerValue:"REQUEST_TIME"}]}]});
+    },
+    async top(jogo, turma){
+      const f = [{fieldFilter:{field:{fieldPath:"jogo"},op:"EQUAL",value:{stringValue:jogo}}}];
+      if(turma) f.push({fieldFilter:{field:{fieldPath:"turma"},op:"EQUAL",value:{stringValue:turma}}});
+      const rows = await call("runQuery", {structuredQuery:{from:[{collectionId:"ranking"}],
+        where: f.length>1 ? {compositeFilter:{op:"AND",filters:f}} : f[0],
+        orderBy:[{field:{fieldPath:"pontos"},direction:"DESCENDING"}], limit:10}});
+      return rows.filter(r=>r.document).map(r=>{ const d=r.document.fields; return {apelido:val(d.apelido), faixa:val(d.faixa), turma:val(d.turma), pontos:val(d.pontos)}; }).filter(p=>p.pontos>0);
+    },
   };
 })();
 function uuid(){ try{ return crypto.randomUUID(); }catch(e){ return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{ const r=Math.random()*16|0; return (c==="x"?r:(r&3|8)).toString(16); }); } }
@@ -1219,7 +1235,10 @@ function enviarOnline(jogo,pontos){
   enviarOnline.t=setTimeout(()=>{ const f=filaOnline; filaOnline={}; Object.entries(f).forEach(([j,p])=>ONLINE.enviar(j,p).catch(()=>{})); }, 1500);
 }
 const _salvarLocal = Ranking.salvar;
-Ranking.salvar = function(jogo, placar){ _salvarLocal(jogo, placar); enviarOnline("geral", S.pts); if(jogo && jogo!=="memoria") enviarOnline(jogo, placar); };
+Ranking.salvar = function(jogo, placar){ _salvarLocal(jogo, placar);
+  const eu = Ranking.ler().j[Ranking.nome().toLowerCase()] || {pts:0,best:{}};
+  enviarOnline("geral", Math.max(S.pts, eu.pts||0));
+  if(jogo && jogo!=="memoria") enviarOnline(jogo, Math.max(placar||0, eu.best[jogo]||0)); };
 
 /* tela do ranking com abas "Este aparelho" e "Online" */
 const _telaLocal = telaRanking;
