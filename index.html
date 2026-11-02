@@ -658,6 +658,43 @@ h1,h2{letter-spacing:-.01em}
 @media (prefers-reduced-motion:reduce){.ator .palco img,.fimator,.fcard,.mscard,.livro{animation:none!important;transition:none!important}}
 .conteudo{overflow-x:clip}
 
+/* ================== PLATAFORMA (02/11/2026): modo claro branco, jogos novos, pergunta entre fases ================== */
+:root[data-theme="light"]{--bg:#FFFFFF;--line:#DCE8E1;--shadow:0 6px 18px rgba(18,48,42,.07)}
+:root[data-theme="light"] body{background:#FFFFFF}
+:root[data-theme="dark"] body{background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 60%,color-mix(in srgb,var(--sun-soft) 45%,var(--bg)) 100%) fixed}
+.temabtn.topo{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font:800 .82rem var(--body);cursor:pointer;margin-left:8px}
+.temabtn.topo:hover{border-color:var(--leaf)}
+@media (max-width:720px){.temabtn.topo{display:none}}
+.devbar .temabtn{display:inline-flex;gap:6px;align-items:center}
+.side nav.snovo{margin-top:6px}
+.jogobox{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.jogoframe{display:block;width:100%;height:80vh;min-height:420px;border:0;background:transparent}
+.fcard.embreve{opacity:.72;cursor:default;border-style:dashed}
+.fcard.embreve .fpe span{color:var(--muted)}
+.pqfundo{position:fixed;inset:0;z-index:200;background:rgba(10,30,24,.6);display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:pqin .25s ease-out}
+@keyframes pqin{from{opacity:0}}
+.pqcard{background:var(--card);color:var(--ink);border:2px solid var(--leaf);border-radius:26px;max-width:620px;width:100%;max-height:100%;overflow:auto;padding:22px;box-shadow:0 12px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;gap:14px}
+.pqtopo{display:flex;gap:12px;align-items:center}
+.pqtopo img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 15%;background:var(--leaf-soft);border:3px solid var(--leaf);flex:none}
+.pqtopo b{font-family:var(--display);font-size:1.35rem;line-height:1.1;display:block}
+.pqq{font-family:var(--display);font-size:1.45rem;line-height:1.2;margin:0;text-wrap:balance}
+.pqops{grid-template-columns:1fr}
+.opt.elim{opacity:.55;text-decoration:line-through}
+.pqfb:empty{display:none}
+.pqfb{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.pqok,.pqdica{border-radius:14px;padding:10px 14px;line-height:1.45}
+.pqok{background:var(--leaf-soft);border:1px solid color-mix(in srgb,var(--leaf) 40%,transparent)}
+.pqdica{background:var(--sun-soft);border:1px solid color-mix(in srgb,var(--sun) 50%,transparent)}
+.devbar{margin-bottom:16px;display:flex;flex-direction:column;gap:12px}
+.devperg summary{cursor:pointer;font-weight:800}
+.devperg h4{margin:14px 0 6px}
+.devperg ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.devperg .ok{color:var(--leaf);font-weight:700}
+.pildev{position:fixed;z-index:150;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;background:var(--side);color:var(--side-ink);border-radius:999px;padding:6px 6px 6px 14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-weight:800;font-size:.85rem}
+.pildev span{display:inline-flex;gap:6px;align-items:center}
+.pildev .btn{padding:8px 14px;font-size:.85rem}
+
 </style>
 
 <div class="shell"><aside class="side" id="side" aria-label="Menu"></aside><div class="conteudo">
@@ -2461,6 +2498,234 @@ new MutationObserver(()=>{
   const a=g.querySelector(".av"); if(a) a.classList.add(g.classList.contains("ok")?"pula":"treme");
   const q=document.querySelector(".qcard"); if(q){ q.classList.remove("certo","errado"); void q.offsetWidth; q.classList.add(g.classList.contains("ok")?"certo":"errado"); }
 }).observe(app,{childList:true,subtree:true});
+
+/* ================== PERGUNTAS ENTRE FASES ==================
+   Banco usado pela "pergunta da Professora Catarina" que aparece entre uma fase/partida e a próxima.
+   Faixas: 1 = Mirim (6 a 10), 2 = Explorador (11 a 14), 3 = Cientista (15 a 17).
+   Cada pergunta: q (pergunta), ops (alternativas; a primeira é a certa, o jogo embaralha), dica (aparece quando erra), ex (explicação quando acerta).
+   Conteúdo conferido com materiais do Ministério da Saúde e da Fiocruz. */
+const PERGUNTAS = {
+  1: [
+    {q:"Onde o mosquito Aedes aegypti (o Listras) coloca seus ovos?", ops:["Em água parada","Na areia seca da praia","Nas folhas das árvores altas"], dica:"Pense no que a chuva deixa acumulado no quintal.", ex:"O Aedes coloca os ovos perto da água parada, em pneus, vasos, garrafas e baldes."},
+    {q:"O que fazer com o pratinho do vaso de planta?", ops:["Colocar areia até a borda","Encher de água limpa","Deixar ao sol com água"], dica:"O segredo é não deixar espaço para a água ficar parada.", ex:"Com areia até a borda, a água não fica parada e o mosquito não tem onde nascer."},
+    {q:"Como deixar um balde que não está sendo usado?", ops:["Virado de boca para baixo","De boca para cima no quintal","Cheio de água da chuva"], dica:"Se a boca fica para baixo, a chuva entra?", ex:"Balde de boca para baixo não junta água da chuva."},
+    {q:"A caixa-d'água deve ficar…", ops:["Sempre bem tampada","Aberta para pegar ar","Tampada só no inverno"], dica:"O mosquito precisa entrar para botar ovos.", ex:"Caixa-d'água bem tampada não deixa o mosquito entrar. Quem cuida dela é um adulto."},
+    {q:"Encontrei água parada no quintal. O que eu faço?", ops:["Aviso um adulto","Deixo do jeito que está","Escondo com folhas"], dica:"Criança observa e avisa.", ex:"Avisar um adulto é o certo. Ele ajuda a esvaziar, guardar ou jogar fora."},
+    {q:"Onde vai a tampinha de garrafa que caiu no chão?", ops:["No lixo reciclável","No canteiro de flores","Na calçada"], dica:"Até uma tampinha junta água!", ex:"Tampinha jogada no chão junta água da chuva. Lugar de lixo é na lixeira."},
+    {q:"O Pintas é um maruim. Onde o maruim gosta de nascer?", ops:["Em folhas e frutas apodrecendo no chão úmido","Dentro da geladeira","Em água limpa do filtro"], dica:"Pense no Varre-Varre e no Limpeza Ninja.", ex:"O maruim nasce em lugares úmidos com folhas, cascas e frutas apodrecendo."},
+    {q:"Qual destes ajuda a proteger da picada do mosquito?", ops:["Repelente passado por um adulto","Ficar perto da água parada","Usar roupa molhada"], dica:"Tem um frasco que espanta os insetos.", ex:"O repelente ajuda a evitar picadas. Peça para um adulto passar em você."},
+    {q:"O Listras (Aedes aegypti) pica mais em que hora?", ops:["De dia","Só à meia-noite","Nunca pica"], dica:"Lembra do Espanta-Mosquito? Ele vem quando o sol está no céu.", ex:"O Aedes aegypti pica mais durante o dia."},
+    {q:"Se eu tiver febre e dor no corpo, o que faço?", ops:["Conto para um adulto e vamos ao posto de saúde","Tomo qualquer remédio sozinho","Não falo para ninguém"], dica:"Quem cuida da saúde é o médico.", ex:"Com febre e dor no corpo, conte para um adulto e procurem uma unidade de saúde."},
+    {q:"Quantas vezes devemos olhar o quintal procurando água parada?", ops:["Toda semana","Uma vez por ano","Só quando chover muito"], dica:"O ciclo do mosquito é rápido.", ex:"Uma olhada de 10 minutos toda semana ajuda muito a acabar com os criadouros."},
+    {q:"Pneu velho no quintal pode virar…", ops:["Criadouro de mosquito","Ninho de passarinho","Vaso de flor que não junta água"], dica:"Olhe o meio do pneu: a água fica ali dentro.", ex:"Pneu junta água da chuva e vira criadouro. Guarde em lugar coberto e seco."},
+  ],
+  2: [
+    {q:"Quais doenças o Aedes aegypti pode transmitir?", ops:["Dengue, zika e chikungunya","Gripe e resfriado","Catapora e sarampo"], dica:"São três arboviroses bem conhecidas no Brasil.", ex:"O Aedes aegypti transmite dengue, zika e chikungunya."},
+    {q:"Qual inseto transmite a febre Oropouche?", ops:["O maruim (mosquito-pólvora)","A abelha","A formiga"], dica:"É bem pequeno e é amigo do Pintas.", ex:"A febre Oropouche é transmitida principalmente pelo maruim, Culicoides paraensis."},
+    {q:"Qual é a ordem do ciclo de vida do mosquito?", ops:["Ovo, larva, pupa e adulto","Larva, ovo, adulto e pupa","Adulto, pupa, ovo e larva"], dica:"Tudo começa com o ovo.", ex:"O mosquito passa por ovo, larva, pupa e adulto. Larva e pupa vivem na água."},
+    {q:"Quanto tempo o ovo do Aedes pode resistir seco, grudado na parede de um recipiente?", ops:["Cerca de um ano","Só um dia","Uma hora"], dica:"É por isso que é preciso esfregar o recipiente, não só esvaziar.", ex:"O ovo do Aedes pode sobreviver por muitos meses no seco, cerca de um ano. Por isso, esfregue as bordas."},
+    {q:"Por que o maruim passa por telas comuns de janela?", ops:["Ele é minúsculo, de 1 a 3 milímetros","Ele rói a tela","Ele só entra pela porta"], dica:"O tamanho dele é a chave.", ex:"O maruim é tão pequeno que passa por telas comuns. Para ele, só tela de malha bem fina."},
+    {q:"Qual é a melhor atitude com garrafas vazias?", ops:["Reciclar, fechadas ou de boca para baixo","Deixar de boca para cima no quintal","Usar como vaso com água"], dica:"Boca para cima junta água.", ex:"Garrafas vazias vão para a reciclagem, fechadas ou de boca para baixo."},
+    {q:"Qual é um sintoma comum da dengue?", ops:["Febre alta e dor atrás dos olhos","Coceira só nos pés","Espirros sem parar"], dica:"Pense em febre e dores.", ex:"Febre alta, dor de cabeça, dor atrás dos olhos, dor no corpo e manchas na pele são sinais comuns."},
+    {q:"Com suspeita de dengue, o que NÃO se deve fazer?", ops:["Tomar remédio por conta própria","Beber bastante líquido","Procurar uma unidade de saúde"], dica:"Alguns remédios podem piorar o quadro.", ex:"Não tome remédio por conta própria. Beba líquidos e procure uma unidade de saúde."},
+    {q:"Em que horários o maruim costuma atacar mais?", ops:["Ao amanhecer e ao entardecer","Só ao meio-dia","De madrugada, só no inverno"], dica:"Lembra do céu do Espanta-Mosquito mudando de cor?", ex:"O maruim é mais ativo ao amanhecer e ao entardecer."},
+    {q:"Quem pica e se alimenta de sangue no Aedes aegypti?", ops:["A fêmea","O macho","Os dois, igualmente"], dica:"Ela precisa do sangue para os ovos.", ex:"Só a fêmea pica: ela precisa do sangue para amadurecer os ovos."},
+    {q:"Por que folhas e frutas apodrecendo no quintal são um problema?", ops:["Podem virar criadouro de maruim","Deixam o quintal mais fresco","Espantam todos os insetos"], dica:"O Pintas adora matéria orgânica úmida.", ex:"Matéria orgânica úmida, como folhas, cascas e frutas caídas, é onde o maruim se cria."},
+    {q:"Calhas entupidas no telhado podem…", ops:["Acumular água e virar criadouro","Ajudar a espantar o mosquito","Secar mais rápido o quintal"], dica:"A água da chuva precisa escorrer.", ex:"Calha entupida junta água. A limpeza é tarefa de adulto, por ser em lugar alto."},
+  ],
+  3: [
+    {q:"Quantos sorotipos do vírus da dengue existem?", ops:["Quatro (DENV-1 a DENV-4)","Um só","Dez"], dica:"Por isso uma pessoa pode ter dengue mais de uma vez.", ex:"São quatro sorotipos. Ter tido um não protege contra os outros."},
+    {q:"Qual destes é um sinal de alarme da dengue, que exige atendimento imediato?", ops:["Dor forte e contínua na barriga","Leve cansaço depois da febre passar e melhora geral","Fome normal"], dica:"Sinais de alarme costumam aparecer quando a febre baixa.", ex:"Dor abdominal intensa, vômitos persistentes, sangramentos e tontura são sinais de alarme. Procure atendimento na hora."},
+    {q:"Qual é o principal vetor da febre Oropouche no Brasil?", ops:["Culicoides paraensis","Aedes albopictus","Anopheles darlingi"], dica:"É o nome científico do maruim.", ex:"O Culicoides paraensis, o maruim, é o principal transmissor da Oropouche."},
+    {q:"A infecção pelo vírus zika na gravidez está associada a…", ops:["Microcefalia e outras alterações no bebê","Aumento da altura do bebê","Nenhum efeito"], dica:"Foi um alerta importante no Brasil em 2015 e 2016.", ex:"A zika na gestação pode causar microcefalia e outras alterações. Gestantes devem redobrar a proteção."},
+    {q:"Qual arbovirose é conhecida por dor nas articulações que pode durar meses?", ops:["Chikungunya","Gripe","Sarampo"], dica:"O nome vem de uma língua africana e quer dizer 'aquele que se curva'.", ex:"A chikungunya pode deixar dor forte nas articulações por meses."},
+    {q:"Por que esfregar as paredes dos recipientes, e não só esvaziar?", ops:["Os ovos ficam grudados e resistem secos","A água sai mais rápido","Esfregar atrai o mosquito"], dica:"Pense no ovo que resiste no seco.", ex:"Os ovos ficam grudados nas paredes e resistem por meses. Esfregar com escova remove os ovos."},
+    {q:"Em condições favoráveis, quanto tempo leva do ovo ao mosquito adulto?", ops:["Cerca de 7 a 10 dias","Cerca de 6 meses","Algumas horas"], dica:"É por isso que a vistoria é semanal.", ex:"Em clima quente, o ciclo leva cerca de 7 a 10 dias. Por isso, olhe o quintal toda semana."},
+    {q:"O que caracteriza o criadouro do maruim, diferente do Aedes?", ops:["Matéria orgânica úmida, como solo, folhas e restos de plantas","Água limpa em recipientes","Locais totalmente secos e limpos"], dica:"Lembra do Varre-Varre?", ex:"O maruim se cria em matéria orgânica úmida. O Aedes prefere água parada em recipientes."},
+    {q:"Por que o Aedes aegypti é chamado de vetor?", ops:["Porque leva o vírus de uma pessoa para outra","Porque é a doença em si","Porque é um tipo de vírus"], dica:"Vetor transporta.", ex:"Vetor é o ser vivo que transmite o agente da doença. O mosquito leva o vírus de uma pessoa para outra."},
+    {q:"Qual medida de proteção vale contra o Aedes e contra o maruim?", ops:["Repelente e roupas compridas","Ficar perto de água parada","Deixar janelas abertas no entardecer"], dica:"É uma barreira na pele.", ex:"Repelente e roupas compridas protegem contra os dois. Para o maruim, tela de malha fina também."},
+    {q:"Arbovírus são vírus que…", ops:["São transmitidos por artrópodes, como mosquitos","Só existem em laboratório","São transmitidos só pelo ar"], dica:"'Arbo' vem do inglês arthropod-borne.", ex:"Arbovírus são transmitidos por artrópodes, como mosquitos e maruins."},
+    {q:"Qual atitude reduz criadouros na comunidade toda?", ops:["Mutirão de limpeza e descarte correto do lixo","Cada um esperar o vizinho","Jogar o lixo em terreno baldio"], dica:"O mosquito não respeita muro de vizinho.", ex:"Mutirões, coleta de lixo e cuidado coletivo reduzem os criadouros no bairro inteiro."},
+  ],
+};
+
+/* ================== PLATAFORMA (02/11/2026) ==================
+   Carregado por último. Não altera a lógica antiga: só acrescenta.
+   1) Modo claro (fundo branco, menu verde) e escuro, com botão e memória da escolha.
+   2) Jogos novos (páginas em jogos/*.html) abertos dentro do site, ligados a pontos, medalhas e ranking.
+   3) Pergunta da Professora Catarina entre uma fase/partida e a próxima (tenta até acertar).
+   4) Área do desenvolvedor: só renato@norionano.com.br, com "Ver como usuário".
+   5) Jogos "em breve" no fliperama. */
+
+/* ---------- 1. tema claro / escuro ---------- */
+const TEMA_KEY = "arbogame-tema";
+function temaSalvo(){ try{ return localStorage.getItem(TEMA_KEY); }catch(e){ return null; } }
+function temaAtual(){ const t=temaSalvo(); if(t==="light"||t==="dark") return t; return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+function aplicaTema(){ const t=temaAtual(); document.documentElement.dataset.theme=t;
+  document.querySelectorAll("iframe.jogoframe").forEach(f=>{ try{ f.contentWindow.postMessage({arbo:"tema", tema:t}, location.origin); }catch(e){} });
+  document.querySelectorAll(".temabtn").forEach(b=>{ b.innerHTML = t==="dark" ? `${ic("sol",18)}<span>Modo claro</span>` : `${ic("lua",18)}<span>Modo escuro</span>`; b.setAttribute("aria-label", t==="dark"?"Mudar para o modo claro":"Mudar para o modo escuro"); }); }
+function trocaTema(){ const t = temaAtual()==="dark" ? "light" : "dark"; try{ localStorage.setItem(TEMA_KEY, t); }catch(e){} aplicaTema(); }
+ICO.lua = ICO.lua || '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>';
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", ()=>{ if(!temaSalvo()) aplicaTema(); });
+(function botaoTemaTopo(){ const st=$("#stats"); if(!st) return; const b=document.createElement("button"); b.type="button"; b.className="temabtn topo"; b.onclick=trocaTema; st.after(b); })();
+aplicaTema();
+
+/* ---------- 2. jogos novos ---------- */
+const NOVOS = [
+  {id:"chuva",   arquivo:"missao-chuva",   nome:"Missão Chuva",     who:"L", cor:"var(--sky-soft)",   desc:"A chuva enche os recipientes do quintal. Esvazie cada um a tempo, em 5 fases!", icone:"gota"},
+  {id:"limpeza", arquivo:"limpeza-ninja",  nome:"Limpeza Ninja",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
+  {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"Sudoku BugKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
+  {id:"mahjong", arquivo:"mahjong-bugkids",nome:"Mahjong BugKids",  who:"L", cor:"var(--coral-soft)", desc:"Ache os pares de peças livres e limpe a mesa inteira.", icone:"cartas"},
+];
+// Coleta Certa, Espanta-Mosquito e Memória ganham a versão nova (mesmo id: recordes, medalhas e ranking continuam)
+const TROCADOS = {coleta:"coleta-certa", espanta:"espanta-mosquito", memoria:"memoria-bugkids"};
+const EMBREVE = [
+  {nome:"Labirinto da Floresta", desc:"Leve o Pintas da cidade até a floresta por um tabuleiro-labirinto. Para jogar online com a turma.", img:"pintas-folha"},
+  {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
+];
+NOVOS.forEach(n=>{ if(!ARCADE.some(a=>a.id===n.id)) ARCADE.push({id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}); ICO_JOGO[n.id]=n.icone; });
+Object.assign(MEDALS, {
+  chuva:{m:"🌧️", nome:"Guardião da chuva", desc:"Venceu as 5 fases da Missão Chuva"},
+  limpeza:{m:"🧹", nome:"Ninja da limpeza", desc:"Completou o tempo no Limpeza Ninja"},
+  sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um Sudoku BugKids"},
+  mahjong:{m:"🀄", nome:"Mesa limpa", desc:"Limpou a mesa do Mahjong BugKids"},
+});
+Object.assign(ICO_MEDALHA, {chuva:"gota", limpeza:"folha", sudoku:"alvo", mahjong:"cartas"});
+const ARQ = id => (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
+const NOME = id => (ARCADE.find(a=>a.id===id)||{}).nome || id;
+
+let JOGO_AT = null;
+function telaJogoNovo(id){
+  if(typeof stopArcade==="function") stopArcade(); clearTimer();
+  JOGO_AT = id;
+  app.innerHTML = head(NOME(id)) + `<div class="jogobox"><iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}" allow="autoplay; fullscreen"></iframe></div>`;
+  bindBack();
+}
+Object.keys(TROCADOS).forEach(id=>{ GAMES[id]=function(){ marcaNav(id); telaJogoNovo(id); }; });
+NOVOS.forEach(n=>{ GAMES[n.id]=function(){ marcaNav(n.id); telaJogoNovo(n.id); }; });
+
+// recados que os jogos mandam para o site
+addEventListener("message", e=>{
+  if(e.origin!==location.origin || !e.data || !e.data.arbo) return;
+  const d=e.data, fr=$("#jogoframe"); if(!fr || e.source!==fr.contentWindow) return;
+  if(d.arbo==="altura"){ fr.style.height = Math.max(420, Math.ceil(d.h)) + "px"; }
+  else if(d.arbo==="fim"){ const id=JOGO_AT; if(!id) return;
+    const placar=Math.max(0, Math.round(+d.placar||0)), pts=Math.min(80, Math.round(placar/3));
+    if(pts>0) addPts(pts); finish(id); Ranking.salvar(id, placar);
+    if(d.venceu || (id==="coleta"||id==="espanta") && placar>=150 || id==="memoria") medal(id);
+    toast(`+${pts} pontos no ${NOME(id)}`); }
+  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
+});
+
+/* ---------- 3. pergunta entre fases ---------- */
+const PQ_KEY = "arbogame-perguntas-vistas";
+function proximaPergunta(){
+  const f = Math.min(3, Math.max(1, S.idade||1)), banco = PERGUNTAS[f];
+  let vistas=[]; try{ vistas=JSON.parse(sessionStorage.getItem(PQ_KEY))||[]; }catch(e){}
+  let livres = banco.map((_,i)=>i).filter(i=>!vistas.includes(f+":"+i));
+  if(!livres.length){ vistas=vistas.filter(v=>!v.startsWith(f+":")); livres=banco.map((_,i)=>i); }
+  const i = livres[Math.floor(Math.random()*livres.length)];
+  vistas.push(f+":"+i); try{ sessionStorage.setItem(PQ_KEY, JSON.stringify(vistas.slice(-40))); }catch(e){}
+  return banco[i];
+}
+let PQ_ABERTA = false;
+function perguntaEntreFases(depois){
+  if(PQ_ABERTA) return; PQ_ABERTA = true;
+  const p = proximaPergunta(), certa = p.ops[0], ops = shuffle(p.ops);
+  const box = document.createElement("div"); box.className="pqfundo"; box.setAttribute("role","dialog"); box.setAttribute("aria-modal","true"); box.setAttribute("aria-labelledby","pqq");
+  box.innerHTML = `<div class="pqcard">
+      <div class="pqtopo"><img src="${IMG["catarina-busto"]}" alt="Professora Catarina"><div><span class="eyebrow">Antes de continuar</span><b>Pergunta da Professora Catarina</b></div></div>
+      <p class="pqq" id="pqq">${esc(p.q)}</p>
+      <div class="opts pqops">${ops.map(o=>`<button type="button" class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+      <div class="pqfb" id="pqfb" aria-live="polite"></div>
+    </div>`;
+  document.body.appendChild(box); sfx && sfx("swoosh");
+  const fb = box.querySelector("#pqfb"); let erros=0;
+  box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(b.dataset.v===certa){
+      box.querySelectorAll(".opt").forEach(x=>x.disabled=true); b.classList.add("right"); sfx && sfx("win");
+      fb.innerHTML = `<div class="pqok"><b>${erros?"Agora sim!":"Acertou!"}</b> ${esc(p.ex)}</div><button type="button" class="btn sun" id="pqgo">Continuar jogando →</button>`;
+      const go=fb.querySelector("#pqgo"); go.focus();
+      go.onclick=()=>{ box.remove(); PQ_ABERTA=false; depois(); };
+    } else {
+      erros++; b.disabled=true; b.classList.add("wrong","elim"); sfx && sfx("bad");
+      fb.innerHTML = `<div class="pqdica"><b>Quase!</b> ${esc(p.dica)} Tente de novo.</div>`;
+    }
+  });
+  box.querySelector(".opt").focus();
+}
+// "Jogar de novo" dos minijogos e missões antigos também passa pela pergunta
+const _endScreen = endScreen;
+endScreen = function(...a){
+  const btn = _endScreen.apply(this, a);
+  let fn = null;
+  Object.defineProperty(btn, "onclick", {configurable:true, get(){ return fn; }, set(f){ fn=f; }});
+  btn.addEventListener("click", ()=>{ if(fn) perguntaEntreFases(()=>fn()); });
+  return btn;
+};
+
+/* ---------- 4. área do desenvolvedor ---------- */
+const DEV_EMAILS = ["renato@norionano.com.br"];
+const VER_USUARIO = "arbogame-dev-usuario", DEV_OK = "arbogame-dev-ok";
+const ss = {get:k=>{ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }, set:(k,v)=>{ try{ v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v); }catch(e){} }};
+if(DEV){
+  const _aut = DEV.autorizado;
+  DEV.autorizado = async function(){ const ok = await _aut.apply(this, arguments);
+    const email = String(DEV.email()||"").toLowerCase(), vale = ok && DEV_EMAILS.includes(email);
+    ss.set(DEV_OK, vale ? email : null); return vale; };
+}
+const _painelDev = painelDev;
+painelDev = function(topo, liga){
+  _painelDev(topo, liga);
+  const bar = document.createElement("section"); bar.className="panel devbar";
+  const n = Object.values(PERGUNTAS).reduce((s,l)=>s+l.length,0);
+  bar.innerHTML = `<div class="row" style="justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div><span class="eyebrow">Você está no modo desenvolvedor</span><p class="muted" style="margin:2px 0 0">Veja o site como um jogador vê e volte quando quiser.</p></div>
+      <div class="row"><button class="btn sun" id="verusuario">${ic("olho",18)} Ver como usuário</button><button class="btn ghost temabtn"></button></div></div>
+    <details class="devperg"><summary>Perguntas entre fases (${n})</summary>
+      ${[1,2,3].map(f=>`<h4>${AGES[f-1].nome} · ${AGES[f-1].faixa}</h4><ol>${PERGUNTAS[f].map(p=>`<li><b>${esc(p.q)}</b><br><span class="ok">✓ ${esc(p.ops[0])}</span> · <span class="muted">${p.ops.slice(1).map(esc).join(" · ")}</span></li>`).join("")}</ol>`).join("")}
+      <p class="nota">As perguntas ficam em <code>src/perguntas.js</code>. Para mudar, edite o arquivo e publique.</p></details>`;
+  const head0 = app.querySelector(".gamehead"); if(head0) head0.after(bar); else app.prepend(bar);
+  bar.querySelector(".temabtn").onclick=trocaTema; aplicaTema();
+  bar.querySelector("#verusuario").onclick=()=>{ ss.set(VER_USUARIO,"1"); history.replaceState(null,"",location.pathname); home(); pilulaDev(); };
+};
+ICO.olho = ICO.olho || '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
+function pilulaDev(){
+  let p=$("#pilduladev"); const on = ss.get(VER_USUARIO)==="1" && !!ss.get(DEV_OK);
+  if(!on){ if(p) p.remove(); return; }
+  if(p) return;
+  p=document.createElement("div"); p.id="pilduladev"; p.className="pildev";
+  p.innerHTML=`<span>${ic("olho",16)} Vendo como usuário</span><button type="button" class="btn sun" id="voltadev">Voltar ao desenvolvedor</button>`;
+  document.body.appendChild(p);
+  p.querySelector("#voltadev").onclick=()=>{ ss.set(VER_USUARIO,null); p.remove(); location.hash="#dev"; telaDev(); };
+}
+pilulaDev();
+
+/* ---------- menu lateral: botão de tema, atalho do desenvolvedor e "em breve" ---------- */
+const _montaMenu = montaMenu;
+montaMenu = function(){
+  _montaMenu();
+  const side=$("#side"); if(!side) return;
+  const nav=document.createElement("nav"); nav.className="snovo";
+  nav.innerHTML = `<h4>Em breve</h4>${EMBREVE.map(e=>`<button disabled>${ic("cadeado",18)}<span>${e.nome}</span></button>`).join("")}
+    <h4>Preferências</h4><button class="temabtn" type="button"></button>
+    ${ss.get(DEV_OK)?`<button type="button" id="atalhodev">${ic("olho",18)}<span>Área do desenvolvedor</span></button>`:""}`;
+  side.appendChild(nav);
+  nav.querySelector(".temabtn").onclick=trocaTema;
+  const ad=nav.querySelector("#atalhodev"); if(ad) ad.onclick=()=>{ fechaMenu(); ss.set(VER_USUARIO,null); pilulaDev(); location.hash="#dev"; telaDev(); };
+  aplicaTema();
+};
+montaMenu();
+
+/* ---------- painel: cartões "em breve" ---------- */
+const _homeNovo = homeNovo;
+homeNovo = function(){
+  _homeNovo();
+  const fl = app.querySelector(".fliper"); if(!fl) return;
+  fl.insertAdjacentHTML("beforeend", EMBREVE.map(e=>`<div class="fcard embreve" style="--c:var(--card)" aria-disabled="true">
+      <span class="fimg"><img src="${IMG[e.img]}" alt=""></span><h3>${e.nome}</h3><p>${e.desc}</p><span class="fpe"><span>${ic("cadeado",16)} Em breve</span></span></div>`).join(""));
+  pilulaDev();
+};
 
 renderStats(); home();
 </script>

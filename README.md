@@ -85,3 +85,13 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - Contagem 3-2-1 antes de começar, carimbo de sequência (x3, x5…), aviso nos 10 segundos finais.
 - Fim de jogo com 1 a 3 estrelas e o personagem comemorando ou desanimado; no quiz o personagem pula no acerto e se assusta no erro.
 - Respeita "reduzir movimento" do sistema.
+
+## Plataforma (02/11/2026)
+
+- `src/plataforma.js` (carregado por último) e o fim de `src/tema.css`: só acrescentam, sem mudar a lógica antiga.
+- **Modo claro e escuro:** botão no topo e no menu lateral ("Preferências"). A escolha fica salva no aparelho; sem escolha, segue o sistema. No claro o fundo é branco e o menu lateral continua verde.
+- **Jogos novos** em `jogos/*.html`, abertos dentro do site: Missão Chuva, Limpeza Ninja, Sudoku BugKids, Mahjong BugKids, e as versões novas de Coleta Certa, Espanta-Mosquito e Jogo da Memória (mesmos ids: recordes, medalhas e ranking continuam). Cada jogo avisa o site no fim da partida (pontos, medalha, ranking) pela ponte `ARBO` (postMessage, mesma origem). Fora do site os jogos funcionam sozinhos.
+- **Pergunta entre fases:** antes da próxima fase ou partida, a Professora Catarina faz uma pergunta (`src/perguntas.js`, por faixa etária). Errou: dica e tenta de novo, até acertar. Vale também para o "Jogar de novo" dos minijogos e missões antigos.
+- **Área do desenvolvedor:** além da autorização em `/devs`, o site só libera `renato@norionano.com.br` (autorize também em `/devs` com `bash scripts/ligar-dev.sh renato@norionano.com.br`). Botão "Ver como usuário" e pílula "Voltar ao desenvolvedor"; lista das perguntas.
+- **Em breve:** Labirinto da Floresta e Fuga dos BugKids no fliperama e no menu.
+- Ranking online dos jogos novos: as regras em `ranking/firestore.rules` já aceitam `chuva`, `limpeza`, `sudoku` e `mahjong`. Para valer, publique as regras uma vez (`cd ranking && firebase deploy --only firestore:rules --project arbogame-ranking`). Até lá, esses jogos ficam só no ranking do aparelho.

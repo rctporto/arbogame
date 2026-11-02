@@ -1,0 +1,177 @@
+/* ================== PLATAFORMA (02/11/2026) ==================
+   Carregado por último. Não altera a lógica antiga: só acrescenta.
+   1) Modo claro (fundo branco, menu verde) e escuro, com botão e memória da escolha.
+   2) Jogos novos (páginas em jogos/*.html) abertos dentro do site, ligados a pontos, medalhas e ranking.
+   3) Pergunta da Professora Catarina entre uma fase/partida e a próxima (tenta até acertar).
+   4) Área do desenvolvedor: só renato@norionano.com.br, com "Ver como usuário".
+   5) Jogos "em breve" no fliperama. */
+
+/* ---------- 1. tema claro / escuro ---------- */
+const TEMA_KEY = "arbogame-tema";
+function temaSalvo(){ try{ return localStorage.getItem(TEMA_KEY); }catch(e){ return null; } }
+function temaAtual(){ const t=temaSalvo(); if(t==="light"||t==="dark") return t; return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+function aplicaTema(){ const t=temaAtual(); document.documentElement.dataset.theme=t;
+  document.querySelectorAll("iframe.jogoframe").forEach(f=>{ try{ f.contentWindow.postMessage({arbo:"tema", tema:t}, location.origin); }catch(e){} });
+  document.querySelectorAll(".temabtn").forEach(b=>{ b.innerHTML = t==="dark" ? `${ic("sol",18)}<span>Modo claro</span>` : `${ic("lua",18)}<span>Modo escuro</span>`; b.setAttribute("aria-label", t==="dark"?"Mudar para o modo claro":"Mudar para o modo escuro"); }); }
+function trocaTema(){ const t = temaAtual()==="dark" ? "light" : "dark"; try{ localStorage.setItem(TEMA_KEY, t); }catch(e){} aplicaTema(); }
+ICO.lua = ICO.lua || '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>';
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", ()=>{ if(!temaSalvo()) aplicaTema(); });
+(function botaoTemaTopo(){ const st=$("#stats"); if(!st) return; const b=document.createElement("button"); b.type="button"; b.className="temabtn topo"; b.onclick=trocaTema; st.after(b); })();
+aplicaTema();
+
+/* ---------- 2. jogos novos ---------- */
+const NOVOS = [
+  {id:"chuva",   arquivo:"missao-chuva",   nome:"Missão Chuva",     who:"L", cor:"var(--sky-soft)",   desc:"A chuva enche os recipientes do quintal. Esvazie cada um a tempo, em 5 fases!", icone:"gota"},
+  {id:"limpeza", arquivo:"limpeza-ninja",  nome:"Limpeza Ninja",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
+  {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"Sudoku BugKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
+  {id:"mahjong", arquivo:"mahjong-bugkids",nome:"Mahjong BugKids",  who:"L", cor:"var(--coral-soft)", desc:"Ache os pares de peças livres e limpe a mesa inteira.", icone:"cartas"},
+];
+// Coleta Certa, Espanta-Mosquito e Memória ganham a versão nova (mesmo id: recordes, medalhas e ranking continuam)
+const TROCADOS = {coleta:"coleta-certa", espanta:"espanta-mosquito", memoria:"memoria-bugkids"};
+const EMBREVE = [
+  {nome:"Labirinto da Floresta", desc:"Leve o Pintas da cidade até a floresta por um tabuleiro-labirinto. Para jogar online com a turma.", img:"pintas-folha"},
+  {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
+];
+NOVOS.forEach(n=>{ if(!ARCADE.some(a=>a.id===n.id)) ARCADE.push({id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}); ICO_JOGO[n.id]=n.icone; });
+Object.assign(MEDALS, {
+  chuva:{m:"🌧️", nome:"Guardião da chuva", desc:"Venceu as 5 fases da Missão Chuva"},
+  limpeza:{m:"🧹", nome:"Ninja da limpeza", desc:"Completou o tempo no Limpeza Ninja"},
+  sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um Sudoku BugKids"},
+  mahjong:{m:"🀄", nome:"Mesa limpa", desc:"Limpou a mesa do Mahjong BugKids"},
+});
+Object.assign(ICO_MEDALHA, {chuva:"gota", limpeza:"folha", sudoku:"alvo", mahjong:"cartas"});
+const ARQ = id => (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
+const NOME = id => (ARCADE.find(a=>a.id===id)||{}).nome || id;
+
+let JOGO_AT = null;
+function telaJogoNovo(id){
+  if(typeof stopArcade==="function") stopArcade(); clearTimer();
+  JOGO_AT = id;
+  app.innerHTML = head(NOME(id)) + `<div class="jogobox"><iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}" allow="autoplay; fullscreen"></iframe></div>`;
+  bindBack();
+}
+Object.keys(TROCADOS).forEach(id=>{ GAMES[id]=function(){ marcaNav(id); telaJogoNovo(id); }; });
+NOVOS.forEach(n=>{ GAMES[n.id]=function(){ marcaNav(n.id); telaJogoNovo(n.id); }; });
+
+// recados que os jogos mandam para o site
+addEventListener("message", e=>{
+  if(e.origin!==location.origin || !e.data || !e.data.arbo) return;
+  const d=e.data, fr=$("#jogoframe"); if(!fr || e.source!==fr.contentWindow) return;
+  if(d.arbo==="altura"){ fr.style.height = Math.max(420, Math.ceil(d.h)) + "px"; }
+  else if(d.arbo==="fim"){ const id=JOGO_AT; if(!id) return;
+    const placar=Math.max(0, Math.round(+d.placar||0)), pts=Math.min(80, Math.round(placar/3));
+    if(pts>0) addPts(pts); finish(id); Ranking.salvar(id, placar);
+    if(d.venceu || (id==="coleta"||id==="espanta") && placar>=150 || id==="memoria") medal(id);
+    toast(`+${pts} pontos no ${NOME(id)}`); }
+  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
+});
+
+/* ---------- 3. pergunta entre fases ---------- */
+const PQ_KEY = "arbogame-perguntas-vistas";
+function proximaPergunta(){
+  const f = Math.min(3, Math.max(1, S.idade||1)), banco = PERGUNTAS[f];
+  let vistas=[]; try{ vistas=JSON.parse(sessionStorage.getItem(PQ_KEY))||[]; }catch(e){}
+  let livres = banco.map((_,i)=>i).filter(i=>!vistas.includes(f+":"+i));
+  if(!livres.length){ vistas=vistas.filter(v=>!v.startsWith(f+":")); livres=banco.map((_,i)=>i); }
+  const i = livres[Math.floor(Math.random()*livres.length)];
+  vistas.push(f+":"+i); try{ sessionStorage.setItem(PQ_KEY, JSON.stringify(vistas.slice(-40))); }catch(e){}
+  return banco[i];
+}
+let PQ_ABERTA = false;
+function perguntaEntreFases(depois){
+  if(PQ_ABERTA) return; PQ_ABERTA = true;
+  const p = proximaPergunta(), certa = p.ops[0], ops = shuffle(p.ops);
+  const box = document.createElement("div"); box.className="pqfundo"; box.setAttribute("role","dialog"); box.setAttribute("aria-modal","true"); box.setAttribute("aria-labelledby","pqq");
+  box.innerHTML = `<div class="pqcard">
+      <div class="pqtopo"><img src="${IMG["catarina-busto"]}" alt="Professora Catarina"><div><span class="eyebrow">Antes de continuar</span><b>Pergunta da Professora Catarina</b></div></div>
+      <p class="pqq" id="pqq">${esc(p.q)}</p>
+      <div class="opts pqops">${ops.map(o=>`<button type="button" class="opt" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+      <div class="pqfb" id="pqfb" aria-live="polite"></div>
+    </div>`;
+  document.body.appendChild(box); sfx && sfx("swoosh");
+  const fb = box.querySelector("#pqfb"); let erros=0;
+  box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(b.dataset.v===certa){
+      box.querySelectorAll(".opt").forEach(x=>x.disabled=true); b.classList.add("right"); sfx && sfx("win");
+      fb.innerHTML = `<div class="pqok"><b>${erros?"Agora sim!":"Acertou!"}</b> ${esc(p.ex)}</div><button type="button" class="btn sun" id="pqgo">Continuar jogando →</button>`;
+      const go=fb.querySelector("#pqgo"); go.focus();
+      go.onclick=()=>{ box.remove(); PQ_ABERTA=false; depois(); };
+    } else {
+      erros++; b.disabled=true; b.classList.add("wrong","elim"); sfx && sfx("bad");
+      fb.innerHTML = `<div class="pqdica"><b>Quase!</b> ${esc(p.dica)} Tente de novo.</div>`;
+    }
+  });
+  box.querySelector(".opt").focus();
+}
+// "Jogar de novo" dos minijogos e missões antigos também passa pela pergunta
+const _endScreen = endScreen;
+endScreen = function(...a){
+  const btn = _endScreen.apply(this, a);
+  let fn = null;
+  Object.defineProperty(btn, "onclick", {configurable:true, get(){ return fn; }, set(f){ fn=f; }});
+  btn.addEventListener("click", ()=>{ if(fn) perguntaEntreFases(()=>fn()); });
+  return btn;
+};
+
+/* ---------- 4. área do desenvolvedor ---------- */
+const DEV_EMAILS = ["renato@norionano.com.br"];
+const VER_USUARIO = "arbogame-dev-usuario", DEV_OK = "arbogame-dev-ok";
+const ss = {get:k=>{ try{ return sessionStorage.getItem(k); }catch(e){ return null; } }, set:(k,v)=>{ try{ v==null?sessionStorage.removeItem(k):sessionStorage.setItem(k,v); }catch(e){} }};
+if(DEV){
+  const _aut = DEV.autorizado;
+  DEV.autorizado = async function(){ const ok = await _aut.apply(this, arguments);
+    const email = String(DEV.email()||"").toLowerCase(), vale = ok && DEV_EMAILS.includes(email);
+    ss.set(DEV_OK, vale ? email : null); return vale; };
+}
+const _painelDev = painelDev;
+painelDev = function(topo, liga){
+  _painelDev(topo, liga);
+  const bar = document.createElement("section"); bar.className="panel devbar";
+  const n = Object.values(PERGUNTAS).reduce((s,l)=>s+l.length,0);
+  bar.innerHTML = `<div class="row" style="justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+      <div><span class="eyebrow">Você está no modo desenvolvedor</span><p class="muted" style="margin:2px 0 0">Veja o site como um jogador vê e volte quando quiser.</p></div>
+      <div class="row"><button class="btn sun" id="verusuario">${ic("olho",18)} Ver como usuário</button><button class="btn ghost temabtn"></button></div></div>
+    <details class="devperg"><summary>Perguntas entre fases (${n})</summary>
+      ${[1,2,3].map(f=>`<h4>${AGES[f-1].nome} · ${AGES[f-1].faixa}</h4><ol>${PERGUNTAS[f].map(p=>`<li><b>${esc(p.q)}</b><br><span class="ok">✓ ${esc(p.ops[0])}</span> · <span class="muted">${p.ops.slice(1).map(esc).join(" · ")}</span></li>`).join("")}</ol>`).join("")}
+      <p class="nota">As perguntas ficam em <code>src/perguntas.js</code>. Para mudar, edite o arquivo e publique.</p></details>`;
+  const head0 = app.querySelector(".gamehead"); if(head0) head0.after(bar); else app.prepend(bar);
+  bar.querySelector(".temabtn").onclick=trocaTema; aplicaTema();
+  bar.querySelector("#verusuario").onclick=()=>{ ss.set(VER_USUARIO,"1"); history.replaceState(null,"",location.pathname); home(); pilulaDev(); };
+};
+ICO.olho = ICO.olho || '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>';
+function pilulaDev(){
+  let p=$("#pilduladev"); const on = ss.get(VER_USUARIO)==="1" && !!ss.get(DEV_OK);
+  if(!on){ if(p) p.remove(); return; }
+  if(p) return;
+  p=document.createElement("div"); p.id="pilduladev"; p.className="pildev";
+  p.innerHTML=`<span>${ic("olho",16)} Vendo como usuário</span><button type="button" class="btn sun" id="voltadev">Voltar ao desenvolvedor</button>`;
+  document.body.appendChild(p);
+  p.querySelector("#voltadev").onclick=()=>{ ss.set(VER_USUARIO,null); p.remove(); location.hash="#dev"; telaDev(); };
+}
+pilulaDev();
+
+/* ---------- menu lateral: botão de tema, atalho do desenvolvedor e "em breve" ---------- */
+const _montaMenu = montaMenu;
+montaMenu = function(){
+  _montaMenu();
+  const side=$("#side"); if(!side) return;
+  const nav=document.createElement("nav"); nav.className="snovo";
+  nav.innerHTML = `<h4>Em breve</h4>${EMBREVE.map(e=>`<button disabled>${ic("cadeado",18)}<span>${e.nome}</span></button>`).join("")}
+    <h4>Preferências</h4><button class="temabtn" type="button"></button>
+    ${ss.get(DEV_OK)?`<button type="button" id="atalhodev">${ic("olho",18)}<span>Área do desenvolvedor</span></button>`:""}`;
+  side.appendChild(nav);
+  nav.querySelector(".temabtn").onclick=trocaTema;
+  const ad=nav.querySelector("#atalhodev"); if(ad) ad.onclick=()=>{ fechaMenu(); ss.set(VER_USUARIO,null); pilulaDev(); location.hash="#dev"; telaDev(); };
+  aplicaTema();
+};
+montaMenu();
+
+/* ---------- painel: cartões "em breve" ---------- */
+const _homeNovo = homeNovo;
+homeNovo = function(){
+  _homeNovo();
+  const fl = app.querySelector(".fliper"); if(!fl) return;
+  fl.insertAdjacentHTML("beforeend", EMBREVE.map(e=>`<div class="fcard embreve" style="--c:var(--card)" aria-disabled="true">
+      <span class="fimg"><img src="${IMG[e.img]}" alt=""></span><h3>${e.nome}</h3><p>${e.desc}</p><span class="fpe"><span>${ic("cadeado",16)} Em breve</span></span></div>`).join(""));
+  pilulaDev();
+};

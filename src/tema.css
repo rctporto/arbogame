@@ -355,3 +355,40 @@ h1,h2{letter-spacing:-.01em}
 }
 @media (prefers-reduced-motion:reduce){.ator .palco img,.fimator,.fcard,.mscard,.livro{animation:none!important;transition:none!important}}
 .conteudo{overflow-x:clip}
+
+/* ================== PLATAFORMA (02/11/2026): modo claro branco, jogos novos, pergunta entre fases ================== */
+:root[data-theme="light"]{--bg:#FFFFFF;--line:#DCE8E1;--shadow:0 6px 18px rgba(18,48,42,.07)}
+:root[data-theme="light"] body{background:#FFFFFF}
+:root[data-theme="dark"] body{background:linear-gradient(180deg,var(--bg) 0%,var(--bg) 60%,color-mix(in srgb,var(--sun-soft) 45%,var(--bg)) 100%) fixed}
+.temabtn.topo{flex:none;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 12px;font:800 .82rem var(--body);cursor:pointer;margin-left:8px}
+.temabtn.topo:hover{border-color:var(--leaf)}
+@media (max-width:720px){.temabtn.topo{display:none}}
+.devbar .temabtn{display:inline-flex;gap:6px;align-items:center}
+.side nav.snovo{margin-top:6px}
+.jogobox{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.jogoframe{display:block;width:100%;height:80vh;min-height:420px;border:0;background:transparent}
+.fcard.embreve{opacity:.72;cursor:default;border-style:dashed}
+.fcard.embreve .fpe span{color:var(--muted)}
+.pqfundo{position:fixed;inset:0;z-index:200;background:rgba(10,30,24,.6);display:grid;place-items:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:pqin .25s ease-out}
+@keyframes pqin{from{opacity:0}}
+.pqcard{background:var(--card);color:var(--ink);border:2px solid var(--leaf);border-radius:26px;max-width:620px;width:100%;max-height:100%;overflow:auto;padding:22px;box-shadow:0 12px 0 rgba(0,0,0,.18);display:flex;flex-direction:column;gap:14px}
+.pqtopo{display:flex;gap:12px;align-items:center}
+.pqtopo img{width:64px;height:64px;border-radius:50%;object-fit:cover;object-position:50% 15%;background:var(--leaf-soft);border:3px solid var(--leaf);flex:none}
+.pqtopo b{font-family:var(--display);font-size:1.35rem;line-height:1.1;display:block}
+.pqq{font-family:var(--display);font-size:1.45rem;line-height:1.2;margin:0;text-wrap:balance}
+.pqops{grid-template-columns:1fr}
+.opt.elim{opacity:.55;text-decoration:line-through}
+.pqfb:empty{display:none}
+.pqfb{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.pqok,.pqdica{border-radius:14px;padding:10px 14px;line-height:1.45}
+.pqok{background:var(--leaf-soft);border:1px solid color-mix(in srgb,var(--leaf) 40%,transparent)}
+.pqdica{background:var(--sun-soft);border:1px solid color-mix(in srgb,var(--sun) 50%,transparent)}
+.devbar{margin-bottom:16px;display:flex;flex-direction:column;gap:12px}
+.devperg summary{cursor:pointer;font-weight:800}
+.devperg h4{margin:14px 0 6px}
+.devperg ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+.devperg .ok{color:var(--leaf);font-weight:700}
+.pildev{position:fixed;z-index:150;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;background:var(--side);color:var(--side-ink);border-radius:999px;padding:6px 6px 6px 14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-weight:800;font-size:.85rem}
+.pildev span{display:inline-flex;gap:6px;align-items:center}
+.pildev .btn{padding:8px 14px;font-size:.85rem}
