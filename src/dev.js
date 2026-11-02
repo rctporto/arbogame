@@ -68,6 +68,18 @@ const DEV = (()=>{
       for(let i=0;i<ids.length;i+=400)
         await req(`${fs}/v1/${raiz}:commit?${key}`, {writes:ids.slice(i,i+400).map(id=>({delete:`${raiz}/ranking/${id}`}))}, t);
     },
+    // cadastros que pedem acesso à plataforma (coleção /acessos)
+    async acessos(){
+      const t = await token();
+      const rows = await req(`${fs}/v1/${raiz}:runQuery?${key}`, {structuredQuery:{from:[{collectionId:"acessos"}],
+        orderBy:[{field:{fieldPath:"criado"},direction:"DESCENDING"}], limit:500}}, t);
+      return rows.filter(r=>r.document).map(r=>{ const d=r.document.fields;
+        return {uid:r.document.name.split("/").pop(), nome:val(d.nome), email:val(d.email), status:val(d.status), provedor:val(d.provedor), criado:val(d.criado)}; });
+    },
+    async decidir(uid, status){
+      const t = await token();
+      await req(`${fs}/v1/${raiz}/acessos/${encodeURIComponent(uid)}?updateMask.fieldPaths=status&${key}`, {fields:{status:{stringValue:status}}}, t, "PATCH");
+    },
     console: `https://console.firebase.google.com/project/${c.firebaseProjectId}/firestore/data/~2Franking`,
   };
 })();

@@ -39,6 +39,23 @@ service cloud.firestore {
       allow delete: if dev();
     }
 
+    // Pedidos de acesso à plataforma: cada pessoa cria o seu (pendente); só desenvolvedores aprovam.
+    function pedidoValido(d) {
+      return d.keys().hasOnly(['nome', 'email', 'status', 'provedor', 'criado']) && d.keys().hasAll(['nome', 'email', 'status', 'provedor', 'criado'])
+        && d.nome is string && d.nome.size() >= 2 && d.nome.size() <= 40
+        && d.email == request.auth.token.email
+        && d.provedor in ['google', 'email']
+        && d.status == 'pendente' && d.criado == request.time;
+    }
+    match /acessos/{uid} {
+      allow create: if request.auth != null && request.auth.uid == uid && pedidoValido(request.resource.data);
+      allow get: if (request.auth != null && request.auth.uid == uid) || dev();
+      allow list: if dev() && request.query.limit <= 500;
+      allow update: if dev() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['pendente', 'aprovado', 'negado'];
+      allow delete: if dev();
+    }
+
     match /devs/{email} {
       allow get: if request.auth != null && request.auth.token.email == email;
     }

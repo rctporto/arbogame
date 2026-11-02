@@ -392,3 +392,50 @@ h1,h2{letter-spacing:-.01em}
 .pildev{position:fixed;z-index:150;right:max(16px,env(safe-area-inset-right,0px));bottom:max(16px,env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;background:var(--side);color:var(--side-ink);border-radius:999px;padding:6px 6px 6px 14px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-weight:800;font-size:.85rem}
 .pildev span{display:inline-flex;gap:6px;align-items:center}
 .pildev .btn{padding:8px 14px;font-size:.85rem}
+
+/* ================== ACESSO (02/11/2026): login, cadastro, página de jogadores e Nório no topo ================== */
+:root{--traco:color-mix(in srgb,var(--ink) 82%,transparent);--sombra-jogo:0 4px 0 color-mix(in srgb,var(--ink) 28%,transparent)}
+.norio-topo{display:inline-flex;align-items:center;gap:6px;flex:none;margin-left:auto;margin-right:10px;color:var(--muted)}
+.norio-topo small{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+.norio-topo img{height:16px;width:auto}
+.norio-topo .logo-l{display:var(--logo-l)}.norio-topo .logo-d{display:var(--logo-d)}
+.norio-linha{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--muted);margin:14px 0 0}
+.norio-linha img{height:18px;width:auto}.norio-linha .logo-l{display:var(--logo-l)}.norio-linha .logo-d{display:var(--logo-d)}
+@media (max-width:720px){.norio-topo small{display:none}.norio-topo img{height:13px}}
+
+.acesso,.login.login2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:860px){.acesso,.login.login2{grid-template-columns:1fr}}
+.acarte,.login.login2 .loginart{border:2px solid var(--traco);border-radius:26px;overflow:hidden;background:var(--leaf-soft);box-shadow:var(--sombra-jogo)}
+.acarte>img,.turmaimg{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:50% 40%;border-bottom:2px solid var(--traco);background:#bfe3fb}
+.actexto{padding:20px 22px 22px}
+.acarte h1,.login.login2 h1{font-family:var(--display);font-size:clamp(1.9rem,4vw,2.6rem);line-height:1;margin:6px 0 10px;text-wrap:balance}
+.acpainel,.login.login2 #lp{border:2px solid var(--traco)!important;border-radius:26px!important;box-shadow:var(--sombra-jogo)!important;padding:22px!important}
+.acpainel h2,.login.login2 #lp h2{font-family:var(--display);font-size:1.9rem;line-height:1.05;margin:2px 0 0}
+.passo{display:inline-block;align-self:flex-start;font:800 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;background:var(--sun);color:#3a2a00;border-radius:999px;padding:4px 10px;border:2px solid var(--traco)}
+.btn.google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:var(--card);color:var(--ink);border:2px solid var(--traco);box-shadow:var(--sombra-jogo);font-weight:800;padding:12px 16px}
+.btn.google:hover{border-color:var(--leaf)}
+.acpainel .btn.sun,.login.login2 .btn{border:2px solid var(--traco);box-shadow:var(--sombra-jogo)}
+.acpainel .btn:active,.login.login2 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 color-mix(in srgb,var(--ink) 28%,transparent)}
+.ou{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.ou::before,.ou::after{content:"";flex:1;height:2px;background:var(--line)}
+.campo{display:flex;flex-direction:column;gap:5px}
+.campo span{font:800 .72rem var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.campo input{font:600 1rem var(--body);color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.campo input:focus{outline:none;border-color:var(--leaf);box-shadow:0 0 0 3px color-mix(in srgb,var(--leaf) 25%,transparent)}
+.linkbtn{background:none;border:0;padding:0;font:800 .9rem var(--body);color:var(--leaf);text-decoration:underline;cursor:pointer}
+.acrodape{gap:6px;font-size:.9rem;color:var(--muted);flex-wrap:wrap}.acrodape .sep{opacity:.6}
+.contabar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;grid-column:1/-1}
+.contabar .conta{font-size:.85rem;color:var(--muted);display:inline-flex;gap:8px;align-items:center}
+.login.login2 .cena,.login.login2 .cena *{animation:none!important}
+.login.login2 .loginart>div:last-child{padding:20px 22px 22px}
+.login.login2 .avopt{border:2px solid var(--line);border-radius:18px}
+.login.login2 .avopt[aria-pressed="true"]{border-color:var(--traco);background:var(--sun-soft);box-shadow:var(--sombra-jogo)}
+.login.login2 .avopt .corpo img,.login.login2 .perfil img{animation:none!important}
+.login.login2 input,.login.login2 .agebtn,.login.login2 [data-age]{border-width:2px}
+.devacessos{margin-bottom:16px;display:flex;flex-direction:column;gap:4px}
+.devacessos .tabela{overflow-x:auto}
+.devacessos table{width:100%;border-collapse:collapse}
+.devacessos td{padding:10px 8px;border-top:1px solid var(--line);vertical-align:middle}
+.devacessos .acoesac{text-align:right;white-space:nowrap}.devacessos .acoesac .btn{padding:7px 12px;font-size:.85rem;margin-left:6px}
+.stt{font:800 .72rem var(--body);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.stt.pendente{background:var(--sun-soft);color:color-mix(in srgb,var(--ink) 80%,#7a5200)}.stt.aprovado{background:var(--leaf-soft);color:var(--leaf)}.stt.negado{background:var(--coral-soft);color:var(--coral)}

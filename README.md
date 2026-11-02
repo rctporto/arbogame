@@ -95,3 +95,11 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - **Área do desenvolvedor:** além da autorização em `/devs`, o site só libera `renato@norionano.com.br` (autorize também em `/devs` com `bash scripts/ligar-dev.sh renato@norionano.com.br`). Botão "Ver como usuário" e pílula "Voltar ao desenvolvedor"; lista das perguntas.
 - **Em breve:** Labirinto da Floresta e Fuga dos BugKids no fliperama e no menu.
 - Ranking online dos jogos novos: as regras em `ranking/firestore.rules` já aceitam `chuva`, `limpeza`, `sudoku` e `mahjong`. Para valer, publique as regras uma vez (`cd ranking && firebase deploy --only firestore:rules --project arbogame-ranking`). Até lá, esses jogos ficam só no ranking do aparelho.
+
+## Login da plataforma (02/11/2026)
+
+- `src/acesso.js`: a **página 1** é o login (Google ou e-mail e senha, Firebase Authentication pelo SDK compat 10.12.2 do gstatic). Cada cadastro cria um pedido em `/acessos/{uid}` com status `pendente`.
+- Um desenvolvedor libera ou recusa em **#dev → Pedidos de acesso**. Liberado, a pessoa segue para a **página 2** (escolha do jogador, visual novo, sem animação).
+- O e-mail de desenvolvedor (`DEV_EMAILS` em `src/plataforma.js`) entra sem aprovação.
+- A logo da Nório aparece no topo de todas as páginas, além do rodapé.
+- Configuração única no Firebase (projeto `arbogame-ranking`): em Authentication → Método de login, ligar **Google** e **E-mail/senha**; depois publicar as regras (`cd ranking && firebase deploy --only firestore:rules --project arbogame-ranking`).
