@@ -38,12 +38,26 @@ if os.environ["DOM"] not in doms: doms.append(os.environ["DOM"])
 print(json.dumps({"signIn": {"email": {"enabled": True, "passwordRequired": False}},
                   "authorizedDomains": doms,
                   "notification": {"sendEmail": {"callbackUri": os.environ["SITE"] + "/"}}}))')"
-curl -sf -X PATCH "${H[@]}" -d "$BODY" \
-  "$ADM?updateMask=signIn.email.enabled,signIn.email.passwordRequired,authorizedDomains,notification.sendEmail.callbackUri" >/dev/null
+RESP="$(curl -s -w '\n%{http_code}' -X PATCH "${H[@]}" -d "$BODY" \
+  "$ADM?updateMask=signIn.email.enabled,signIn.email.passwordRequired,authorizedDomains,notification.sendEmail.callbackUri")"
+if [ "$(echo "$RESP" | tail -1)" != "200" ]; then
+  # tenta de novo sem o endereço de retorno do e-mail (alguns projetos não aceitam esse campo)
+  BODY2="$(echo "$BODY" | python3 -c 'import json,sys; d=json.load(sys.stdin); d.pop("notification",None); print(json.dumps(d))')"
+  RESP="$(curl -s -w '\n%{http_code}' -X PATCH "${H[@]}" -d "$BODY2" \
+    "$ADM?updateMask=signIn.email.enabled,signIn.email.passwordRequired,authorizedDomains")"
+fi
+if [ "$(echo "$RESP" | tail -1)" != "200" ]; then
+  echo; echo "Não deu para ligar o login por e-mail. Resposta do Google:"; echo "$RESP" | sed '$d'
+  echo; echo "Alternativa manual: em https://console.firebase.google.com/project/$PROJETO/authentication/providers"
+  echo "ative \"E-mail/senha\" e a opção \"Link do e-mail (login sem senha)\"; em Configurações > Domínios autorizados, adicione $DOM."
+  echo "Depois rode este script de novo."
+  exit 1
+fi
 
 echo "3/4 Autorizando $EMAIL como desenvolvedor..."
-curl -sf -X PATCH "${H[@]}" -d "{\"fields\":{\"desde\":{\"timestampValue\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}" \
-  "https://firestore.googleapis.com/v1/projects/$PROJETO/databases/(default)/documents/devs/$EMAIL" >/dev/null
+RESP="$(curl -s -w '\n%{http_code}' -X PATCH "${H[@]}" -d "{\"fields\":{\"desde\":{\"timestampValue\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}" \
+  "https://firestore.googleapis.com/v1/projects/$PROJETO/databases/(default)/documents/devs/$EMAIL")"
+if [ "$(echo "$RESP" | tail -1)" != "200" ]; then echo; echo "Não deu para autorizar o e-mail. Resposta do Google:"; echo "$RESP" | sed '$d'; exit 1; fi
 
 echo "4/4 Aplicando as regras novas do banco..."
 ( cd "$(dirname "$0")/../ranking" && $FB deploy --only firestore:rules --project "$PROJETO" --non-interactive )
