@@ -2722,16 +2722,15 @@ const NOVOS = [
   {id:"varre",   arquivo:"limpeza-ninja",  nome:"Varre-Varre",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
   {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"Sudoku BugKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
   {id:"mahjong", arquivo:"mahjong-bugkids",nome:"Mahjong BugKids",  who:"L", cor:"var(--coral-soft)", desc:"Ache os pares de peças livres e limpe a mesa inteira.", icone:"cartas"},
+  {id:"labirinto", arquivo:"labirinto-floresta", nome:"Labirinto da Floresta", who:"P", cor:"var(--leaf-soft)", desc:"Leve o Pintas da cidade até a floresta em 5 bairros. Tem desafio do dia para a turma!", icone:"alvo"},
+  {id:"fuga",    arquivo:"fuga-bugkids",   nome:"Fuga dos BugKids", who:"L", cor:"var(--coral-soft)", desc:"Recolha as tampinhas e fuja do Zé Listrão e da Gangue Pintada. O repelente vira o jogo!", icone:"escudo"},
 ];
 // Coleta Certa, Espanta-Mosquito e Memória ganham a versão nova (mesmo id: recordes, medalhas e ranking continuam)
 const TROCADOS = {coleta:"coleta-certa", espanta:"espanta-mosquito", memoria:"memoria-bugkids"};
-const EMBREVE = [
-  {nome:"Labirinto da Floresta", desc:"Leve o Pintas da cidade até a floresta por um tabuleiro-labirinto. Para jogar online com a turma.", img:"pintas-folha"},
-  {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
-];
+const EMBREVE = [];
 NOVOS.forEach(n=>{ const novo={id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}, a=ARCADE.find(x=>x.id===n.id); if(a) Object.assign(a, novo); else ARCADE.push(novo); ICO_JOGO[n.id]=n.icone; });
 // Esvazia Já! e Varre-Varre agora são os jogos novos (antes chamados Missão Chuva e Limpeza Ninja). Ordem: jogos novos primeiro.
-(function ordena(){ const ordem=["esvazia","varre","coleta","espanta","memoria","sudoku","mahjong"];
+(function ordena(){ const ordem=["esvazia","varre","coleta","espanta","labirinto","fuga","memoria","sudoku","mahjong"];
   ARCADE.sort((x,y)=>(ordem.indexOf(x.id)+1||99)-(ordem.indexOf(y.id)+1||99)); })();
 const CAPA = id => `jogos/capas/${id}.webp`;
 Object.assign(MEDALS, {
@@ -2739,8 +2738,10 @@ Object.assign(MEDALS, {
   varre:{m:"🧹", nome:"Vassoura de ouro", desc:"Completou o tempo no Varre-Varre"},
   sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um Sudoku BugKids"},
   mahjong:{m:"🀄", nome:"Mesa limpa", desc:"Limpou a mesa do Mahjong BugKids"},
+  labirinto:{m:"🌳", nome:"Pintas em casa", desc:"Levou o Pintas até a floresta nos 5 bairros"},
+  fuga:{m:"🏃", nome:"Fuga perfeita", desc:"Recolheu todo o lixo nas 4 fases da Fuga dos BugKids"},
 });
-Object.assign(ICO_MEDALHA, {esvazia:"gota", varre:"folha", sudoku:"alvo", mahjong:"cartas"});
+Object.assign(ICO_MEDALHA, {labirinto:"alvo", fuga:"escudo", esvazia:"gota", varre:"folha", sudoku:"alvo", mahjong:"cartas"});
 const ARQ = id => (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
 const NOME = id => (ARCADE.find(a=>a.id===id)||{}).nome || id;
 
@@ -2857,7 +2858,7 @@ montaMenu = function(){
   _montaMenu();
   const side=$("#side"); if(!side) return;
   const nav=document.createElement("nav"); nav.className="snovo";
-  nav.innerHTML = `<h4>Em breve</h4>${EMBREVE.map(e=>`<button disabled>${ic("cadeado",18)}<span>${e.nome}</span></button>`).join("")}
+  nav.innerHTML = `${EMBREVE.length?`<h4>Em breve</h4>${EMBREVE.map(e=>`<button disabled>${ic("cadeado",18)}<span>${e.nome}</span></button>`).join("")}`:""}
     <h4>Preferências</h4><button class="temabtn" type="button"></button>
     ${ss.get(DEV_OK)?`<button type="button" id="atalhodev">${ic("olho",18)}<span>Área do desenvolvedor</span></button>`:""}`;
   side.appendChild(nav);

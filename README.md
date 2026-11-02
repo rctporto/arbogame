@@ -108,3 +108,9 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 
 - Os nomes Esvazia Já! e Varre-Varre agora são dos jogos novos `jogos/missao-chuva.html` e `jogos/limpeza-ninja.html` (mesmos ids `esvazia` e `varre`: ranking e medalhas continuam). As versões antigas seguem no código em `src/arcade.js`, sem aparecer no site.
 - O fim de `src/tema.css` ("VISUAL DOS JOGOS") aplica no site inteiro as cores, bordas grossas, sombras de botão e tipografia dos jogos em `jogos/`. Capas do fliperama em `jogos/capas/`.
+
+## Labirinto da Floresta e Fuga dos BugKids (02/11/2026)
+
+- `jogos/labirinto-floresta.html`: tabuleiro-labirinto em 5 bairros (cidade → mata), passos contra a meta, lixo no caminho para recolher. "Desafio do dia" gera os mesmos labirintos para todo mundo no mesmo dia (bom para o ranking da turma).
+- `jogos/fuga-bugkids.html`: labirinto de perseguição em 4 fases. Vilões novos: Zé Listrão (Aedes mascarado, mais rápido de dia) e Gangue Pintada (maruins mascarados, mais rápidos no entardecer). Repelente deixa os vilões com medo por 7 s.
+- Ranking online: as regras já aceitam `labirinto` e `fuga` (publique as regras de novo).
