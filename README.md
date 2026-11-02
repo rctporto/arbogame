@@ -103,3 +103,8 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - O e-mail de desenvolvedor (`DEV_EMAILS` em `src/plataforma.js`) entra sem aprovação.
 - A logo da Nório fica no rodapé de todas as páginas.
 - Configuração única no Firebase (projeto `arbogame-ranking`): em Authentication → Método de login, ligar **Google** e **E-mail/senha**; depois publicar as regras (`cd ranking && firebase deploy --only firestore:rules --project arbogame-ranking`).
+
+## Visual único (02/11/2026)
+
+- Esvazia Já! e Varre-Varre saíram do fliperama (o código continua em `src/arcade.js`). No lugar ficam Missão Chuva e Limpeza Ninja; os jogos novos vêm primeiro.
+- O fim de `src/tema.css` ("VISUAL DOS JOGOS") aplica no site inteiro as cores, bordas grossas, sombras de botão e tipografia dos jogos em `jogos/`. Capas do fliperama em `jogos/capas/`.

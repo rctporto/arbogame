@@ -744,6 +744,91 @@ h1,h2{letter-spacing:-.01em}
 .stt{font:800 .72rem var(--body);border-radius:999px;padding:3px 9px;white-space:nowrap}
 .stt.pendente{background:var(--sun-soft);color:color-mix(in srgb,var(--ink) 80%,#7a5200)}.stt.aprovado{background:var(--leaf-soft);color:var(--leaf)}.stt.negado{background:var(--coral-soft);color:var(--coral)}
 
+/* ================== VISUAL DOS JOGOS no site inteiro (02/11/2026) ==================
+   Mesmas cores, bordas grossas, sombras "de botão" e tipografia dos jogos novos (jogos/*.html). */
+:root[data-theme="light"]{
+  --bg:#FFFFFF; --card:#FFFFFF; --ink:#1d3a24; --muted:#56705b; --line:#d7e6cf;
+  --leaf:#3c8f3f; --leaf-soft:#e3f3d9; --sun:#f2b52c; --sun-soft:#fff3cc;
+  --coral:#e2462f; --coral-soft:#fde3dd; --sky:#2f7fe0; --sky-soft:#e3efff;
+  --traco:#21452a; --sombra-jogo:0 4px 0 rgba(33,69,42,.22); --sombra-btn:0 4px 0 #21452a;
+  --side:#2c6f29; --side-ink:#eef8ea; --side-muted:#b9dcb1; --hero1:#2c6f29; --hero2:#3c8f3f; --shadow:0 4px 0 rgba(33,69,42,.18);
+}
+:root[data-theme="dark"]{
+  --bg:#13201a; --card:#22362a; --ink:#eaf5e6; --muted:#a8c0a6; --line:#3c5a44;
+  --leaf:#6cc464; --leaf-soft:#263d2e; --sun:#ffcf4d; --sun-soft:#3a3418;
+  --coral:#ff7a63; --coral-soft:#45231b; --sky:#5aa8ff; --sky-soft:#1e3446;
+  --traco:#9fd39a; --sombra-jogo:0 4px 0 rgba(0,0,0,.4); --sombra-btn:0 4px 0 rgba(0,0,0,.5);
+  --side:#1a3321; --side-ink:#e3f3de; --side-muted:#8fb889; --hero1:#1f4a25; --hero2:#2c6f29; --shadow:0 4px 0 rgba(0,0,0,.35);
+}
+:root[data-theme="dark"] body{background:var(--bg);background-image:radial-gradient(circle at 92% 8%,#1b2c22 0 120px,transparent 121px)}
+body{font-family:var(--body)}
+h1,h2,h3,.secao,.gamehead h2{font-family:var(--display);font-weight:800;letter-spacing:-.2px}
+
+/* cartões */
+.panel,.fcard,.mscard,.numero,.livro,.moeda,.dicacard,.fimcard,.qcard>.panel,.loginart,.acarte,.acpainel,.podio>*,.jogobox{border:2px solid var(--traco)!important;box-shadow:var(--sombra-jogo)!important}
+.panel,.fcard,.mscard,.numero,.livro,.dicacard,.fimcard{border-radius:22px}
+.herocard{border:2px solid var(--traco);box-shadow:var(--sombra-jogo);background:linear-gradient(135deg,var(--hero1),var(--hero2))}
+.herocard::before{content:"";position:absolute;left:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.07)}
+.herocard h1{font-family:var(--display);font-weight:800}
+.dicacard{background:var(--leaf-soft)}
+
+/* botões como nos jogos */
+.btn{font:800 1rem var(--body);background:var(--leaf);color:#fff;border:2px solid var(--traco);border-radius:14px;box-shadow:var(--sombra-btn);padding:11px 20px}
+.btn:hover:not(:disabled){filter:brightness(1.05)}
+.btn:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--traco)}
+.btn.sun{background:var(--sun);color:#1f3320}
+.btn.ghost{background:var(--card);color:var(--ink);border:2px solid var(--traco);box-shadow:var(--sombra-jogo)}
+:root[data-theme="dark"] .btn{color:#10200f}
+:root[data-theme="dark"] .btn.ghost{color:var(--ink)}
+.btn.big{box-shadow:var(--sombra-btn)}
+
+/* barra do topo */
+.status{border-bottom:2px solid var(--line)}
+.pill,.temabtn.topo,.meu{border:2px solid var(--traco)!important;box-shadow:0 3px 0 rgba(33,69,42,.2)!important;background:var(--card)}
+.pill.pts{background:var(--sun-soft)}
+.brand .logo{border:2px solid var(--traco);background:var(--leaf)}
+.brand b{font-family:var(--display);color:var(--leaf)}
+
+/* menu lateral */
+.side{border-right:2px solid var(--traco)}
+.side .sbrand .slogo{border:2px solid rgba(0,0,0,.25)}
+.side nav button{border:2px solid transparent;border-radius:12px}
+.side nav button[aria-current="page"]{background:var(--sun);color:#1f3320;border-color:rgba(0,0,0,.35);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+
+/* fliperama: capas de cada jogo */
+.fliper{gap:14px}
+.fcard{background:var(--card);padding:0 0 14px;overflow:hidden}
+.fcard .fimg{display:block;background:var(--c);border-bottom:2px solid var(--traco);margin:0 0 10px;padding:8px 8px 0;aspect-ratio:3/2;overflow:hidden}
+.fcard .fimg img{width:100%;height:100%;object-fit:contain;object-position:50% 100%}
+.fcard h3,.fcard p,.fcard .fpe,.fcard .feito{padding:0 14px}
+.fcard h3{font-family:var(--display);font-size:1.3rem;line-height:1.05;margin:0 0 4px}
+.fcard .fpe i{font-style:normal;background:var(--sun);color:#1f3320;border:2px solid var(--traco);border-radius:12px;padding:5px 14px;font-weight:800;box-shadow:0 3px 0 rgba(33,69,42,.25)}
+.fcard:hover:not(.embreve){transform:translateY(-3px)}
+.fcard.embreve{border-style:dashed!important;box-shadow:none!important}
+
+/* missões, números, medalhas, livros */
+.mscard{background:var(--card)}
+.mscard .ic,.numero .ic{border:2px solid var(--traco)}
+.moeda{border-radius:18px;background:var(--card)}
+.moeda.on{background:var(--sun-soft)}
+.livro{background:var(--card)}
+.secao svg{color:var(--leaf)}
+
+/* perguntas e telas de fim */
+.opt{border:2px solid var(--line);border-radius:14px;box-shadow:0 3px 0 rgba(33,69,42,.12);font-weight:700}
+.opt:hover:not(:disabled){border-color:var(--traco)}
+.opt.right{border-color:var(--leaf)}.opt.wrong{border-color:var(--coral)}
+.qprog i{border:2px solid var(--traco)}
+.fimcard{background:var(--card)}
+.chip.claro{border:2px solid var(--traco)}
+.alert{border-radius:14px}
+.campo input,input[type=text],input[type=email],input[type=password],select{border:2px solid var(--line)!important;border-radius:14px}
+.pqcard{border:3px solid var(--traco)}
+.gamehead .btn.ghost{padding:9px 16px}
+.foot{border-top:2px solid var(--line)}
+.qcard{border:2px solid var(--traco)!important;box-shadow:var(--sombra-jogo)!important;border-radius:22px}
+.menubtn{border:2px solid var(--traco);box-shadow:0 3px 0 rgba(33,69,42,.2)}
+
 </style>
 
 <div class="shell"><aside class="side" id="side" aria-label="Menu"></aside><div class="conteudo">
@@ -2645,6 +2730,11 @@ const EMBREVE = [
   {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
 ];
 NOVOS.forEach(n=>{ if(!ARCADE.some(a=>a.id===n.id)) ARCADE.push({id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}); ICO_JOGO[n.id]=n.icone; });
+// Esvazia Já! e Varre-Varre saem do fliperama (Missão Chuva e Limpeza Ninja ficam no lugar). Ordem: jogos novos primeiro.
+["esvazia","varre"].forEach(id=>{ const i=ARCADE.findIndex(a=>a.id===id); if(i>=0) ARCADE.splice(i,1); delete MEDALS[id]; });
+(function ordena(){ const ordem=["chuva","limpeza","coleta","espanta","memoria","sudoku","mahjong"];
+  ARCADE.sort((x,y)=>(ordem.indexOf(x.id)+1||99)-(ordem.indexOf(y.id)+1||99)); })();
+const CAPA = id => `jogos/capas/${id}.webp`;
 Object.assign(MEDALS, {
   chuva:{m:"🌧️", nome:"Guardião da chuva", desc:"Venceu as 5 fases da Missão Chuva"},
   limpeza:{m:"🧹", nome:"Ninja da limpeza", desc:"Completou o tempo no Limpeza Ninja"},
@@ -2783,6 +2873,7 @@ const _homeNovo = homeNovo;
 homeNovo = function(){
   _homeNovo();
   const fl = app.querySelector(".fliper"); if(!fl) return;
+  fl.querySelectorAll(".fcard[data-go]").forEach(c=>{ const im=c.querySelector(".fimg img"); if(im && ARQ(c.dataset.go)){ im.src=CAPA(c.dataset.go); im.classList.add("capa"); } });
   fl.insertAdjacentHTML("beforeend", EMBREVE.map(e=>`<div class="fcard embreve" style="--c:var(--card)" aria-disabled="true">
       <span class="fimg"><img src="${IMG[e.img]}" alt=""></span><h3>${e.nome}</h3><p>${e.desc}</p><span class="fpe"><span>${ic("cadeado",16)} Em breve</span></span></div>`).join(""));
   pilulaDev();

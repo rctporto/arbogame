@@ -33,6 +33,11 @@ const EMBREVE = [
   {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
 ];
 NOVOS.forEach(n=>{ if(!ARCADE.some(a=>a.id===n.id)) ARCADE.push({id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}); ICO_JOGO[n.id]=n.icone; });
+// Esvazia Já! e Varre-Varre saem do fliperama (Missão Chuva e Limpeza Ninja ficam no lugar). Ordem: jogos novos primeiro.
+["esvazia","varre"].forEach(id=>{ const i=ARCADE.findIndex(a=>a.id===id); if(i>=0) ARCADE.splice(i,1); delete MEDALS[id]; });
+(function ordena(){ const ordem=["chuva","limpeza","coleta","espanta","memoria","sudoku","mahjong"];
+  ARCADE.sort((x,y)=>(ordem.indexOf(x.id)+1||99)-(ordem.indexOf(y.id)+1||99)); })();
+const CAPA = id => `jogos/capas/${id}.webp`;
 Object.assign(MEDALS, {
   chuva:{m:"🌧️", nome:"Guardião da chuva", desc:"Venceu as 5 fases da Missão Chuva"},
   limpeza:{m:"🧹", nome:"Ninja da limpeza", desc:"Completou o tempo no Limpeza Ninja"},
@@ -171,6 +176,7 @@ const _homeNovo = homeNovo;
 homeNovo = function(){
   _homeNovo();
   const fl = app.querySelector(".fliper"); if(!fl) return;
+  fl.querySelectorAll(".fcard[data-go]").forEach(c=>{ const im=c.querySelector(".fimg img"); if(im && ARQ(c.dataset.go)){ im.src=CAPA(c.dataset.go); im.classList.add("capa"); } });
   fl.insertAdjacentHTML("beforeend", EMBREVE.map(e=>`<div class="fcard embreve" style="--c:var(--card)" aria-disabled="true">
       <span class="fimg"><img src="${IMG[e.img]}" alt=""></span><h3>${e.nome}</h3><p>${e.desc}</p><span class="fpe"><span>${ic("cadeado",16)} Em breve</span></span></div>`).join(""));
   pilulaDev();
