@@ -106,5 +106,5 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 
 ## Visual único (02/11/2026)
 
-- Esvazia Já! e Varre-Varre saíram do fliperama (o código continua em `src/arcade.js`). No lugar ficam Missão Chuva e Limpeza Ninja; os jogos novos vêm primeiro.
+- Os nomes Esvazia Já! e Varre-Varre agora são dos jogos novos `jogos/missao-chuva.html` e `jogos/limpeza-ninja.html` (mesmos ids `esvazia` e `varre`: ranking e medalhas continuam). As versões antigas seguem no código em `src/arcade.js`, sem aparecer no site.
 - O fim de `src/tema.css` ("VISUAL DOS JOGOS") aplica no site inteiro as cores, bordas grossas, sombras de botão e tipografia dos jogos em `jogos/`. Capas do fliperama em `jogos/capas/`.

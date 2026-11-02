@@ -21,8 +21,8 @@ aplicaTema();
 
 /* ---------- 2. jogos novos ---------- */
 const NOVOS = [
-  {id:"chuva",   arquivo:"missao-chuva",   nome:"Missão Chuva",     who:"L", cor:"var(--sky-soft)",   desc:"A chuva enche os recipientes do quintal. Esvazie cada um a tempo, em 5 fases!", icone:"gota"},
-  {id:"limpeza", arquivo:"limpeza-ninja",  nome:"Limpeza Ninja",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
+  {id:"esvazia", arquivo:"missao-chuva",   nome:"Esvazia Já!",     who:"L", cor:"var(--sky-soft)",   desc:"A chuva enche os recipientes do quintal. Esvazie cada um a tempo, em 5 fases!", icone:"gota"},
+  {id:"varre",   arquivo:"limpeza-ninja",  nome:"Varre-Varre",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
   {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"Sudoku BugKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
   {id:"mahjong", arquivo:"mahjong-bugkids",nome:"Mahjong BugKids",  who:"L", cor:"var(--coral-soft)", desc:"Ache os pares de peças livres e limpe a mesa inteira.", icone:"cartas"},
 ];
@@ -32,19 +32,18 @@ const EMBREVE = [
   {nome:"Labirinto da Floresta", desc:"Leve o Pintas da cidade até a floresta por um tabuleiro-labirinto. Para jogar online com a turma.", img:"pintas-folha"},
   {nome:"Fuga dos BugKids", desc:"Corra pelo labirinto e fuja dos insetos bandidos mascarados!", img:"bugkids-turma"},
 ];
-NOVOS.forEach(n=>{ if(!ARCADE.some(a=>a.id===n.id)) ARCADE.push({id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}); ICO_JOGO[n.id]=n.icone; });
-// Esvazia Já! e Varre-Varre saem do fliperama (Missão Chuva e Limpeza Ninja ficam no lugar). Ordem: jogos novos primeiro.
-["esvazia","varre"].forEach(id=>{ const i=ARCADE.findIndex(a=>a.id===id); if(i>=0) ARCADE.splice(i,1); delete MEDALS[id]; });
-(function ordena(){ const ordem=["chuva","limpeza","coleta","espanta","memoria","sudoku","mahjong"];
+NOVOS.forEach(n=>{ const novo={id:n.id, who:n.who, nome:n.nome, desc:n.desc, cor:n.cor}, a=ARCADE.find(x=>x.id===n.id); if(a) Object.assign(a, novo); else ARCADE.push(novo); ICO_JOGO[n.id]=n.icone; });
+// Esvazia Já! e Varre-Varre agora são os jogos novos (antes chamados Missão Chuva e Limpeza Ninja). Ordem: jogos novos primeiro.
+(function ordena(){ const ordem=["esvazia","varre","coleta","espanta","memoria","sudoku","mahjong"];
   ARCADE.sort((x,y)=>(ordem.indexOf(x.id)+1||99)-(ordem.indexOf(y.id)+1||99)); })();
 const CAPA = id => `jogos/capas/${id}.webp`;
 Object.assign(MEDALS, {
-  chuva:{m:"🌧️", nome:"Guardião da chuva", desc:"Venceu as 5 fases da Missão Chuva"},
-  limpeza:{m:"🧹", nome:"Ninja da limpeza", desc:"Completou o tempo no Limpeza Ninja"},
+  esvazia:{m:"💦", nome:"Mão rápida", desc:"Venceu as 5 fases do Esvazia Já!"},
+  varre:{m:"🧹", nome:"Vassoura de ouro", desc:"Completou o tempo no Varre-Varre"},
   sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um Sudoku BugKids"},
   mahjong:{m:"🀄", nome:"Mesa limpa", desc:"Limpou a mesa do Mahjong BugKids"},
 });
-Object.assign(ICO_MEDALHA, {chuva:"gota", limpeza:"folha", sudoku:"alvo", mahjong:"cartas"});
+Object.assign(ICO_MEDALHA, {esvazia:"gota", varre:"folha", sudoku:"alvo", mahjong:"cartas"});
 const ARQ = id => (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
 const NOME = id => (ARCADE.find(a=>a.id===id)||{}).nome || id;
 
