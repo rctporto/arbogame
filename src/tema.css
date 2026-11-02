@@ -524,3 +524,10 @@ h1,h2,h3,.secao,.gamehead h2{font-family:var(--display);font-weight:800;letter-s
 .foot{border-top:2px solid var(--line)}
 .qcard{border:2px solid var(--traco)!important;box-shadow:var(--sombra-jogo)!important;border-radius:22px}
 .menubtn{border:2px solid var(--traco);box-shadow:0 3px 0 rgba(33,69,42,.2)}
+/* Meu Quintal no painel */
+.quintalcard{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:16px;align-items:center;margin:16px 0 4px;padding:14px 18px;border-radius:22px;background:var(--leaf-soft);border:2px solid var(--traco);box-shadow:var(--sombra-jogo)}
+.quintalcard img{width:100%;height:auto}
+.quintalcard h3{font-family:var(--display);font-size:1.35rem;margin:6px 0 2px;line-height:1.1}
+.quintalcard p{margin:0;color:var(--muted)}
+.quintalcard.urgente{background:var(--coral-soft)}
+@media (max-width:720px){.quintalcard{grid-template-columns:90px minmax(0,1fr)}.quintalcard .btn{grid-column:1/-1}}

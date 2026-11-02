@@ -114,3 +114,10 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - `jogos/labirinto-floresta.html`: tabuleiro-labirinto em 5 bairros (cidade → mata), passos contra a meta, lixo no caminho para recolher. "Desafio do dia" gera os mesmos labirintos para todo mundo no mesmo dia (bom para o ranking da turma).
 - `jogos/fuga-bugkids.html`: labirinto de perseguição em 4 fases. Vilões novos: Zé Listrão (Aedes mascarado, mais rápido de dia) e Gangue Pintada (maruins mascarados, mais rápidos no entardecer). Repelente deixa os vilões com medo por 7 s.
 - Ranking online: as regras já aceitam `labirinto` e `fuga` (publique as regras de novo).
+
+## Meu Quintal (02/11/2026)
+
+- `jogos/meu-quintal.html`: bichinho virtual. Cada jogador cuida de um quintal que muda em tempo real (um "turno" a cada 3 h, mesmo com o site fechado): chuva enche recipientes, caem folhas e frutas, aparece lixo. Água parada por 24 h vira larva e por 48 h vira mosquito; folhas por 48 h viram maruins. Ações: esvaziar, esfregar as bordas, varrer, recolher e resolver de vez (virar o balde, areia no pratinho, reciclar, tampar a caixa-d'água).
+- Estado salvo no aparelho em `arbogame-quintal-<uid do jogador>`. Pontos por cuidado limitados a 40 por dia. Medalhas `quintal` e `quintal3`.
+- Para testar rápido: abra `jogos/meu-quintal.html?rapido=1` (um turno a cada 15 s).
+- No painel aparece um cartão com os alertas do quintal; no menu, "Meu Quintal" logo abaixo do Painel principal.
