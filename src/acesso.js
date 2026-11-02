@@ -2,7 +2,7 @@
    Página 1: login com Google ou cadastro com e-mail e senha (Firebase Authentication).
    Cada cadastro vira um pedido em /acessos/{uid} (status "pendente"); um desenvolvedor aprova na área #dev.
    Aprovado: segue para a página 2 (escolha de jogador, a tela de antes, com visual novo).
-   O e-mail de desenvolvedor (DEV_EMAILS) entra sem precisar de aprovação. */
+   O e-mail de desenvolvedor (DEV_EMAILS) entra sem precisar de aprovação. A logo da Nório fica no rodapé. */
 const ACC = {pronto:false, user:null, status:null, erro:null};
 const FBOK = !!(window.firebase && window.ARBO_CONFIG && ARBO_CONFIG.firebaseApiKey);
 let FBAUTH = null;
@@ -45,14 +45,6 @@ async function confereAcesso(){
   ACC.status = st;
 }
 
-/* ---------- logo da Nório no topo de todas as páginas ---------- */
-(function norioNoTopo(){
-  const st=$("#stats"), l=$(".foot .logo-l"), d=$(".foot .logo-d"); if(!st || !l) return;
-  const s=document.createElement("span"); s.className="norio-topo"; s.title="ArboGame é um produto da Nório";
-  s.innerHTML=`<small>um produto da</small><img class="logo-l" src="${l.src}" alt="Nório"><img class="logo-d" src="${d?d.src:l.src}" alt="Nório">`;
-  st.parentNode.insertBefore(s, st);
-})();
-
 /* ---------- página 1: entrar ou criar conta ---------- */
 function telaAcesso(modo){
   clearTimer(); if(typeof stopArcade==="function") stopArcade();
@@ -60,8 +52,7 @@ function telaAcesso(modo){
   const u = ACC.user;
   const lado = `<div class="acarte"><img src="${IMG["bugkids-turma"]}" alt="Ana, Pedro, Júlia, Guto, Listras e Pintas">
       <div class="actexto"><span class="eyebrow">Observar · aprender · cuidar</span><h1>Bem-vindo ao ArboGame!</h1>
-      <p>Jogos e missões sobre dengue, zika, chikungunya, Oropouche, o Aedes e o maruim, com a Professora Catarina e os BugKids.</p>
-      <p class="norio-linha">Um produto da <img class="logo-l" src="${($(".foot .logo-l")||{}).src||""}" alt="Nório"><img class="logo-d" src="${($(".foot .logo-d")||{}).src||""}" alt="Nório"></p></div></div>`;
+      <p>Jogos e missões sobre dengue, zika, chikungunya, Oropouche, o Aedes e o maruim, com a Professora Catarina e os BugKids.</p></div></div>`;
   let painel;
   if(!FBAUTH){
     painel = `<div class="stack"><span class="eyebrow">Login</span><h2>Não deu para carregar o login</h2><p>Confira a internet e recarregue a página.${ACC.erro?` <small class="muted">(${esc(ACC.erro)})</small>`:""}</p><div><button class="btn" onclick="location.reload()">Recarregar</button></div></div>`;

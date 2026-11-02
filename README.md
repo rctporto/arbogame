@@ -101,5 +101,5 @@ Os e-mails autorizados ficam na coleção `devs` do Firestore, que só o script 
 - `src/acesso.js`: a **página 1** é o login (Google ou e-mail e senha, Firebase Authentication pelo SDK compat 10.12.2 do gstatic). Cada cadastro cria um pedido em `/acessos/{uid}` com status `pendente`.
 - Um desenvolvedor libera ou recusa em **#dev → Pedidos de acesso**. Liberado, a pessoa segue para a **página 2** (escolha do jogador, visual novo, sem animação).
 - O e-mail de desenvolvedor (`DEV_EMAILS` em `src/plataforma.js`) entra sem aprovação.
-- A logo da Nório aparece no topo de todas as páginas, além do rodapé.
+- A logo da Nório fica no rodapé de todas as páginas.
 - Configuração única no Firebase (projeto `arbogame-ranking`): em Authentication → Método de login, ligar **Google** e **E-mail/senha**; depois publicar as regras (`cd ranking && firebase deploy --only firestore:rules --project arbogame-ranking`).
