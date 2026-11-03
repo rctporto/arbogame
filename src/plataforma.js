@@ -52,8 +52,12 @@ let JOGO_AT = null;
 function telaJogoNovo(id){
   if(typeof stopArcade==="function") stopArcade(); clearTimer();
   JOGO_AT = id;
-  app.innerHTML = head(NOME(id)) + `<div class="jogobox"><iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}&uid=${encodeURIComponent(S.uid||"local")}" allow="autoplay; fullscreen"></iframe></div>`;
-  bindBack();
+  // modo jogo: o jogo ocupa a tela inteira e a página não rola enquanto a criança joga
+  app.innerHTML = `<div class="modojogo" id="modojogo"><div class="mjbar"><button class="btn ghost" id="voltar" type="button">← Painel</button><b>${esc(NOME(id))}</b><button class="temabtn mjtema" type="button"></button></div>
+    <iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}&uid=${encodeURIComponent(S.uid||"local")}" allow="autoplay; fullscreen"></iframe></div>`;
+  bindBack(); fechaMenu();
+  const fr=$("#jogoframe"); fr.addEventListener("load", ()=>{ try{ fr.focus(); fr.contentWindow.focus(); }catch(e){} });
+  app.querySelector(".mjtema").onclick=trocaTema; aplicaTema();
 }
 Object.keys(TROCADOS).forEach(id=>{ GAMES[id]=function(){ marcaNav(id); telaJogoNovo(id); }; });
 NOVOS.forEach(n=>{ GAMES[n.id]=function(){ marcaNav(n.id); telaJogoNovo(n.id); }; });
@@ -72,7 +76,7 @@ addEventListener("message", e=>{
     if(pts>0) addPts(pts); finish(id); Ranking.salvar(id, placar);
     if(d.venceu || (id==="coleta"||id==="espanta") && placar>=150 || id==="memoria") medal(id);
     toast(`+${pts} pontos no ${NOME(id)}`); }
-  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
+  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.focus(); fr.contentWindow.focus(); fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
 });
 
 /* ---------- 3. pergunta entre fases ---------- */
@@ -213,3 +217,12 @@ homeNovo = function(){ _homeNovoQ();
   const sec=document.createElement("section"); sec.className="quintalcard"+(r&&r.grave?" urgente":"");
   sec.innerHTML=`<img src="jogos/capas/quintal.webp" alt=""><div><span class="chip claro">Meu Quintal</span><h3>${msg[0]}</h3><p>${msg[1]}</p></div><button class="btn sun" id="irquintal">${ic("home",18)} Cuidar do quintal</button>`;
   alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.quintal(); };
+
+/* teclas apertadas fora do jogo (depois de um clique no site ou da pergunta) seguem para o jogo aberto */
+["keydown","keyup"].forEach(tp=>addEventListener(tp, e=>{
+  const fr=$("#jogoframe"); if(!fr || document.querySelector(".pqfundo")) return;
+  if(/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||"")) return;
+  if(!/^(Arrow(Up|Down|Left|Right)|Key[WASD]|Digit[0-6])$/.test(e.code)) return;
+  if(e.code.startsWith("Arrow")) e.preventDefault();
+  try{ fr.contentWindow.postMessage({arbo:"tecla", tipo:tp, key:e.key, code:e.code}, location.origin); }catch(x){}
+}));

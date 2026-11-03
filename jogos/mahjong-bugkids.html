@@ -115,6 +115,10 @@ html.embed .stage{max-height:none!important}
 .ihelp{position:fixed;z-index:9700;right:max(14px,env(safe-area-inset-right,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:6px;font:800 13px var(--body);background:var(--paper);color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;box-shadow:0 3px 0 rgba(33,69,42,.25);cursor:pointer}
 .ihelp img{width:30px;height:30px;border-radius:50%;object-fit:cover;object-position:50% 12%;background:#d7efcf}
 @media (max-width:640px){.idialog{grid-template-columns:1fr}.iart{min-height:0;padding-top:10px}.iart img{max-height:150px}.iart img.iside{max-height:90px}.ibody{padding:16px;gap:10px}.ibody h2{font-size:26px}}
+
+/* tela fixa */
+html.embed,html.embed body{overscroll-behavior:none}
+
 </style>
 </head>
 <body>
@@ -174,7 +178,8 @@ const ARBO=(()=>{const q=new URLSearchParams(location.search),em=q.get('embed')=
   const post=m=>{try{parent.postMessage(m,location.origin)}catch(e){}},esp={};
   addEventListener('message',e=>{if(e.origin!==location.origin||!e.data)return;const d=e.data;
     if(d.arbo==='tema'&&(d.tema==='dark'||d.tema==='light'))de.dataset.theme=d.tema;
-    if(d.arbo==='continuar'&&esp[d.id]){const f=esp[d.id];delete esp[d.id];f()}});
+    if(d.arbo==='continuar'&&esp[d.id]){try{window.focus()}catch(x){}const f=esp[d.id];delete esp[d.id];f()}
+    if(d.arbo==='tecla'){document.dispatchEvent(new KeyboardEvent(d.tipo,{key:d.key,code:d.code,bubbles:true,cancelable:true}))}});
   if(em){const r=()=>{const b=document.body;if(b)post({arbo:'altura',h:b.getBoundingClientRect().height+2})};
     addEventListener('load',()=>{r();try{new ResizeObserver(r).observe(document.body)}catch(e){setInterval(r,1000)}})}
   return{em,faixa:+q.get('faixa')||0,

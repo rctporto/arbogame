@@ -836,6 +836,25 @@ h1,h2,h3,.secao,.gamehead h2{font-family:var(--display);font-weight:800;letter-s
 .quintalcard.urgente{background:var(--coral-soft)}
 @media (max-width:720px){.quintalcard{grid-template-columns:90px minmax(0,1fr)}.quintalcard .btn{grid-column:1/-1}}
 
+/* ================== MODO JOGO e CELULAR (03/11/2026) ================== */
+html:has(.modojogo),body:has(.modojogo){overflow:hidden!important;overscroll-behavior:none;height:100%}
+.modojogo{position:fixed;inset:0;z-index:120;background:var(--bg);display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.mjbar{flex:none;display:flex;align-items:center;gap:10px;padding:8px max(12px,env(safe-area-inset-left,0px));border-bottom:2px solid var(--line);background:var(--card)}
+.mjbar .btn{padding:7px 14px;font-size:.9rem}
+.mjbar b{flex:1;min-width:0;font-family:var(--display);font-size:1.25rem;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mjbar .temabtn{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--traco);border-radius:999px;background:var(--card);color:var(--ink);padding:6px 10px;font:800 .8rem var(--body);cursor:pointer}
+@media (max-width:520px){.mjbar .temabtn span{display:none}.mjbar b{font-size:1.05rem}}
+.modojogo .jogoframe{flex:1;width:100%;height:auto!important;min-height:0;border:0;display:block;background:var(--bg)}
+
+/* celular: nada sai da tela */
+html,body{max-width:100%;overflow-x:hidden}
+img,canvas,video,iframe{max-width:100%}
+.conteudo,.wrap,#app,.panel,.stack,.row{min-width:0}
+.panel,.dicac,.alert,.nota,.fimcard,.herocard,.dicacard{overflow-wrap:anywhere}
+table{max-width:100%}
+.tabela,.devpre,pre{overflow-x:auto;max-width:100%}
+
 </style>
 
 <div class="shell"><aside class="side" id="side" aria-label="Menu"></aside><div class="conteudo">
@@ -2756,8 +2775,12 @@ let JOGO_AT = null;
 function telaJogoNovo(id){
   if(typeof stopArcade==="function") stopArcade(); clearTimer();
   JOGO_AT = id;
-  app.innerHTML = head(NOME(id)) + `<div class="jogobox"><iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}&uid=${encodeURIComponent(S.uid||"local")}" allow="autoplay; fullscreen"></iframe></div>`;
-  bindBack();
+  // modo jogo: o jogo ocupa a tela inteira e a página não rola enquanto a criança joga
+  app.innerHTML = `<div class="modojogo" id="modojogo"><div class="mjbar"><button class="btn ghost" id="voltar" type="button">← Painel</button><b>${esc(NOME(id))}</b><button class="temabtn mjtema" type="button"></button></div>
+    <iframe class="jogoframe" id="jogoframe" title="${esc(NOME(id))}" src="jogos/${ARQ(id)}.html?embed=1&tema=${temaAtual()}&faixa=${S.idade||1}&uid=${encodeURIComponent(S.uid||"local")}" allow="autoplay; fullscreen"></iframe></div>`;
+  bindBack(); fechaMenu();
+  const fr=$("#jogoframe"); fr.addEventListener("load", ()=>{ try{ fr.focus(); fr.contentWindow.focus(); }catch(e){} });
+  app.querySelector(".mjtema").onclick=trocaTema; aplicaTema();
 }
 Object.keys(TROCADOS).forEach(id=>{ GAMES[id]=function(){ marcaNav(id); telaJogoNovo(id); }; });
 NOVOS.forEach(n=>{ GAMES[n.id]=function(){ marcaNav(n.id); telaJogoNovo(n.id); }; });
@@ -2776,7 +2799,7 @@ addEventListener("message", e=>{
     if(pts>0) addPts(pts); finish(id); Ranking.salvar(id, placar);
     if(d.venceu || (id==="coleta"||id==="espanta") && placar>=150 || id==="memoria") medal(id);
     toast(`+${pts} pontos no ${NOME(id)}`); }
-  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
+  else if(d.arbo==="antes"){ perguntaEntreFases(()=>{ try{ fr.focus(); fr.contentWindow.focus(); fr.contentWindow.postMessage({arbo:"continuar", id:d.id}, location.origin); }catch(err){} }); }
 });
 
 /* ---------- 3. pergunta entre fases ---------- */
@@ -2917,6 +2940,15 @@ homeNovo = function(){ _homeNovoQ();
   const sec=document.createElement("section"); sec.className="quintalcard"+(r&&r.grave?" urgente":"");
   sec.innerHTML=`<img src="jogos/capas/quintal.webp" alt=""><div><span class="chip claro">Meu Quintal</span><h3>${msg[0]}</h3><p>${msg[1]}</p></div><button class="btn sun" id="irquintal">${ic("home",18)} Cuidar do quintal</button>`;
   alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.quintal(); };
+
+/* teclas apertadas fora do jogo (depois de um clique no site ou da pergunta) seguem para o jogo aberto */
+["keydown","keyup"].forEach(tp=>addEventListener(tp, e=>{
+  const fr=$("#jogoframe"); if(!fr || document.querySelector(".pqfundo")) return;
+  if(/^(INPUT|TEXTAREA|SELECT)$/.test((e.target&&e.target.tagName)||"")) return;
+  if(!/^(Arrow(Up|Down|Left|Right)|Key[WASD]|Digit[0-6])$/.test(e.code)) return;
+  if(e.code.startsWith("Arrow")) e.preventDefault();
+  try{ fr.contentWindow.postMessage({arbo:"tecla", tipo:tp, key:e.key, code:e.code}, location.origin); }catch(x){}
+}));
 
 /* ================== ACESSO À PLATAFORMA (02/11/2026) ==================
    Página 1: login com Google ou cadastro com e-mail e senha (Firebase Authentication).

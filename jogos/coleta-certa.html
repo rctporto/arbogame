@@ -105,6 +105,11 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block}
 html.embed body{background:transparent!important;background-image:none!important;padding-top:10px!important}
 html.embed .brand,html.embed .note,html.embed header h1,html.embed .app>section:first-of-type{display:none!important}
 html.embed .stage{max-height:none!important}
+
+/* tela fixa */
+html.embed,html.embed body{overscroll-behavior:none}
+html.embed .stage{width:min(100%,calc((100dvh - 120px)*1.6));margin-inline:auto;max-height:none}
+@media (max-width:820px){html.embed .stage{width:min(100%,calc((100dvh - 120px)*.8125))}}
 </style>
 </head>
 <body>
@@ -153,7 +158,8 @@ const ARBO=(()=>{const q=new URLSearchParams(location.search),em=q.get('embed')=
   const post=m=>{try{parent.postMessage(m,location.origin)}catch(e){}},esp={};
   addEventListener('message',e=>{if(e.origin!==location.origin||!e.data)return;const d=e.data;
     if(d.arbo==='tema'&&(d.tema==='dark'||d.tema==='light'))de.dataset.theme=d.tema;
-    if(d.arbo==='continuar'&&esp[d.id]){const f=esp[d.id];delete esp[d.id];f()}});
+    if(d.arbo==='continuar'&&esp[d.id]){try{window.focus()}catch(x){}const f=esp[d.id];delete esp[d.id];f()}
+    if(d.arbo==='tecla'){document.dispatchEvent(new KeyboardEvent(d.tipo,{key:d.key,code:d.code,bubbles:true,cancelable:true}))}});
   if(em){const r=()=>{const b=document.body;if(b)post({arbo:'altura',h:b.getBoundingClientRect().height+2})};
     addEventListener('load',()=>{r();try{new ResizeObserver(r).observe(document.body)}catch(e){setInterval(r,1000)}})}
   return{em,faixa:+q.get('faixa')||0,

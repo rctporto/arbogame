@@ -114,6 +114,10 @@ h1 em{font-style:normal;color:var(--leaf)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 html.embed body{background:transparent!important;background-image:none!important;padding-top:10px!important}
 html.embed .brand,html.embed .note,html.embed .app>section:first-of-type{display:none!important}
+
+/* tela fixa */
+html.embed,html.embed body{overscroll-behavior:none}
+html.embed .cena{width:min(100%,calc((100dvh - 70px)*1.45));margin-inline:auto}
 </style>
 </head>
 <body>
