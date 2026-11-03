@@ -23,7 +23,7 @@ aplicaTema();
 const NOVOS = [
   {id:"esvazia", arquivo:"missao-chuva",   nome:"Esvazia Já!",     who:"L", cor:"var(--sky-soft)",   desc:"A chuva enche os recipientes do quintal. Esvazie cada um a tempo, em 5 fases!", icone:"gota"},
   {id:"varre",   arquivo:"limpeza-ninja",  nome:"Varre-Varre",    who:"P", cor:"var(--sun-soft)",   desc:"Varra frutas estragadas e folhas com a vassoura. Não encoste no inseticida nem no repelente!", icone:"folha"},
-  {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"Sudoku BugKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
+  {id:"sudoku",  arquivo:"sudoku-bugkids", nome:"SudoKids",   who:"P", cor:"var(--leaf-soft)",  desc:"Cada BugKid aparece uma vez em cada linha, coluna e bloco. Três níveis.", icone:"alvo"},
   {id:"mahjong", arquivo:"mahjong-bugkids",nome:"Mahjong BugKids",  who:"L", cor:"var(--coral-soft)", desc:"Ache os pares de peças livres e limpe a mesa inteira.", icone:"cartas"},
   {id:"labirinto", arquivo:"labirinto-floresta", nome:"Labirinto da Floresta", who:"P", cor:"var(--leaf-soft)", desc:"Leve o Pintas da cidade até a floresta em 5 bairros. Tem desafio do dia para a turma!", icone:"alvo"},
   {id:"fuga",    arquivo:"fuga-bugkids",   nome:"Fuga dos BugKids", who:"L", cor:"var(--coral-soft)", desc:"Recolha as tampinhas e fuja do Zé Listrão e da Gangue Pintada. O repelente vira o jogo!", icone:"escudo"},
@@ -39,7 +39,7 @@ const CAPA = id => `jogos/capas/${id}.webp`;
 Object.assign(MEDALS, {
   esvazia:{m:"💦", nome:"Mão rápida", desc:"Venceu as 5 fases do Esvazia Já!"},
   varre:{m:"🧹", nome:"Vassoura de ouro", desc:"Completou o tempo no Varre-Varre"},
-  sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um Sudoku BugKids"},
+  sudoku:{m:"🧩", nome:"Mestre do Sudoku", desc:"Completou um SudoKids"},
   mahjong:{m:"🀄", nome:"Mesa limpa", desc:"Limpou a mesa do Mahjong BugKids"},
   labirinto:{m:"🌳", nome:"Pintas em casa", desc:"Levou o Pintas até a floresta nos 5 bairros"},
   fuga:{m:"🏃", nome:"Fuga perfeita", desc:"Recolheu todo o lixo nas 4 fases da Fuga dos BugKids"},
