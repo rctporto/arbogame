@@ -51,10 +51,20 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hearts i.off{background:#d9d2c3}
 .bar{height:12px;border-radius:999px;border:2px solid var(--line);background:#fff;overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fd36a,#2f9a3c)}
-.pad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,58px);gap:8px;justify-content:center}
-.pad button{font:800 24px var(--display);border:2px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);box-shadow:0 4px 0 rgba(33,69,42,.25);cursor:pointer;touch-action:manipulation}
-.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(33,69,42,.25)}
-.pad .up{grid-column:2}.pad .left{grid-column:1;grid-row:2}.pad .down{grid-column:2;grid-row:2}.pad .right{grid-column:3;grid-row:2}
+.joy{display:flex;justify-content:center;padding:4px 0}
+.joy-base,.fjoy{position:relative;width:136px;height:136px;border-radius:50%;background:radial-gradient(circle at 50% 42%,#ffffff 0 40%,#eaf5e3 70%,#d6ebcb);border:3px solid var(--line);box-shadow:0 5px 0 rgba(33,69,42,.25),inset 0 0 0 7px rgba(60,143,63,.12);touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none}
+.joy-base i,.fjoy i{position:absolute;font:800 15px var(--display);color:#9bb59a;font-style:normal;transition:color .1s,transform .1s;pointer-events:none}
+.joy-base i.n,.fjoy i.n{left:50%;top:6px;transform:translateX(-50%)}.joy-base i.s,.fjoy i.s{left:50%;bottom:6px;transform:translateX(-50%)}
+.joy-base i.o,.fjoy i.o{left:8px;top:50%;transform:translateY(-50%)}.joy-base i.l,.fjoy i.l{right:8px;top:50%;transform:translateY(-50%)}
+.joy-base i.on,.fjoy i.on{color:var(--leaf)}
+.knob{position:absolute;left:50%;top:50%;width:58px;height:58px;margin:-29px 0 0 -29px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#ffe58a,#f2b52c 60%,#d6950f);border:3px solid var(--line);box-shadow:0 4px 0 rgba(33,69,42,.3);pointer-events:none;transition:transform .12s}
+.joy-base.ativo .knob,.fjoy.ativo .knob{transition:none}
+.fjoy{position:absolute;z-index:6;width:120px;height:120px;margin:-60px 0 0 -60px;opacity:.6;pointer-events:none;display:none}
+.fjoy.on{display:block}
+.fjoy .knob{width:50px;height:50px;margin:-25px 0 0 -25px}
+.padx button{font:800 24px var(--display);border:2px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink);box-shadow:0 4px 0 rgba(33,69,42,.25);cursor:pointer;touch-action:manipulation}
+.padx button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(33,69,42,.25)}
+.padx .up{grid-column:2}.pad .left{grid-column:1;grid-row:2}.pad .down{grid-column:2;grid-row:2}.pad .right{grid-column:3;grid-row:2}
 .dica{font-size:13px;color:var(--muted);margin:0;line-height:1.4}
 .coach{display:flex;align-items:flex-end;gap:10px}
 .coach img{width:64px;height:80px;object-fit:cover;object-position:top;border-radius:50% 50% 14px 14px;background:#d7efcf;border:2px solid var(--line);flex:none}
@@ -94,12 +104,12 @@ canvas#game{position:absolute;inset:0;width:100%;height:100%;display:block}
 .primary{flex:1;font:800 17px var(--display);background:var(--leaf);color:#fff;border:2px solid var(--line);border-radius:14px;padding:11px 16px;cursor:pointer;box-shadow:0 4px 0 var(--line)}
 .secondary{flex:1;font:800 15px var(--body);background:#fff;color:var(--ink);border:2px solid var(--line);border-radius:14px;padding:10px 14px;cursor:pointer;box-shadow:0 4px 0 var(--line)}
 .primary:active,.secondary:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.hbtn:focus-visible,.primary:focus-visible,.secondary:focus-visible,.age:focus-visible,.kid:focus-visible,.pad button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hbtn:focus-visible,.primary:focus-visible,.secondary:focus-visible,.age:focus-visible,.kid:focus-visible,.joy-base:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 @media (max-width:640px){
   .dialog{grid-template-columns:1fr}.d-art{min-height:0;padding-top:10px}.d-art img{max-height:150px}.d-art img.side{max-height:90px}
   .d-body{padding:16px;gap:10px}.d-body h2{font-size:26px}.viloes{grid-template-columns:1fr}
 }
-@media (max-width:820px){.lado{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.lado>.pad{grid-column:1/-1;order:-1;margin:2px 0 4px}.lado>.cardz{grid-column:auto}.lado>.dica{display:none}}
+@media (max-width:820px){.lado{display:grid!important;grid-template-columns:1fr 1fr;gap:8px}.lado>.joy{grid-column:1/-1;order:-1;margin:2px 0 4px}.lado>.cardz{grid-column:auto}.lado>.dica{display:none}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* dentro do site ArboGame */
 html.embed body{background:transparent!important;background-image:none!important;padding-top:10px!important}
@@ -128,13 +138,8 @@ html.embed .stage{width:min(100%,calc((100dvh - 70px)*1.235));justify-self:cente
       <div class="duas"><div class="cardz"><small>Pontos</small><b id="pontos">0</b></div><div class="cardz"><small>Fase</small><b id="faseN">1/4</b></div></div>
       <div class="cardz"><small>Vidas</small><div class="hearts" id="hearts"></div></div>
       <div class="cardz"><small>Tampinhas recolhidas</small><div class="bar"><i id="barra"></i></div></div>
-      <div class="pad" aria-label="Setas">
-        <button type="button" class="up" data-d="0" aria-label="Para cima">▲</button>
-        <button type="button" class="left" data-d="3" aria-label="Para a esquerda">◀</button>
-        <button type="button" class="down" data-d="2" aria-label="Para baixo">▼</button>
-        <button type="button" class="right" data-d="1" aria-label="Para a direita">▶</button>
-      </div>
-      <p class="dica">Segure uma seta (teclado ou botão) ou o dedo na tela para andar. Soltou, o BugKid para.</p>
+      <div class="joy"><div class="joy-base" id="joy" tabindex="0" role="application" aria-label="Joystick: arraste o botão amarelo para o lado que quer andar. No teclado, use as setas."><i class="n">▲</i><i class="s">▼</i><i class="o">◀</i><i class="l">▶</i><span class="knob"></span></div></div>
+      <p class="dica">Use as setas do teclado ou arraste o joystick. No celular, encoste o dedo em qualquer lugar do labirinto e arraste. Soltou, o BugKid para.</p>
     </div>
   </div>
 
@@ -234,16 +239,17 @@ function anda(o,dt,escolhe){
   o.p+=o.vel*dt;
   while(o.p>=1){o.p-=1;o.x+=DX[o.d];o.y+=DY[o.d];escolhe(o);if(!livre(o.x+DX[o.d],o.y+DY[o.d])){o.p=0;break}}
 }
-let segura=null;
+let segura=null,alt=null;
+function ef(x,y){if(segura==null)return null;if(livre(x+DX[segura],y+DY[segura]))return segura;if(alt!=null&&livre(x+DX[alt],y+DY[alt]))return alt;return null}
 function moveJ(dt){
   if(segura!=null&&J.p>0&&segura===(J.d+2)%4){J.x+=DX[J.d];J.y+=DY[J.d];J.d=segura;J.p=1-J.p}
   if(J.p===0){
-    if(segura==null||!livre(J.x+DX[segura],J.y+DY[segura])){J.parado=true;return}
-    J.d=segura;J.parado=false}
+    const e=ef(J.x,J.y);if(e==null){J.parado=true;return}
+    J.d=e;J.parado=false}
   J.p+=J.vel*dt;
   while(J.p>=1){J.p-=1;J.x+=DX[J.d];J.y+=DY[J.d];come(J.x,J.y);if(state!=='play')return;
-    if(segura==null||!livre(J.x+DX[segura],J.y+DY[segura])){J.p=0;J.parado=true;return}
-    J.d=segura}
+    const e=ef(J.x,J.y);if(e==null){J.p=0;J.parado=true;return}
+    J.d=e}
 }
 function escolheJ(o){if(livre(o.x+DX[o.want],o.y+DY[o.want]))o.d=o.want;if(!livre(o.x+DX[o.d],o.y+DY[o.d])){o.p=0;o.parado=true}else o.parado=false;come(o.x,o.y)}
 function alvo(b){
@@ -363,23 +369,32 @@ function frame(now){const dt=last?Math.min(.05,(now-last)/1000):0;last=now;
 
 /* controles */
 const KEYS={ArrowUp:0,KeyW:0,ArrowRight:1,KeyD:1,ArrowDown:2,KeyS:2,ArrowLeft:3,KeyA:3};
-const quer=d=>{segura=d};
-const solta=d=>{if(d==null||segura===d)segura=null};
+const quer=d=>{segura=d;alt=null};
+const solta=d=>{if(d==null||segura===d){segura=null;alt=null}};
 addEventListener('keydown',e=>{if(e.code in KEYS&&(state==='play'||state==='cd')){e.preventDefault();quer(KEYS[e.code])}});
 addEventListener('keyup',e=>{if(e.code in KEYS)solta(KEYS[e.code])});
 addEventListener('blur',()=>solta());
-document.querySelectorAll('.pad button').forEach(b=>{const d=+b.dataset.d;
-  b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId)}catch(x){}quer(d)});
-  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,()=>solta(d)));
-  b.addEventListener('contextmenu',e=>e.preventDefault())});
-// na tela: segure o dedo (ou o mouse) para o lado em que o BugKid deve andar
-let tocando=false;
-function dirToque(e){if(!J||!GEO.s)return;const r=c.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
-  const jx=GEO.ox+(J.x+DX[J.d]*J.p+.5)*GEO.s,jy=GEO.oy+(J.y+DY[J.d]*J.p+.5)*GEO.s,dx=px-jx,dy=py-jy;
-  if(Math.hypot(dx,dy)<GEO.s*.5){segura=null;return}segura=Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0)}
-c.addEventListener('pointerdown',e=>{e.preventDefault();tocando=true;try{c.setPointerCapture(e.pointerId)}catch(x){}dirToque(e)});
-c.addEventListener('pointermove',e=>{if(tocando)dirToque(e)});
-['pointerup','pointercancel','lostpointercapture'].forEach(ev=>c.addEventListener(ev,()=>{tocando=false;segura=null}));
+// joystick: vetor do dedo -> direção principal (+ alternativa para virar esquinas)
+function vetor(dx,dy,R,el){const m=Math.hypot(dx,dy),k=m>R?R/m:1,kx=dx*k,ky=dy*k;const kn=el.querySelector('.knob');kn.style.transform=`translate(${kx}px,${ky}px)`;
+  const dz=R*.22;el.querySelectorAll('i').forEach(i=>i.classList.remove('on'));
+  if(m<dz){segura=null;alt=null;return}
+  const h=Math.abs(dx)>=Math.abs(dy),p=h?(dx>0?1:3):(dy>0?2:0),mi=h?dy:dx;
+  segura=p;alt=Math.abs(mi)>dz*.8?(h?(dy>0?2:0):(dx>0?1:3)):null;
+  el.querySelector('i.'+['n','l','s','o'][p]).classList.add('on')}
+function soltaJoy(el){segura=null;alt=null;el.classList.remove('ativo');const kn=el.querySelector('.knob');kn.style.transform='';el.querySelectorAll('i').forEach(i=>i.classList.remove('on'))}
+const joy=document.getElementById('joy');let joyId=null;
+function joyMove(e){const r=joy.getBoundingClientRect();vetor(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2),r.width*.32,joy)}
+joy.addEventListener('pointerdown',e=>{e.preventDefault();joyId=e.pointerId;try{joy.setPointerCapture(e.pointerId)}catch(x){}joy.classList.add('ativo');joyMove(e)});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyMove(e)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>joy.addEventListener(ev,e=>{if(e.pointerId===joyId){joyId=null;soltaJoy(joy)}}));
+joy.addEventListener('contextmenu',e=>e.preventDefault());
+// no labirinto: encostou o dedo, aparece um joystick ali mesmo
+const fj=document.createElement('div');fj.className='fjoy';fj.innerHTML='<i class="n">▲</i><i class="s">▼</i><i class="o">◀</i><i class="l">▶</i><span class="knob"></span>';c.parentElement.appendChild(fj);
+let fjId=null,fx=0,fy=0;
+c.addEventListener('pointerdown',e=>{e.preventDefault();if(fjId!=null)return;fjId=e.pointerId;try{c.setPointerCapture(e.pointerId)}catch(x){}
+  const pr=c.parentElement.getBoundingClientRect();fx=e.clientX;fy=e.clientY;fj.style.left=(e.clientX-pr.left)+'px';fj.style.top=(e.clientY-pr.top)+'px';fj.classList.add('on','ativo');vetor(0,0,40,fj)});
+c.addEventListener('pointermove',e=>{if(e.pointerId===fjId)vetor(e.clientX-fx,e.clientY-fy,40,fj)});
+['pointerup','pointercancel','lostpointercapture'].forEach(ev=>c.addEventListener(ev,e=>{if(e.pointerId===fjId){fjId=null;fj.classList.remove('on');soltaJoy(fj)}}));
 c.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* telas */
@@ -392,7 +407,7 @@ function contagem(){state='cd';cdT=2;$('modal').hidden=true;$('count').hidden=fa
 function inicio(){fase=0;score=0;vidas=DIFS[dif].vidas;novaFase();contagem()}
 function menu(){state='menu';T=null;$('pause').disabled=true;
   dialog('CUIDADO COM OS BANDIDOS!','Recolha o lixo e fuja dos insetos!',`
-   <p>Ande pelo labirinto recolhendo todas as <b>tampinhas</b>. Os insetos bandidos mascarados querem pegar você!</p><div class="legend"><span><b>Como andar:</b> segure a seta do teclado, o botão de seta ou o dedo na tela para o lado que quer ir. Soltou, o BugKid para.</span></div>
+   <p>Ande pelo labirinto recolhendo todas as <b>tampinhas</b>. Os insetos bandidos mascarados querem pegar você!</p><div class="legend"><span><b>Como andar:</b> no computador, use as setas do teclado. No celular, encoste o dedo no labirinto (ou no joystick) e arraste para o lado que quer ir. Soltou, o BugKid para.</span></div>
    <div class="viloes"><div><img src="${IMG.listras_vilao}" alt="Zé Listrão"><span><b>Zé Listrão</b><small>Um Aedes bandido. Vem direto atrás de você e é mais rápido de dia.</small></span></div>
    <div><img src="${IMG.pintas_vilao}" alt="Gangue Pintada"><span><b>Gangue Pintada</b><small>Maruins bandidos. Tentam cortar o seu caminho e ficam mais rápidos no entardecer.</small></span></div></div>
    <div class="legend"><img src="${IMG.repelente}" alt="Repelente"><span><b>Repelente:</b> por ${MEDO} segundos os bandidos ficam azuis e fogem. Encoste neles para espantar!</span></div>
