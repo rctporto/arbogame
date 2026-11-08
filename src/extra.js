@@ -61,8 +61,11 @@ function telaLogin(modo){
     lp.innerHTML = `<div><span class="eyebrow">Seleção do agente</span><h2>Quem vai jogar?</h2><p class="muted" style="font-size:.9rem;margin-top:4px">Cada jogador tem seu próprio progresso neste aparelho.</p></div>
       <div class="perfis">${lista.map(p=>`<div class="perfil"><button class="pbtn" data-u="${esc(p.uid)}">${avatar(p.avatar)}<span><b>${esc(p.nome||"Agente")}</b><small>${AGES[(p.idade||1)-1].nome} · ${p.pts} pts</small></span><span class="seta">${ic("seta",18)}</span></button><button class="pdel" data-del="${esc(p.uid)}" aria-label="Remover ${esc(p.nome||"jogador")}" title="Remover jogador">✕</button></div>`).join("")}</div>
       <div><button class="btn" id="novo">${ic("users",18)} Criar novo jogador</button></div><div id="pc"></div>
-      <div><span class="eyebrow">Nossa biblioteca</span><div class="minilivros">${LIVROS.map(l=>`<button data-livro="${l.id}"><img src="livros/${l.id}/t01.webp" alt="">${l.id==="listras"?"Listras":"Pintas"}</button>`).join("")}</div></div>
-      <p class="muted" style="margin:0;font-size:.85rem">Sem senha e sem e-mail: só um apelido, salvo neste aparelho.</p>`;
+      <div class="espera"><span class="eyebrow">O que te espera</span><ul>
+        <li><span class="ico">${ic("alvo",20)}</span><span><b>Missões educativas</b><small>Jogos curtos sobre insetos e saúde.</small></span></li>
+        <li><span class="ico sol">${ic("medalha",20)}</span><span><b>Medalhas e ranking</b><small>Ganhe pontos a cada missão cumprida.</small></span></li>
+        <li><span class="ico ceu">${ic("users",20)}</span><span><b>Jogue em família</b><small>Crie um jogador para cada pessoa da casa.</small></span></li></ul></div>
+      <p class="nota-perfil">${ic("cadeado",16)}<span>Sem senha e sem e-mail: só um apelido, salvo neste aparelho.</span></p>`;
     lp.querySelectorAll("[data-livro]").forEach(b=>b.onclick=()=>telaLeitor(b.dataset.livro, 0, true));
     lp.querySelectorAll("[data-u]").forEach(b=>b.onclick=()=>{ S = Object.assign(fresh(), perfis()[b.dataset.u]); S.ultimo=Date.now(); save(); marcaEntrada(); renderStats(); home(); });
     lp.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{ const p=perfis()[b.dataset.del];

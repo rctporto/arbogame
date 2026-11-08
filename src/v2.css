@@ -235,6 +235,29 @@ body.v2 .login.login2 .avopt[aria-checked="true"],body.v2 .login.login2 .avopt[a
 body.v2 .login.login2 .avopt[aria-checked="true"]::after{content:"";position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--v2-primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/14px no-repeat}
 body.v2 .login.login2 [role="radio"][aria-checked="true"]:not(.avopt){border-color:var(--v2-primary)!important;background:var(--v2-mint)!important;box-shadow:none!important}
 body.v2 .login.login2 .contabar .passo{display:inline-block}
+/* página 2 (quem vai jogar): sem biblioteca; os dois cartões com a mesma altura e os destaques no painel da direita */
+body.v2 .login.login2{align-items:stretch}
+body.v2 .login.login2 .loginart{display:flex;flex-direction:column}
+body.v2 .login.login2 .loginart .chips{display:none}
+body.v2 .login.login2 .loginart>div:last-child{padding:24px 28px 28px}
+body.v2 .login.login2 .loginart>div:last-child{flex:1;display:flex;flex-direction:column;justify-content:center}
+@media (max-width:860px){body.v2 .login.login2 .contabar{order:0}body.v2 .login.login2 #lp{order:1}body.v2 .login.login2 .loginart{order:2}}
+body.v2 .login.login2 .loginart p{margin:0;font-size:1.05rem;line-height:1.55;color:var(--v2-muted)}
+body.v2 .login.login2 #lp{gap:20px}
+body.v2 .login.login2 .pbtn{border-radius:18px}
+body.v2 .login.login2 .pdel{border:1px solid var(--v2-line);border-radius:18px;background:var(--v2-surface);width:52px;padding:0;font-size:1rem}
+body.v2 .login.login2 .pdel:hover{background:var(--v2-coral);color:var(--coral);border-color:transparent}
+.espera ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px}
+.espera li{display:flex;gap:14px;align-items:center;padding:12px 14px;border:1px solid var(--v2-line);border-radius:16px;background:var(--v2-canvas)}
+.espera .ico{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--v2-mint);color:var(--v2-primary)}
+.espera .ico.sol{background:var(--v2-sun);color:#9A6A00}
+.espera .ico.ceu{background:var(--v2-sky);color:#2C78C8}
+:root[data-theme="dark"] .espera .ico.sol{color:var(--v2-reward)}
+:root[data-theme="dark"] .espera .ico.ceu{color:#8EC5FF}
+.espera b{display:block;font-size:1rem;color:var(--v2-forest)}
+.espera small{display:block;margin-top:1px;font-size:.88rem;color:var(--v2-muted)}
+.nota-perfil{margin:auto 0 0;padding-top:16px;border-top:1px solid var(--v2-line);display:flex;gap:8px;align-items:center;font-size:.86rem;color:var(--v2-muted)}
+.nota-perfil svg{flex:none;color:var(--v2-primary)}
 
 /* ---------- missões por dentro, fim, ranking, leitor: cabeçalho e ritmo novos ---------- */
 body.v2 .gamehead{margin-bottom:20px}
