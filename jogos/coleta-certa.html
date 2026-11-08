@@ -363,14 +363,15 @@ function update(dt){
   const MAX=1400;let alvo=0,kb=(G.keys.ArrowRight?1:0)-(G.keys.ArrowLeft?1:0);
   if(kb){alvo=kb*820}else if(G.ptr.down||(G.ptr.ativo&&matchMedia('(pointer:fine)').matches)){const d=G.ptr.x+(G.ptr.off||0)-b.x;alvo=Math.abs(d)<1.5?0:Math.max(-MAX,Math.min(MAX,d*20))}
   const vira=alvo&&b.vx&&Math.sign(alvo)!==Math.sign(b.vx);if(vira)b.vx*=.35;
+  if(Math.abs(alvo)>160)b.dir=alvo>0?1:-1;
   b.vx=(b.vx||0)+(alvo-(b.vx||0))*Math.min(1,dt*(kb?18:26));
-  b.x+=b.vx*dt;const mn=limE()+binGeo(b).bw*1.15,mx=limD();if(b.x<mn){b.x=mn;b.vx=0}if(b.x>mx){b.x=mx;b.vx=0}
+  b.x+=b.vx*dt;const mn=limE()+binGeo(b).bw*.55,mx=limD();if(b.x<mn){b.x=mn;b.vx=0}if(b.x>mx){b.x=mx;b.vx=0}
   const mv=b.x-ox;b.walk+=Math.abs(mv)*.08;
   // vira só quando anda de verdade para o outro lado (evita piscar) e a virada é animada
-  if(Math.abs(b.vx)>120)b.dir=b.vx>0?1:-1;
+
   G.spawn-=dt*speed;
   if(G.spawn<=0){G.spawn=rnd(D.gap[0],D.gap[1]);const it=LIXO[Math.random()*LIXO.length|0];const vida=Math.random()<D.vida&&G.lives<G.max;
-    const arts=ARTE[it[0]];G.items.push({v:vida||!arts?null:arts[Math.random()*arts.length|0],e:vida?'repelente':it[0],n:vida?'Repelente':it[1],x:(()=>{const a=limE()+G.bin.w*.85,b2=limD(),last=G.lastX??(a+b2)/2,r=(b2-a)*.55;const v=Math.max(a,Math.min(b2,last+rnd(-r,r)));G.lastX=v;return v})(),y:-30,vy:rnd(105,140)*speed,r:0,vr:rnd(-3,3),vida})}
+    const arts=ARTE[it[0]];G.items.push({v:vida||!arts?null:arts[Math.random()*arts.length|0],e:vida?'repelente':it[0],n:vida?'Repelente':it[1],x:(()=>{const a=limE()+G.bin.w*.7,b2=limD(),last=G.lastX??(a+b2)/2,r=(b2-a)*.55;const v=Math.max(a,Math.min(b2,last+rnd(-r,r)));G.lastX=v;return v})(),y:-30,vy:rnd(105,140)*speed,r:0,vr:rnd(-3,3),vida})}
   for(const it of G.items){it.y+=it.vy*dt;it.r+=it.vr*dt;
     const bg2=binGeo(b);if(it.y>bg2.top-10&&it.y<bg2.top+bg2.bh*.42&&Math.abs(it.x-b.x)<bg2.bw/2+12){it.done=true;b.bump=.22;
       if(it.vida){G.lives=Math.min(G.max,G.lives+1);G.texts.push({x:it.x,y:it.y-30,txt:'+1 vida',cor:'#d9482b',a:1});tone(880,.25);say('Repelente pego! Você ganhou uma vida.');hud()}
@@ -384,12 +385,15 @@ function update(dt){
 function drawImg(k,x,y,h,rot=0,flip=1,alpha=1){const im=VEC[k]||sp[k];if(!im||!im.naturalWidth)return;const w=h*im.naturalWidth/im.naturalHeight;g.save();g.globalAlpha=alpha;g.translate(x,y);g.rotate(rot);g.scale(flip,1);g.drawImage(im,-w/2,-h/2,w,h);g.restore()}
 function binGeo(b){const bw=b.w*1.12,bh=bw*560/502,base=H-12;return {bw,bh,base,top:base-bh}}
 function drawBin(b){const {bw,bh,base,top}=binGeo(b),bump=b.bump>0?Math.sin(b.bump*40)*4:0,bob=Math.abs(Math.sin(b.walk))*3;
-  const v=b.vx||0,lean=Math.max(-.06,Math.min(.06,v/12000));
-  g.fillStyle='rgba(60,40,10,.22)';g.beginPath();g.ellipse(b.x-bw*.35,base+2,bw*1.05,10,0,0,7);g.fill();
-  const k=sp[CORPO[kid]];if(k&&k.naturalWidth){const kh=bh*1.32,kw=kh*k.naturalWidth/k.naturalHeight;
-    // indo para a direita empurra (inclina para frente); para a esquerda puxa (inclina para trás)
-    g.save();g.translate(b.x-(bw*.5+kw*.36),base+4);g.rotate(lean*1.6);g.drawImage(k,-kw/2,-kh-bob,kw,kh);g.restore()}
-  const l=sp.n_lixeira;if(l&&l.naturalWidth){g.save();g.translate(b.x,base);g.rotate(lean);g.scale(-1,1);g.drawImage(l,-bw/2,top-base+bump,bw,bh);g.restore()}}
+  // lado do BugKid: -1 = à esquerda empurrando para a direita, +1 = à direita empurrando para a esquerda.
+  // Ao mudar de direção ele dá a volta rapidinho (0,16 s) e a lixeira vira junto.
+  const now=performance.now(),dt2=Math.min(.05,(now-(b._t||now))/1000);b._t=now;
+  const alvo=-(b.dir||1);b.lado=b.lado==null?alvo:b.lado+Math.sign(alvo-b.lado)*Math.min(Math.abs(alvo-b.lado),dt2/0.16*2);
+  const face=b.lado<=0?1:-1,v=b.vx||0,lean=Math.max(-.06,Math.min(.06,v/12000));
+  const k=sp[CORPO[kid]],kh=bh*1.32,kw=k&&k.naturalWidth?kh*k.naturalWidth/k.naturalHeight:0,off=bw*.5+kw*.36;
+  g.fillStyle='rgba(60,40,10,.22)';g.beginPath();g.ellipse(b.x+b.lado*bw*.35,base+2,bw*1.05,10,0,0,7);g.fill();
+  if(kw){g.save();g.translate(b.x+b.lado*off,base+4);g.rotate(lean*1.4);g.scale(face,1);g.drawImage(k,-kw/2,-kh-bob,kw,kh);g.restore()}
+  const l=sp.n_lixeira;if(l&&l.naturalWidth){g.save();g.translate(b.x,base);g.rotate(lean);g.scale(-face,1);g.drawImage(l,-bw/2,top-base+bump,bw,bh);g.restore()}}
 function draw(now){
   if(bgLayer)g.drawImage(bgLayer,0,0,W,H);
   const t=now/1000;
