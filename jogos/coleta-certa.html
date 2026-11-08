@@ -359,9 +359,14 @@ function burst(x,y,cols,n=12){for(let i=0;i<n;i++){const a=Math.random()*7,v=rnd
 function update(dt){
   const D=DIFS[dif],speed=(1+G.t/55)*D.sp;
   const b=G.bin,ox=b.x;
-  if(G.keys.ArrowLeft)b.x-=760*dt;if(G.keys.ArrowRight)b.x+=760*dt;
-  if(G.ptr.down||matchMedia('(pointer:fine)').matches)b.x+=(G.ptr.x-b.x)*Math.min(1,dt*24);
-  b.x=Math.max(limE()+40,Math.min(limD(),b.x));const mv=b.x-ox;if(Math.abs(mv)>.4){b.walk+=Math.abs(mv)*.08}if(Math.abs(mv)>3)b.dir=mv>0?1:-1;
+  // movimento suave: a lixeira tem velocidade e acelera/freia rápido (sem "teleportar" nem tremer)
+  const MAX=900;let alvo=0;const kb=(G.keys.ArrowRight?1:0)-(G.keys.ArrowLeft?1:0);
+  if(kb)alvo=kb*MAX;else if(G.ptr.down||(G.ptr.ativo&&matchMedia('(pointer:fine)').matches)){const d=G.ptr.x-b.x;alvo=Math.abs(d)<3?0:Math.max(-MAX,Math.min(MAX,d*11))}
+  b.vx=(b.vx||0)+(alvo-(b.vx||0))*Math.min(1,dt*(alvo&&Math.sign(alvo)!==Math.sign(b.vx||0)?22:14));
+  b.x+=b.vx*dt;const mn=limE()+40,mx=limD();if(b.x<mn){b.x=mn;b.vx=0}if(b.x>mx){b.x=mx;b.vx=0}
+  const mv=b.x-ox;b.walk+=Math.abs(mv)*.08;
+  // vira só quando anda de verdade para o outro lado (evita piscar) e a virada é animada
+  if(Math.abs(b.vx)>120)b.dir=b.vx>0?1:-1;
   G.spawn-=dt*speed;
   if(G.spawn<=0){G.spawn=rnd(D.gap[0],D.gap[1]);const it=LIXO[Math.random()*LIXO.length|0];const vida=Math.random()<D.vida&&G.lives<G.max;
     const arts=ARTE[it[0]];G.items.push({v:vida||!arts?null:arts[Math.random()*arts.length|0],e:vida?'repelente':it[0],n:vida?'Repelente':it[1],x:(()=>{const a=limE()+20,b2=limD(),last=G.lastX??(a+b2)/2,r=(b2-a)*.55;const v=Math.max(a,Math.min(b2,last+rnd(-r,r)));G.lastX=v;return v})(),y:-30,vy:rnd(105,140)*speed,r:0,vr:rnd(-3,3),vida})}
@@ -377,10 +382,15 @@ function update(dt){
 
 function drawImg(k,x,y,h,rot=0,flip=1,alpha=1){const im=VEC[k]||sp[k];if(!im||!im.naturalWidth)return;const w=h*im.naturalWidth/im.naturalHeight;g.save();g.globalAlpha=alpha;g.translate(x,y);g.rotate(rot);g.scale(flip,1);g.drawImage(im,-w/2,-h/2,w,h);g.restore()}
 function binGeo(b){const bw=b.w*1.12,bh=bw*560/502,base=H-12;return {bw,bh,base,top:base-bh}}
-function drawBin(b){const {bw,bh,base,top}=binGeo(b),bump=b.bump>0?Math.sin(b.bump*40)*4:0,bob=Math.abs(Math.sin(b.walk))*3,f=b.dir>=0?1:-1;
-  g.fillStyle='rgba(60,40,10,.22)';g.beginPath();g.ellipse(b.x-f*bw*.35,base+2,bw*1.05,10,0,0,7);g.fill();
-  const k=sp[CORPO[kid]];if(k&&k.naturalWidth){const kh=bh*1.32,kw=kh*k.naturalWidth/k.naturalHeight;g.save();g.translate(b.x-f*(bw*.5+kw*.36),0);g.scale(f,1);g.drawImage(k,-kw/2,base+4-kh-bob,kw,kh);g.restore()}
-  const l=sp.n_lixeira;if(l&&l.naturalWidth){g.save();g.translate(b.x,0);g.scale(-f,1);g.drawImage(l,-bw/2,top+bump,bw,bh);g.restore()}}
+function drawBin(b){const {bw,bh,base,top}=binGeo(b),bump=b.bump>0?Math.sin(b.bump*40)*4:0,bob=Math.abs(Math.sin(b.walk))*3;
+  // "face" vai de -1 a 1 suavemente: o BugKid dá a volta por trás da lixeira em vez de pular de lado
+  const dt2=Math.min(.05,(performance.now()-(b._t||performance.now()))/1000);b._t=performance.now();
+  b.face=b.face==null?b.dir:b.face+(b.dir-b.face)*Math.min(1,dt2*9);const f=b.face,sf=Math.sign(f)||1,sx=Math.max(.18,Math.abs(f))*sf;
+  const lean=Math.max(-.07,Math.min(.07,(b.vx||0)/9000));
+  g.fillStyle='rgba(60,40,10,.22)';g.beginPath();g.ellipse(b.x-f*bw*.35,base+2,bw*(.6+.45*Math.abs(f)),10,0,0,7);g.fill();
+  const k=sp[CORPO[kid]];const drawKid=()=>{if(k&&k.naturalWidth){const kh=bh*1.32,kw=kh*k.naturalWidth/k.naturalHeight;g.save();g.translate(b.x-f*(bw*.5+kw*.36),0);g.scale(sx,1);g.drawImage(k,-kw/2,base+4-kh-bob,kw,kh);g.restore()}};
+  drawKid();
+  const l=sp.n_lixeira;if(l&&l.naturalWidth){g.save();g.translate(b.x,base);g.rotate(lean);g.scale(-sf,1);g.drawImage(l,-bw/2,top-base+bump,bw,bh);g.restore()}}
 function draw(now){
   if(bgLayer)g.drawImage(bgLayer,0,0,W,H);
   const t=now/1000;
@@ -405,9 +415,9 @@ function frame(now){const dt=last?Math.min(.05,(now-last)/1000):0;last=now;if(st
 
 function toX(e){const r=c.getBoundingClientRect();return (e.clientX-r.left)/scale}
 c.addEventListener('pointerdown',e=>{if(state!=='playing')return;e.preventDefault();c.setPointerCapture(e.pointerId);G.ptr={x:toX(e),down:true}});
-c.addEventListener('pointermove',e=>{if(G)G.ptr.x=toX(e)});
+c.addEventListener('pointermove',e=>{if(G){G.ptr.x=toX(e);G.ptr.ativo=true}});
 const up=()=>{if(G)G.ptr.down=false};c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up);
-addEventListener('keydown',e=>{if(!G)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){G.keys[e.key]=true;e.preventDefault()}});
+addEventListener('keydown',e=>{if(!G)return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){G.keys[e.key]=true;G.ptr.ativo=false;e.preventDefault()}});
 addEventListener('keyup',e=>{if(G)G.keys[e.key]=false});
 
 function kidsel(){const el=$('kidsel');el.innerHTML=KIDS.map(([k,n],i)=>`<button type="button" role="radio" aria-checked="${i===kid}" aria-pressed="${i===kid}" data-k="${i}"><img src="${IMG[ROSTO[i]]}" alt="">${n}</button>`).join('');
