@@ -855,6 +855,346 @@ img,canvas,video,iframe{max-width:100%}
 table{max-width:100%}
 .tabela,.devpre,pre{overflow-x:auto;max-width:100%}
 
+/* ================== ARBOGAME 2.0 · repaginação (07/11/2026) ==================
+   Tokens inspirados no BugLab (guia de repaginação): verdes profundos, menta e fundos claros.
+   Bordas finas, sombras discretas, Nunito, raio 20–24 px, espaçamento em múltiplos de 8 px. */
+:root[data-theme],:root{
+  --v2-forest:#103F32; --v2-primary:#16845B; --v2-primary-h:#127250; --v2-canvas:#F8FAF5; --v2-surface:#FFFFFF;
+  --v2-mint:#E5F3EA; --v2-reward:#F4C45B; --v2-sky:#E8F2FA; --v2-lilac:#EEE9FA; --v2-sun:#FDF3DA; --v2-coral:#FCE9E4;
+  --v2-text:#183A30; --v2-muted:#52675E; --v2-line:#DCE7DF; --v2-focus:#1F6FD1;
+  --v2-shadow:0 1px 2px rgba(16,63,50,.06),0 6px 18px rgba(16,63,50,.07); --v2-shadow-h:0 2px 4px rgba(16,63,50,.08),0 12px 28px rgba(16,63,50,.12);
+  --v2-side:#103F32; --v2-side-ink:#E5F3EA; --v2-side-muted:#9CC3B2; --v2-side-at:#16845B;
+}
+:root[data-theme="dark"]{
+  --v2-forest:#BFE6D2; --v2-primary:#3FB883; --v2-primary-h:#57C795; --v2-canvas:#102C24; --v2-surface:#173A30;
+  --v2-mint:#1D4638; --v2-reward:#F4C45B; --v2-sky:#1C3A4A; --v2-lilac:#2C2A48; --v2-sun:#3A3320; --v2-coral:#4A2A26;
+  --v2-text:#E6F2EC; --v2-muted:#A6C2B6; --v2-line:#2C5446; --v2-focus:#8EC5FF;
+  --v2-shadow:0 1px 2px rgba(0,0,0,.25),0 6px 18px rgba(0,0,0,.25); --v2-shadow-h:0 2px 4px rgba(0,0,0,.3),0 12px 28px rgba(0,0,0,.35);
+  --v2-side:#0B2019; --v2-side-ink:#DCEFE5; --v2-side-muted:#88AE9E; --v2-side-at:#1F6B4C;
+}
+/* os tokens antigos passam a apontar para os novos: telas que ainda não foram reescritas herdam o visual */
+body.v2{
+  --bg:var(--v2-canvas); --card:var(--v2-surface); --ink:var(--v2-text); --muted:var(--v2-muted); --line:var(--v2-line);
+  --leaf:var(--v2-primary); --leaf-soft:var(--v2-mint); --sun:var(--v2-reward); --sun-soft:var(--v2-sun);
+  --sky:#2C78C8; --sky-soft:var(--v2-sky); --coral:#C8462F; --coral-soft:var(--v2-coral);
+  --traco:var(--v2-line); --sombra-jogo:var(--v2-shadow); --sombra-btn:none; --shadow:var(--v2-shadow);
+  --side:var(--v2-side); --side-ink:var(--v2-side-ink); --side-muted:var(--v2-side-muted); --hero1:var(--v2-forest); --hero2:var(--v2-primary);
+  --display:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif; --body:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:var(--v2-canvas)!important; background-image:none!important; color:var(--v2-text); font-size:17px;
+}
+:root[data-theme="dark"] body.v2{--sky:#8EC5FF;--coral:#FF9A82}
+body.v2 h1,body.v2 h2,body.v2 h3,body.v2 .secao,body.v2 .gamehead h2{font-family:var(--display);font-weight:800;letter-spacing:-.01em;color:var(--v2-forest)}
+body.v2 :focus-visible{outline:3px solid var(--v2-focus);outline-offset:2px}
+body.v2 .eyebrow{letter-spacing:.06em;color:var(--v2-primary)}
+
+/* ---------- cartões e botões herdados: borda fina, sombra suave ---------- */
+body.v2 :is(.panel,.fcard,.mscard,.numero,.livro,.moeda,.dicacard,.fimcard,.loginart,.acarte,.acpainel,.podio>*,.jogobox,.herocard){border:1px solid var(--v2-line)!important;box-shadow:var(--v2-shadow)!important}
+body.v2 :is(.panel,.fimcard,.acpainel,.acarte){border-radius:24px!important}
+body.v2 .btn{font:800 1rem var(--body);background:var(--v2-primary);color:#fff;border:1px solid transparent;border-radius:14px;box-shadow:none;padding:12px 20px;min-height:48px}
+body.v2 .btn:hover:not(:disabled){background:var(--v2-primary-h);filter:none}
+body.v2 .btn:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+body.v2 .btn.sun{background:var(--v2-primary);color:#fff}
+body.v2 .btn.ghost{background:var(--v2-surface);color:var(--v2-text);border:1px solid var(--v2-line);box-shadow:none}
+body.v2 .btn.ghost:hover:not(:disabled){background:var(--v2-mint)}
+:root[data-theme="dark"] body.v2 .btn{color:#06261A}
+:root[data-theme="dark"] body.v2 .btn.ghost{color:var(--v2-text)}
+body.v2 .chip,body.v2 .passo{border:0!important;background:var(--v2-mint);color:var(--v2-primary);border-radius:999px;font-weight:800;letter-spacing:.02em;text-transform:none;font-size:.82rem;padding:5px 12px}
+body.v2 .alert{border-radius:14px}
+body.v2 input,body.v2 select,body.v2 textarea{font-family:var(--body)}
+
+/* ---------- casca: menu lateral curto ---------- */
+body.v2 .shell{grid-template-columns:232px minmax(0,1fr)}
+body.v2 .side{background:var(--v2-side);padding:20px 14px 24px;display:flex;flex-direction:column;gap:6px;
+  background-image:radial-gradient(120px 160px at 20% 102%,rgba(63,174,106,.28),transparent 70%),radial-gradient(90px 120px at 85% 98%,rgba(63,174,106,.18),transparent 70%)}
+body.v2 .side .sbrand{padding:2px 6px 18px}
+.v2marca{display:inline-flex;align-items:center;gap:8px;text-decoration:none}
+.v2marca b{font:800 1.45rem/1 var(--body);letter-spacing:-.02em;color:var(--v2-forest)}
+.v2marca small{display:block;font:700 .72rem var(--body);color:var(--v2-muted)}
+body.v2 .side .v2marca b{color:#fff}
+body.v2 .side nav button{gap:12px;padding:11px 12px;border-radius:14px;font-weight:700;font-size:1rem;min-height:46px;color:var(--v2-side-ink)}
+body.v2 .side nav button:hover{background:rgba(255,255,255,.08)}
+body.v2 .side nav button[aria-current="page"]{background:var(--v2-side-at);color:#fff;box-shadow:none}
+body.v2 .side nav button[aria-current="page"]::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--v2-reward);margin-left:auto}
+body.v2 .side .v2mais{margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+body.v2 .side .v2mais button,body.v2 .side .v2conta button{font-size:.92rem;min-height:42px;color:var(--v2-side-muted)}
+body.v2 .side .v2mais button:hover,body.v2 .side .v2conta button:hover{color:var(--v2-side-ink)}
+body.v2 .side .temabtn{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:10px 12px;border-radius:14px;font-weight:700}
+body.v2 .side .sjog{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:14px 8px 6px}
+body.v2 .side .sjog img{width:42px;height:42px;border-radius:50%;object-fit:cover;background:var(--v2-mint);border:2px solid rgba(255,255,255,.6);flex:none}
+body.v2 .side .sjog b{color:#fff}
+body.v2 .side .sjog small{color:var(--v2-side-muted)}
+body.v2 .side .snovo{display:none}
+
+/* ---------- barra do topo ---------- */
+body.v2 .conteudo{padding:0 max(24px,env(safe-area-inset-right,0px)) 40px max(24px,env(safe-area-inset-left,0px))}
+body.v2 .wrap{max-width:1160px}
+body.v2 .status{background:color-mix(in srgb,var(--v2-canvas) 90%,transparent);border-bottom:1px solid var(--v2-line);padding-block:12px;margin-bottom:24px;position:sticky;top:0;z-index:20}
+body.v2 .status .wrap{gap:12px;align-items:center}
+body.v2 .brand .logo,body.v2 .norio-topo{display:none!important}
+body.v2 .brand{display:flex;align-items:center;gap:10px;min-width:0}
+.v2ola b{display:block;font:800 1.2rem/1.15 var(--body);color:var(--v2-forest);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v2ola small{display:block;font:700 .82rem var(--body);color:var(--v2-muted)}
+body.v2 .v2so-m{display:none}
+body.v2 .stats{display:flex;gap:8px;align-items:center;margin-left:auto}
+.chipv{display:inline-flex;align-items:center;gap:6px;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:999px;padding:7px 14px;font:700 .92rem var(--body);color:var(--v2-text);white-space:nowrap;min-height:40px}
+.chipv svg{flex:none}
+.chipv.pts svg{color:#D79A12;fill:#F4C45B}
+.chipv.med svg{color:#C98410}
+.chipv.lvl svg{color:var(--v2-primary)}
+button.chipv{cursor:pointer}
+button.chipv.icone{padding:7px 10px}
+body.v2 .meu{width:44px;height:44px;border-radius:50%;padding:0;border:2px solid var(--v2-line);background:var(--v2-mint);overflow:hidden;flex:none}
+body.v2 .meu img{width:100%;height:100%;object-fit:cover}
+body.v2 .temabtn.topo{background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:999px;box-shadow:none;color:var(--v2-text);min-height:40px}
+body.v2 .foot{border-top:1px solid var(--v2-line);margin-top:40px}
+
+/* ---------- títulos de página ---------- */
+.v2head{margin:0 0 20px}
+.v2head h1{display:flex;align-items:center;gap:10px;font-size:clamp(1.6rem,3.2vw,2.3rem)!important;line-height:1.1;color:var(--v2-forest)}
+.v2head h1 svg{color:var(--v2-primary);flex:none}
+.v2head p{margin-top:6px;color:var(--v2-muted);max-width:62ch;font-size:1.02rem}
+.v2sec{font-size:1.3rem!important;margin:28px 0 14px}
+.v2btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--v2-primary);color:#fff;border:0;border-radius:14px;padding:12px 22px;min-height:48px;font:800 1.02rem var(--body);cursor:pointer}
+.v2btn:hover{background:var(--v2-primary-h)}
+:root[data-theme="dark"] .v2btn{color:#06261A}
+.v2btn svg{flex:none}
+
+/* ---------- 05 · painel ---------- */
+.v2hero{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:center;gap:16px;background:linear-gradient(115deg,var(--v2-surface) 0 46%,var(--v2-mint) 46% 100%);
+  border:1px solid var(--v2-line);border-radius:24px;box-shadow:var(--v2-shadow);padding:32px;overflow:hidden;min-height:250px}
+.v2hero::after{content:"";position:absolute;right:-60px;bottom:-80px;width:340px;height:240px;border-radius:50%;background:radial-gradient(closest-side,rgba(63,174,106,.28),transparent)}
+.v2hero h1{font-size:clamp(1.8rem,3.4vw,2.6rem)!important;line-height:1.08}
+.v2hero p{margin:10px 0 20px;color:var(--v2-muted);font-size:1.05rem;max-width:42ch}
+.v2hero .arte{position:relative;align-self:end;display:flex;justify-content:center;align-items:flex-end;gap:0;margin:-32px 0 -32px;z-index:1;min-height:230px}
+.v2hero .arte .kid{height:250px;width:auto;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(16,63,50,.18))}
+.v2hero .arte .mas{height:140px;width:auto;object-fit:contain;margin-left:-20px;margin-bottom:30px;filter:drop-shadow(0 6px 10px rgba(16,63,50,.18))}
+.v2atalhos{display:grid;grid-template-columns:minmax(0,1.6fr) repeat(3,minmax(0,1fr));gap:16px;margin-top:20px}
+.v2quintal{display:flex;align-items:center;gap:16px;text-align:left;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:22px;box-shadow:var(--v2-shadow);padding:12px 16px 12px 12px;color:var(--v2-text);cursor:pointer;min-height:120px}
+.v2quintal img{width:42%;max-width:180px;aspect-ratio:3/2;object-fit:cover;border-radius:14px;flex:none}
+.v2quintal b{display:block;font:800 1.2rem var(--body);color:var(--v2-forest)}
+.v2quintal small{display:block;color:var(--v2-muted);font-size:.95rem;margin-top:4px;line-height:1.35}
+.v2quintal .seta{margin-left:auto;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--v2-mint);color:var(--v2-primary);flex:none}
+.v2quintal.urgente{border-color:#E9A28F;background:linear-gradient(90deg,var(--v2-coral),var(--v2-surface) 60%)}
+.v2quintal.largo{width:100%;margin-top:20px}
+.v2atalho{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;background:var(--c);border:1px solid var(--v2-line);border-radius:22px;padding:18px 12px;cursor:pointer;color:var(--v2-text);box-shadow:var(--v2-shadow);min-height:120px}
+.v2atalho .ic{color:var(--v2-primary)}
+.v2atalho b{font:800 1.15rem var(--body);color:var(--v2-forest)}
+.v2atalho small{color:var(--v2-muted);font-size:.86rem;line-height:1.3}
+:is(.v2quintal,.v2atalho,.v2jogo,.v2missao,.v2num.link,.v2final):not(:disabled):hover{box-shadow:var(--v2-shadow-h);transform:translateY(-2px)}
+:is(.v2quintal,.v2atalho,.v2jogo,.v2missao,.v2num.link,.v2final){transition:box-shadow .2s,transform .2s}
+.v2dica{display:flex;align-items:center;gap:16px;background:var(--v2-mint);border:1px solid var(--v2-line);border-radius:22px;padding:12px 20px 0 12px;margin-top:20px;overflow:hidden}
+.v2dica img{width:96px;height:96px;object-fit:cover;object-position:top;align-self:flex-end;flex:none}
+.v2dica b{display:flex;align-items:center;gap:6px;font:800 1.08rem var(--body);color:var(--v2-forest)}
+.v2dica b svg{color:#D79A12}
+.v2dica p{margin:4px 0 12px;color:var(--v2-text)}
+.v2numeros{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
+.v2numeros.dois{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:0}
+.v2num{display:flex;align-items:center;gap:12px;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:20px;padding:14px 16px;box-shadow:var(--v2-shadow);text-align:left;color:var(--v2-text)}
+.v2num .ic{width:42px;height:42px;border-radius:12px;background:var(--v2-mint);color:var(--v2-primary);display:grid;place-items:center;flex:none}
+.v2num b{display:block;font:800 1.3rem/1.1 var(--body);color:var(--v2-forest)}
+.v2num small{color:var(--v2-muted);font-size:.86rem}
+.v2num.barra{display:block}
+.v2num.link{cursor:pointer}
+.lin{display:flex;justify-content:space-between;gap:8px;font-weight:800;font-size:.9rem;color:var(--v2-text)}
+.v2num.barra i,.v2prog i{display:block;height:10px;border-radius:999px;background:var(--v2-mint);margin:8px 0 6px;overflow:hidden}
+.v2num.barra i b,.v2prog i b{display:block;height:100%;border-radius:999px;background:var(--v2-primary)}
+.v2educ{margin-top:24px;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:20px;padding:14px 18px}
+.v2educ summary{font-weight:800;cursor:pointer;color:var(--v2-forest);min-height:32px;display:flex;align-items:center}
+.v2educ p,.v2educ ul{margin:10px 0 0;color:var(--v2-text)}
+.v2educ a{color:var(--v2-primary)}
+
+/* ---------- 09 / 30 · catálogo ---------- */
+.v2filtro{display:flex;gap:8px;flex-wrap:wrap;margin:-4px 0 18px}
+.v2filtro button{border:1px solid var(--v2-line);background:var(--v2-surface);color:var(--v2-text);border-radius:999px;padding:9px 18px;font:800 .95rem var(--body);min-height:44px;cursor:pointer}
+.v2filtro button[aria-pressed="true"]{background:var(--v2-primary);border-color:var(--v2-primary);color:#fff}
+:root[data-theme="dark"] .v2filtro button[aria-pressed="true"]{color:#06261A}
+.v2jogos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.v2jogo{display:flex;align-items:center;gap:14px;text-align:left;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:20px;padding:10px 14px 10px 10px;box-shadow:var(--v2-shadow);cursor:pointer;color:var(--v2-text);min-height:108px}
+.v2jogo .capa{width:112px;aspect-ratio:3/2;border-radius:14px;overflow:hidden;background:var(--c);flex:none}
+.v2jogo .capa img{width:100%;height:100%;object-fit:cover;display:block}
+.v2jogo .txt{min-width:0;flex:1}
+.v2jogo b{display:block;font:800 1.08rem/1.2 var(--body);color:var(--v2-forest)}
+.v2jogo small{display:block;color:var(--v2-muted);font-size:.86rem;margin-top:2px}
+.v2jogo .rec{display:inline-flex;align-items:center;gap:4px;margin-top:6px;font:800 .78rem var(--body);color:var(--v2-primary);background:var(--v2-mint);border-radius:999px;padding:2px 8px}
+.v2jogo .play{width:40px;height:40px;border-radius:50%;background:var(--v2-primary);color:#fff;display:grid;place-items:center;flex:none}
+.v2jogo .play svg{fill:currentColor;margin-left:2px}
+
+/* ---------- missões ---------- */
+.v2prog{background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:18px;padding:12px 16px 8px;margin-bottom:16px}
+.v2prog.mini{border:0;padding:0;background:none;margin:10px 0 12px}
+.v2missoes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.v2missao{display:flex;align-items:center;gap:14px;text-align:left;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:20px;padding:14px 16px;box-shadow:var(--v2-shadow);cursor:pointer;color:var(--v2-text);min-height:104px}
+.v2missao .ic{width:56px;height:56px;border-radius:16px;background:var(--c);color:var(--v2-forest);display:grid;place-items:center;flex:none}
+.v2missao .txt{flex:1;min-width:0}
+.v2missao b{display:block;font:800 1.1rem var(--body);color:var(--v2-forest)}
+.v2missao small{display:block;color:var(--v2-muted);font-size:.9rem;line-height:1.35;margin-top:2px}
+.v2missao .estado{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font:800 .82rem var(--body);color:var(--v2-primary)}
+.v2missao.ok .estado{color:var(--v2-primary)}
+.v2missao:disabled{cursor:default;opacity:1;background:color-mix(in srgb,var(--v2-surface) 70%,var(--v2-canvas))}
+.v2missao:disabled .estado{color:var(--v2-muted)}
+.v2missao:disabled .ic{background:var(--v2-line);color:var(--v2-muted)}
+.v2missao .seta{color:var(--v2-muted)}
+
+/* ---------- 24 · conquistas ---------- */
+.v2conq{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.v2final{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;border:1px solid #E6D8A8;border-radius:22px;padding:18px;background:linear-gradient(160deg,var(--v2-sun),var(--v2-surface));color:var(--v2-text);cursor:pointer;box-shadow:var(--v2-shadow)}
+.v2final svg{color:#C98410}
+.v2final b{font:800 1.2rem var(--body);color:var(--v2-forest)}
+.v2final small{color:var(--v2-muted)}
+.v2final.tranca{background:var(--v2-lilac);border-color:var(--v2-line);cursor:default}
+.v2final.tranca svg{color:#6B4FB0}
+.v2medalhas{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.v2medalhas li{background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:18px;padding:14px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px}
+.v2medalhas .moeda{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--v2-line);color:var(--v2-muted);margin-bottom:4px}
+.v2medalhas li.on .moeda{background:radial-gradient(circle at 35% 30%,#FFE7A3,#F4C45B 60%,#D79A12);color:#5A3B00;box-shadow:0 0 0 3px var(--v2-sun)}
+.v2medalhas b{font:800 .95rem/1.2 var(--body);color:var(--v2-forest)}
+.v2medalhas small{color:var(--v2-muted);font-size:.8rem;line-height:1.3}
+.v2medalhas .st{margin-top:auto;font:800 .74rem var(--body);color:var(--v2-muted);padding-top:4px}
+.v2medalhas li.on .st{color:var(--v2-primary)}
+
+/* ---------- 06 · biblioteca ---------- */
+.v2livros{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.v2livro{background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:22px;box-shadow:var(--v2-shadow);overflow:hidden;display:flex;flex-direction:column}
+.v2livro .capa{position:relative;background:var(--v2-mint)}
+.v2livro .capa img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.v2livro .pg{position:absolute;right:12px;bottom:12px;background:var(--v2-surface);color:var(--v2-forest);border-radius:999px;padding:3px 10px;font:800 .8rem var(--body)}
+.v2livro .txt{padding:16px 18px 18px}
+.v2livro b{display:block;font:800 1.2rem var(--body);color:var(--v2-forest)}
+.v2livro small{color:var(--v2-muted)}
+.v2livro .v2btn{width:100%}
+
+/* ---------- 01–04 · acesso e perfil ---------- */
+body.v2 .v2acesso{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:0;background:var(--v2-surface);border:1px solid var(--v2-line);border-radius:28px;box-shadow:var(--v2-shadow);overflow:hidden;max-width:1100px;margin:16px auto 0}
+body.v2 .v2acesso .acarte{border:0!important;box-shadow:none!important;border-radius:0!important;background:var(--v2-mint);display:flex;flex-direction:column}
+body.v2 .v2acesso .acarte>img{aspect-ratio:auto;flex:1;min-height:320px;border:0;object-fit:cover}
+body.v2 .v2acesso .acarte>img.v2prof{object-fit:contain;object-position:bottom;background:linear-gradient(180deg,#d9efe1,var(--v2-mint))}
+body.v2 .v2acesso .actexto h1{font-size:clamp(1.6rem,3vw,2.2rem)}
+body.v2 .v2acesso .actexto p{color:var(--v2-muted)}
+body.v2 .v2acesso .acpainel{border:0!important;box-shadow:none!important;border-radius:0!important;padding:32px 36px!important}
+.v2topoac{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.v2topoac .v2marca{margin-left:auto;margin-right:auto}
+.v2topoac .linkbtn{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+body.v2 .acpainel h2{font-size:1.75rem;color:var(--v2-forest)}
+body.v2 .btn.google{border:1px solid var(--v2-line);box-shadow:none;border-radius:14px;min-height:50px}
+body.v2 .campo span{text-transform:none;letter-spacing:0;font:800 .92rem var(--body);color:var(--v2-text)}
+body.v2 .campo input{background:var(--v2-surface);border:1px solid #C9D9CF;border-radius:12px;padding:13px 14px;min-height:50px;font-size:1rem}
+:root[data-theme="dark"] body.v2 .campo input{border-color:var(--v2-line)}
+body.v2 .campo input:focus{border-color:var(--v2-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--v2-primary) 22%,transparent)}
+body.v2 .ou{text-transform:none;letter-spacing:0;font-size:.9rem}
+body.v2 .ou::before,body.v2 .ou::after{height:1px}
+body.v2 .acpainel .nota{display:flex;gap:10px;align-items:flex-start;background:var(--v2-mint);border-radius:14px;padding:10px 12px;color:var(--v2-text);font-size:.9rem}
+body.v2 .nota.ok{background:var(--v2-mint);border-radius:14px;padding:10px 12px}
+body.v2 .linkbtn{color:var(--v2-primary)}
+body.v2 .acesso .passo{display:none}
+body.v2 .login.login2{gap:20px}
+body.v2 .login.login2 .avopt{border:1px solid var(--v2-line)!important;border-radius:18px;background:var(--v2-surface);min-height:48px}
+body.v2 .login.login2 .avopt[aria-checked="true"],body.v2 .login.login2 .avopt[aria-pressed="true"]{border:2px solid var(--v2-primary)!important;background:var(--v2-mint);box-shadow:none;position:relative}
+body.v2 .login.login2 .avopt[aria-checked="true"]::after{content:"";position:absolute;right:8px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--v2-primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/14px no-repeat}
+body.v2 .login.login2 [role="radio"][aria-checked="true"]:not(.avopt){border-color:var(--v2-primary)!important;background:var(--v2-mint)!important;box-shadow:none!important}
+body.v2 .login.login2 .contabar .passo{display:inline-block}
+
+/* ---------- missões por dentro, fim, ranking, leitor: cabeçalho e ritmo novos ---------- */
+body.v2 .gamehead{margin-bottom:20px}
+body.v2 .gamehead #voltar{display:inline-flex;align-items:center;gap:6px}
+body.v2 .opt{border:1px solid var(--v2-line)!important;border-radius:16px!important;background:var(--v2-surface);min-height:52px;box-shadow:none!important}
+body.v2 .opt:hover:not(:disabled){border-color:var(--v2-primary)!important;background:var(--v2-mint)}
+body.v2 .qprog i{background:var(--v2-mint)!important}
+body.v2 .qprog i b{background:var(--v2-primary)!important}
+body.v2 .fimcard{background:linear-gradient(180deg,var(--v2-mint),var(--v2-surface))!important}
+body.v2 .rlist li{border-color:var(--v2-line)!important}
+
+/* ---------- jogo em tela cheia ---------- */
+body.v2 .modojogo{background:var(--v2-canvas)}
+body.v2 .mjbar{background:var(--v2-surface);border-bottom:1px solid var(--v2-line);gap:12px;padding:8px 14px;align-items:center}
+body.v2 .mjbar b{font:800 1.15rem var(--body);color:var(--v2-forest)}
+body.v2 .mjbar .mjnome{display:inline-flex}
+body.v2 .mjbar #voltar{display:inline-flex;align-items:center;gap:6px;min-height:44px}
+body.v2:has(.modojogo) .bnav{display:none}
+
+/* ---------- navegação inferior (celular) ---------- */
+.bnav{display:none}
+@media (max-width:900px){
+  body.v2 .shell{grid-template-columns:minmax(0,1fr)}
+  body.v2 .menubtn{display:none!important}
+  body.v2 .side{position:fixed;left:auto;right:0;top:0;bottom:0;width:min(300px,86vw);height:auto;z-index:60;transform:translateX(105%);transition:transform .25s;padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+  body.v2.navaberta .side{transform:none}
+  body.v2.navaberta .sidefundo{display:block;position:fixed;inset:0;z-index:55;background:rgba(10,30,24,.45)}
+  body.v2 .side .v2nav [data-nav="painel"],body.v2 .side .v2nav [data-nav="jogar"],body.v2 .side .v2nav [data-nav="missoes"],body.v2 .side .v2nav [data-nav="meuquintal"]{display:none}
+  body.v2:not(.semnav) .bnav{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--v2-surface);border-top:1px solid var(--v2-line);
+    padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));box-shadow:0 -4px 18px rgba(16,63,50,.08)}
+  .bnav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:0;border-radius:14px;min-height:56px;font:700 .78rem var(--body);color:var(--v2-muted);cursor:pointer;padding:4px 2px}
+  .bnav button[aria-current="page"]{background:var(--v2-primary);color:#fff}
+  :root[data-theme="dark"] .bnav button[aria-current="page"]{color:#06261A}
+  body.v2:not(.semnav) .conteudo{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  body.v2 .v2so-d{display:none}
+  body.v2 .chipv.lvl{display:none}
+  body.v2 .v2ola small{display:none}
+}
+@media (max-width:1100px){ .v2jogos{grid-template-columns:repeat(2,minmax(0,1fr))} .v2atalhos{grid-template-columns:repeat(3,minmax(0,1fr))} .v2atalhos .v2quintal{grid-column:1/-1} .v2numeros{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media (max-width:720px){
+  body.v2{font-size:16px}
+  body.v2 .conteudo{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  body.v2 .status{margin-bottom:16px;padding-block:10px}
+  body.v2 .v2so-m{display:inline-flex} body.v2 .v2ola{display:none}
+  body.v2 .temabtn.topo span{display:none}
+  body.v2 .temabtn.topo{padding:8px 10px}
+  .chipv{padding:6px 10px;font-size:.88rem;min-height:38px}
+  body.v2 .meu{width:40px;height:40px}
+  .v2hero{grid-template-columns:1fr;padding:22px 20px 0;background:linear-gradient(180deg,var(--v2-surface) 0 55%,var(--v2-mint) 55%)}
+  .v2hero .arte{margin:0 -20px;min-height:0}
+  .v2hero .arte .kid{height:210px}.v2hero .arte .mas{height:120px}
+  .v2hero .v2btn{width:100%}
+  .v2atalhos{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .v2atalho{padding:12px 6px;min-height:104px}.v2atalho small{display:none}.v2atalho b{font-size:1rem}
+  .v2quintal img{width:96px}
+  .v2jogos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .v2jogo{flex-direction:column;align-items:stretch;padding:8px;gap:8px;position:relative;min-height:0}
+  .v2jogo .capa{width:100%}
+  .v2jogo .txt{padding:0 4px 4px}
+  .v2jogo small{display:none}
+  .v2jogo .play{position:absolute;right:12px;top:12px;width:34px;height:34px}
+  .v2missoes,.v2livros,.v2conq{grid-template-columns:1fr}
+  .v2numeros{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .v2num{padding:12px}
+  .v2dica img{width:72px;height:72px}
+  body.v2 .v2acesso{grid-template-columns:1fr;border-radius:22px;margin-top:4px}
+  body.v2 .v2acesso .acarte>img{min-height:0;max-height:200px}
+  body.v2 .v2acesso .actexto{display:none}
+  body.v2 .v2acesso .acpainel{padding:22px 18px!important}
+  .v2medalhas{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){ :is(.v2quintal,.v2atalho,.v2jogo,.v2missao,.v2num.link,.v2final):hover{transform:none} body.v2 .side{transition:none} }
+/* ---------- ajustes finos ---------- */
+body.v2.semnav .side{display:none}
+body.v2.semnav .status .brand{visibility:hidden}
+body.v2 .btn.google{background:var(--v2-surface)!important;color:var(--v2-text)!important}
+body.v2 .btn.google:hover{background:var(--v2-mint)!important}
+body.v2 .v2acesso .acarte>img{object-position:50% 12%}
+body.v2 .side nav button{border:0!important;box-shadow:none!important}
+body.v2 .temabtn.topo{box-shadow:none!important}
+body.v2 .brand small,body.v2 .v2ola small{text-transform:none;letter-spacing:0;font-size:.85rem}
+body.v2 .foot a{color:var(--v2-primary)}
+body.v2 .foot .v2ver{font-weight:800}
+@media (max-width:720px){
+  body.v2 .temabtn.topo{display:none}
+  body.v2 .status .v2marca b{font-size:1.2rem}
+  body.v2 .status .v2marca svg{width:30px;height:26px}
+  .v2hero .arte .kid{height:170px}.v2hero .arte .mas{height:96px;margin-bottom:20px}
+  .v2hero h1{font-size:1.65rem!important}
+}
+body.v2.semnav .shell{grid-template-columns:minmax(0,1fr)}
+@media (max-width:720px){ body.v2.semnav .temabtn.topo{display:inline-flex;margin-left:auto} body.v2.semnav .status .brand{display:none} }
+@media (max-width:420px){ body.v2 .stats{gap:6px} .chipv{padding:5px 8px} body.v2 .status .v2marca b{font-size:1.1rem} body.v2 .status .v2marca svg{width:26px} }
+body.v2 .acpainel .nota.simples{display:block}
+body.v2 .fimcard{color:var(--v2-text)}
+body.v2 .fimcard h2{color:var(--v2-forest)}
+body.v2 .fimcard .placar{color:var(--v2-primary)}
+body.v2 .fimcard .placar small{color:var(--v2-muted);opacity:1;text-transform:none;letter-spacing:0;font-size:.9rem}
+body.v2 .fimcard .ganho{background:var(--v2-sun);color:#6B4A00}
+:root[data-theme="dark"] body.v2 .fimcard .ganho{color:var(--v2-reward)}
+body.v2 .fimcard.baixo{background:linear-gradient(180deg,var(--v2-coral),var(--v2-surface))!important}
+body.v2 .numero small{text-transform:none;letter-spacing:0}
+
 </style>
 
 <div class="shell"><aside class="side" id="side" aria-label="Menu"></aside><div class="conteudo">
@@ -2768,8 +3108,8 @@ Object.assign(MEDALS, {
   fuga:{m:"🏃", nome:"Fuga perfeita", desc:"Recolheu todo o lixo nas 4 fases da Fuga dos BugKids"},
 });
 Object.assign(ICO_MEDALHA, {labirinto:"alvo", fuga:"escudo", esvazia:"gota", varre:"folha", sudoku:"alvo", mahjong:"cartas"});
-const ARQ = id => id==="quintal" ? "meu-quintal" : (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
-const NOME = id => id==="quintal" ? "Meu Quintal" : (ARCADE.find(a=>a.id===id)||{}).nome || id;
+const ARQ = id => id==="meuquintal" ? "meu-quintal" : (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
+const NOME = id => id==="meuquintal" ? "Meu Quintal" : (ARCADE.find(a=>a.id===id)||{}).nome || id;
 
 let JOGO_AT = null;
 function telaJogoNovo(id){
@@ -2792,7 +3132,7 @@ addEventListener("message", e=>{
   if(d.arbo==="altura"){ fr.style.height = Math.max(420, Math.ceil(d.h)) + "px"; }
   else if(d.arbo==="pontos"){ // Meu Quintal: pontos pequenos por cuidado, no máximo 40 por dia
     const hj=new Date().toDateString(); S.quintalPts = S.quintalPts && S.quintalPts.dia===hj ? S.quintalPts : {dia:hj, n:0};
-    const n=Math.max(0, Math.min(+d.n||0, 40-S.quintalPts.n)); if(n>0){ S.quintalPts.n+=n; addPts(n); finish("quintal"); toast(`+${n} ${n===1?"ponto":"pontos"} · ${d.motivo||"Meu Quintal"}`); } else save(); }
+    const n=Math.max(0, Math.min(+d.n||0, 40-S.quintalPts.n)); if(n>0){ S.quintalPts.n+=n; addPts(n); finish("meuquintal"); toast(`+${n} ${n===1?"ponto":"pontos"} · ${d.motivo||"Meu Quintal"}`); } else save(); }
   else if(d.arbo==="medalha"){ if(MEDALS[d.id]) medal(d.id); }
   else if(d.arbo==="fim"){ const id=JOGO_AT; if(!id) return;
     const placar=Math.max(0, Math.round(+d.placar||0)), pts=Math.min(80, Math.round(placar/3));
@@ -2916,7 +3256,8 @@ homeNovo = function(){
 /* ---------- Meu Quintal (bichinho virtual: um quintal que muda em tempo real) ---------- */
 Object.assign(MEDALS, {quintal:{m:"🏡", nome:"Quintal sem criadouro", desc:"Deixou o Meu Quintal 100% seguro"}, quintal3:{m:"📅", nome:"Cuidador fiel", desc:"Cuidou do Meu Quintal 3 dias seguidos"}});
 Object.assign(ICO_MEDALHA, {quintal:"home", quintal3:"estrela"});
-GAMES.quintal = function(){ marcaNav("quintal"); telaJogoNovo("quintal"); };
+// Meu Quintal tem id próprio (antes ocupava "quintal" e escondia a missão Caça aos criadouros)
+GAMES.meuquintal = function(){ marcaNav("meuquintal"); telaJogoNovo("meuquintal"); };
 function resumoQuintal(){ // lê o estado salvo pelo jogo para mostrar o aviso no painel
   try{ const q=JSON.parse(localStorage.getItem("arbogame-quintal-"+(S.uid||"local"))); if(!q) return null;
     const turno=3*3600e3, agora=Date.now(); let al=0, grave=0;
@@ -2926,9 +3267,9 @@ function resumoQuintal(){ // lê o estado salvo pelo jogo para mostrar o aviso n
     return {al, grave, passou, dias:(q.dias||{}).seq||0}; }catch(e){ return null; } }
 const _montaMenuQ = montaMenu;
 montaMenu = function(){ _montaMenuQ(); const side=$("#side"); if(!side) return;
-  const ref=side.querySelector('[data-nav="painel"]'); if(!ref || side.querySelector('[data-nav="quintal"]')) return;
-  const b=document.createElement("button"); b.setAttribute("data-nav","quintal"); if(NAV_AT==="quintal") b.setAttribute("aria-current","page");
-  b.innerHTML=`${ic("home",18)}<span>Meu Quintal</span>`; b.onclick=()=>{ fechaMenu(); GAMES.quintal(); }; ref.after(b); };
+  const ref=side.querySelector('[data-nav="painel"]'); if(!ref || side.querySelector('[data-nav="meuquintal"]')) return;
+  const b=document.createElement("button"); b.setAttribute("data-nav","meuquintal"); if(NAV_AT==="meuquintal") b.setAttribute("aria-current","page");
+  b.innerHTML=`${ic("home",18)}<span>Meu Quintal</span>`; b.onclick=()=>{ fechaMenu(); GAMES.meuquintal(); }; ref.after(b); };
 montaMenu();
 const _homeNovoQ = homeNovo;
 homeNovo = function(){ _homeNovoQ();
@@ -2939,7 +3280,7 @@ homeNovo = function(){ _homeNovoQ();
     : ["Seu quintal está em ordem!",`Volte mais tarde para ver como ele está.${r.dias>1?` Você cuida dele há ${r.dias} dias seguidos.`:""}`];
   const sec=document.createElement("section"); sec.className="quintalcard"+(r&&r.grave?" urgente":"");
   sec.innerHTML=`<img src="jogos/capas/quintal.webp" alt=""><div><span class="chip claro">Meu Quintal</span><h3>${msg[0]}</h3><p>${msg[1]}</p></div><button class="btn sun" id="irquintal">${ic("home",18)} Cuidar do quintal</button>`;
-  alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.quintal(); };
+  alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.meuquintal(); };
 
 /* teclas apertadas fora do jogo (depois de um clique no site ou da pergunta) seguem para o jogo aberto */
 ["keydown","keyup"].forEach(tp=>addEventListener(tp, e=>{
@@ -3110,6 +3451,322 @@ if(FBAUTH){
   FBAUTH.getRedirectResult().catch(()=>{});
   FBAUTH.onAuthStateChanged(u=>{ ACC.user=u; aoEntrar(); });
 } else { ACC.pronto=true; telaAcesso(); }
+
+/* ================== ARBOGAME 2.0 · repaginação (07/11/2026) ==================
+   Segue o "Guia de repaginação" e as 8 pranchas. Carregado por último: só muda a apresentação e a navegação.
+   Regras dos jogos, login, aprovação de cadastro, perfis, livros, ranking, pontos e medalhas continuam
+   nos arquivos antigos e nos mesmos lugares de armazenamento (a versão 1 segue em /v1/ lendo os mesmos dados). */
+document.body.classList.add("v2");
+const V2_VERSAO = "2.0";
+
+/* ---------- ícones novos ---------- */
+Object.assign(ICO, {
+  bandeira:'<path d="M4 22V4"/><path d="M4 4h13l-2 4 2 4H4"/>',
+  broto:'<path d="M12 22v-9"/><path d="M12 13c0-4 3-7 8-7 0 4-3 7-8 7z"/><path d="M12 15c0-3-2.5-5.5-7-5.5 0 3.5 2.5 5.5 7 5.5z"/>',
+  pontos:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  play:'<path d="M8 5.5v13l11-6.5z"/>',
+  voltar:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+  baixar:'<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
+  olho: ICO.olho || '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+});
+const V2_LOGO = `<svg viewBox="0 0 48 40" width="38" height="32" aria-hidden="true"><path d="M22 36C10 36 4 26 6 12c12 0 20 8 16 24z" fill="#3FAE6A"/><path d="M24 36c-2-15 7-27 20-28 2 14-6 27-20 28z" fill="#16845B"/><path d="M23 35c1-8 5-15 13-20" stroke="#E5F3EA" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+const marcaV2 = (sub="") => `<span class="v2marca">${V2_LOGO}<span><b>ArboGame</b>${sub?`<small>${sub}</small>`:""}</span></span>`;
+
+/* ---------- seções e navegação ---------- */
+const V2_NAV = [
+  ["painel","home","Início"], ["jogar","controle","Jogar"], ["missoes","bandeira","Missões"],
+  ["meuquintal","broto","Meu Quintal"], ["biblioteca","book","Biblioteca"], ["conquistas","trofeu","Conquistas"]];
+const V2_BNAV = [["painel","home","Início"], ["jogar","controle","Jogar"], ["missoes","bandeira","Missões"], ["meuquintal","broto","Quintal"], ["mais","pontos","Mais"]];
+const grupoNav = id => ARCADE.some(a=>a.id===id) ? "jogar" : MISSIONS.some(m=>m.id===id) ? "missoes" : id==="ranking" ? "conquistas" : id;
+let V2_SECAO = "painel"; // para onde o "Voltar" leva
+function irPara(id){
+  fechaMenu();
+  if(id==="painel") return home();
+  if(id==="jogar") return telaJogar();
+  if(id==="missoes") return telaMissoes();
+  if(id==="meuquintal") return GAMES.meuquintal();
+  if(id==="biblioteca") return telaBiblioteca();
+  if(id==="conquistas") return telaConquistas();
+  if(id==="ranking") return GAMES.ranking();
+  if(id==="mais") return abreMais();
+  if(GAMES[id]) return GAMES[id]();
+}
+const feitasN = () => Object.keys(S.feitas||{}).length;
+const trancada = m => !!(m.lock && feitasN() < m.lock && !S.feitas[m.id]);
+
+montaMenu = function(){
+  const side = $("#side"); if(!side) return;
+  const at = grupoNav(NAV_AT);
+  const item = ([id, icone, nome]) => `<button type="button" data-nav="${id}" ${at===id?'aria-current="page"':""}>${ic(icone,20)}<span>${nome}</span></button>`;
+  const kid = KIDS[S.avatar] || KIDS.ana;
+  side.innerHTML = `
+    <div class="sbrand">${marcaV2()}</div>
+    <nav class="v2nav" aria-label="Seções">${V2_NAV.map(item).join("")}</nav>
+    <nav class="v2mais" aria-label="Mais opções">
+      <button type="button" data-nav="ranking" ${at==="conquistas"&&NAV_AT==="ranking"?'aria-current="page"':""}>${ic("estrela",18)}<span>Ranking</span></button>
+      <button type="button" class="temabtn"></button>
+      ${ss.get(DEV_OK)?`<button type="button" id="atalhodev">${ic("olho",18)}<span>Área do desenvolvedor</span></button>`:""}
+    </nav>
+    ${S.idade && entrou() ? `<div class="sjog"><img src="${IMG[kid.img]}" alt=""><span><b>${esc(S.nome||"Agente")}</b><small>${AGES[S.idade-1].nome} · ${LEVELS[level(S.pts)].nome}</small></span></div>
+    <nav class="v2conta"><button type="button" data-nav="sair">${ic("users",18)}<span>Trocar jogador</span></button>${ACC.user?`<button type="button" id="v2sairconta">${ic("sair",18)}<span>Sair da conta</span></button>`:""}</nav>` : ""}`;
+  side.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{ const id=b.dataset.nav; if(id==="sair"){ fechaMenu(); return sairJogador(); } irPara(id); });
+  side.querySelector(".temabtn").onclick=trocaTema;
+  const ad=side.querySelector("#atalhodev"); if(ad) ad.onclick=()=>{ fechaMenu(); ss.set(VER_USUARIO,null); pilulaDev(); location.hash="#dev"; telaDev(); };
+  const sc=side.querySelector("#v2sairconta"); if(sc) sc.onclick=()=>{ fechaMenu(); sairConta(); };
+  montaBnav(); aplicaTema();
+};
+function montaBnav(){
+  let n = $("#bnav");
+  if(!n){ n = document.createElement("nav"); n.id = "bnav"; n.className = "bnav"; n.setAttribute("aria-label","Navegação principal"); document.body.appendChild(n); }
+  const at = document.body.classList.contains("navaberta") ? "mais" : grupoNav(NAV_AT);
+  n.innerHTML = V2_BNAV.map(([id, icone, nome])=>`<button type="button" data-b="${id}" ${at===id?'aria-current="page"':""}>${ic(icone,22)}<span>${nome}</span></button>`).join("");
+  n.querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{ const id=b.dataset.b; if(id==="mais"){ document.body.classList.contains("navaberta") ? (fechaMenu(), montaBnav()) : abreMais(); } else irPara(id); });
+}
+function abreMais(){ document.body.classList.add("navaberta"); const m=$("#menubtn"); if(m) m.setAttribute("aria-expanded","true"); montaBnav();
+  const f=$("#side [data-nav='biblioteca']"); if(f) f.focus(); }
+const _fechaMenuV2 = fechaMenu;
+fechaMenu = function(){ _fechaMenuV2(); const n=$("#bnav"); if(n) montaBnav(); };
+addEventListener("keydown", e=>{ if(e.key==="Escape" && document.body.classList.contains("navaberta")) fechaMenu(); });
+
+/* "Voltar" leva à seção de onde a criança veio (Jogar, Missões, Início...) */
+bindBack = function(){ const b=$("#voltar"); if(b){ b.innerHTML = `${ic("voltar",18)} Voltar`; b.onclick=()=>irPara(V2_SECAO); } window.scrollTo(0,0); };
+function secao(id){ V2_SECAO = id; NAV_AT = id; document.body.classList.toggle("semnav", !entrou()); montaMenu(); }
+
+/* ---------- barra do topo ---------- */
+renderStats = function(){
+  const brand = $(".status .brand");
+  if(!S.idade || !entrou()){ $("#stats").innerHTML=""; document.body.classList.add("semnav"); if(brand) brand.innerHTML = marcaV2(); return; }
+  document.body.classList.remove("semnav");
+  const li = level(S.pts), nMed = Object.keys(S.medalhas).length, tMed = Object.keys(MEDALS).length;
+  if(brand) brand.innerHTML = `<span class="v2so-m">${marcaV2()}</span><span class="v2ola"><b>Olá, ${esc(S.nome||"agente")}!</b><small>${AGES[S.idade-1].nome} · nível ${LEVELS[li].nome}</small></span>`;
+  $("#stats").innerHTML = `
+    <span class="chipv pts" title="Pontos acumulados">${ic("estrela",16)} <b>${S.pts}</b><span class="v2so-d"> pontos</span></span>
+    <span class="chipv med" title="Medalhas conquistadas">${ic("medalha",16)} <b>${nMed}</b><span class="v2so-d"> de ${tMed} medalhas</span></span>
+    <span class="chipv lvl v2so-d">${ic("escudo",16)} ${LEVELS[li].nome}</span>
+    <button class="chipv icone" id="som" type="button" aria-pressed="${S.som!==false}" aria-label="${S.som!==false?"Desligar o som":"Ligar o som"}" title="Som">${ic(S.som!==false?"som":"mudo",18)}</button>
+    <button class="meu" id="meu" type="button" title="Trocar jogador" aria-label="Trocar jogador (${esc(S.nome||"")})"><img src="${IMG[(KIDS[S.avatar]||KIDS.ana).img]}" alt=""></button>`;
+  $("#som").onclick=()=>{ S.som = S.som===false; save(); renderStats(); };
+  $("#meu").onclick=sairJogador;
+  montaMenu();
+};
+
+/* ---------- peças reutilizadas ---------- */
+const v2head = (titulo, sub, icone) => `<header class="v2head"><h1>${icone?ic(icone,30):""}${titulo}</h1>${sub?`<p>${sub}</p>`:""}</header>`;
+const dicaProf = (titulo, texto) => `<section class="v2dica"><img src="${IMG["catarina-busto"]}" alt="Professora Catarina"><div><b>${ic("ideia",18)} ${titulo}</b><p>${texto}</p></div></section>`;
+const CAT_JOGO = {esvazia:"acao", varre:"acao", coleta:"acao", espanta:"acao", fuga:"acao", labirinto:"raciocinio", memoria:"raciocinio", sudoku:"raciocinio", mahjong:"raciocinio"};
+const TAG_JOGO = {esvazia:"Eliminar criadouros", varre:"Limpeza do quintal", coleta:"Coleta e reciclagem", espanta:"Prevenção", labirinto:"Raciocínio e rota",
+  fuga:"Ação e estratégia", memoria:"Memória e atenção", sudoku:"Lógica com personagens", mahjong:"Atenção e pares"};
+const COR_JOGO = {acao:"var(--v2-sky)", raciocinio:"var(--v2-lilac)"};
+const COR_MISSAO = {vetores:"var(--v2-sun)", quintal:"var(--v2-mint)", ciclo:"var(--v2-sky)", detetive:"var(--v2-coral)", mito:"var(--v2-lilac)", casa:"var(--v2-sun)", final:"var(--v2-sun)"};
+const recorde = id => { try{ return ((Ranking.ler().j[Ranking.nome().toLowerCase()]||{best:{}}).best||{})[id]||0; }catch(e){ return 0; } };
+function cardJogo(a){
+  const c = CAT_JOGO[a.id]||"acao", feito = S.feitas[a.id];
+  return `<button type="button" class="v2jogo" data-go="${a.id}" data-cat="${c}" style="--c:${COR_JOGO[c]}">
+    <span class="capa"><img src="${CAPA(a.id)}" alt="" loading="lazy" onerror="this.parentNode.classList.add('semimg')"></span>
+    <span class="txt"><b>${esc(a.nome)}</b><small>${TAG_JOGO[a.id]||""}</small>${feito?`<span class="rec">${ic("check",14)} ${recorde(a.id)?`Recorde ${recorde(a.id)} pts`:"Já jogou"}</span>`:""}</span>
+    <span class="play" aria-hidden="true">${ic("play",18)}</span></button>`;
+}
+function cardMissao(m){
+  const t = trancada(m), ok = S.feitas[m.id]; const [i] = ICO_MISSAO[m.id]||["alvo"];
+  return `<button type="button" class="v2missao ${ok?"ok":""}" data-go="${m.id}" ${t?"disabled":""} style="--c:${COR_MISSAO[m.id]||"var(--v2-mint)"}">
+    <span class="ic">${ic(t?"cadeado":i,26)}</span>
+    <span class="txt"><b>${esc(m.nome)}</b><small>${esc(m.desc)}</small>
+      <span class="estado">${t?`${ic("cadeado",14)} Bloqueada · conclua ${m.lock} atividades para liberar (${feitasN()}/${m.lock})`:ok?`${ic("check",14)} Concluída · jogar de novo`:`${ic("play",14)} Começar`}</span></span>
+    <span class="seta">${ic("seta",20)}</span></button>`;
+}
+function ligaGo(raiz){ raiz.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>irPara(b.dataset.go)); }
+
+/* ---------- 05 · painel inicial ---------- */
+homeNovo = function(){
+  clearTimer(); if(typeof stopArcade==="function") stopArcade();
+  secao("painel"); renderStats();
+  const prox = MISSIONS.find(m=>!S.feitas[m.id] && !trancada(m));
+  const li = level(S.pts), next = LEVELS[li+1];
+  const pct = next ? Math.round(((S.pts-LEVELS[li].min)/(next.min-LEVELS[li].min))*100) : 100;
+  const nMed = Object.keys(S.medalhas).length, tMed = Object.keys(MEDALS).length;
+  const par = S.avatar==="pintas" ? "listras-ola" : "pintas-pulando";
+  const r = typeof resumoQuintal==="function" ? resumoQuintal() : null;
+  const qTxt = !r ? "Você ganhou um quintal para cuidar! Ele muda em tempo real." : r.grave ? `${r.grave===1?"Um alerta urgente":r.grave+" alertas urgentes"}: larvas, mosquito ou maruins!`
+    : r.al ? `${r.al} ${r.al===1?"coisa precisa":"coisas precisam"} de cuidado.` : "Tudo em ordem por enquanto. Volte mais tarde!";
+  app.innerHTML = `
+    <section class="v2hero">
+      <div class="txt"><h1>Sua próxima aventura começa aqui!</h1>
+        <p>Explore, jogue, aprenda e descubra os segredos do nosso quintal com os BugKids.</p>
+        ${prox ? `<button type="button" class="v2btn" data-go="${prox.id}">${ic("play",18)} Próxima missão: ${esc(prox.nome)}</button>`
+               : `<button type="button" class="v2btn" data-go="missoes">${ic("bandeira",18)} Escolher missão</button>`}</div>
+      <div class="arte"><img class="kid" src="${corpo(S.avatar)}" alt=""><img class="mas" src="${IMG[par]}" alt=""></div>
+    </section>
+    <div class="v2atalhos">
+      <button type="button" class="v2quintal ${r&&r.grave?"urgente":""}" data-go="meuquintal"><img src="jogos/capas/quintal.webp" alt="" onerror="this.remove()">
+        <span><b>Meu Quintal</b><small>${qTxt}</small></span><span class="seta">${ic("seta",18)}</span></button>
+      <button type="button" class="v2atalho" data-go="jogar" style="--c:var(--v2-lilac)"><span class="ic">${ic("controle",28)}</span><b>Jogar</b><small>9 jogos para aprender se divertindo</small></button>
+      <button type="button" class="v2atalho" data-go="missoes" style="--c:var(--v2-mint)"><span class="ic">${ic("broto",28)}</span><b>Aprender</b><small>Missões sobre insetos e saúde</small></button>
+      <button type="button" class="v2atalho" data-go="biblioteca" style="--c:var(--v2-sky)"><span class="ic">${ic("book",28)}</span><b>Ler</b><small>Histórias dos BugKids</small></button>
+    </div>
+    ${dicaProf("Dica da Professora Catarina", feitasN() ? "Pequenos cuidados, grandes resultados! Olhe o quintal com atenção e peça ajuda de um adulto sempre que encontrar um risco."
+      : "Que tal começar pelo <b>Quem é quem?</b> Primeiro aprenda a diferenciar o Aedes do maruim. Depois, cuide do seu <b>Meu Quintal</b>!")}
+    <div class="v2numeros">
+      <div class="v2num"><span class="ic">${ic("estrela",22)}</span><span><b>${S.pts}</b><small>pontos</small></span></div>
+      <div class="v2num"><span class="ic">${ic("medalha",22)}</span><span><b>${nMed} de ${tMed}</b><small>medalhas</small></span></div>
+      <div class="v2num barra"><div class="lin"><span>Nível ${LEVELS[li].nome}</span><span>${next?pct+"%":"máximo"}</span></div><i><b style="width:${pct}%"></b></i>
+        <small>${next?`Faltam ${next.min-S.pts} pontos para ${next.nome}`:"Você chegou ao nível máximo!"}</small></div>
+      <button type="button" class="v2num link" data-go="ranking"><span class="ic">${ic("trofeu",22)}</span><span><b>Ranking</b><small>ver a turma</small></span></button>
+    </div>
+    <details class="v2educ"><summary>Para educadores e famílias</summary>
+      <p>Cada missão leva de 3 a 8 minutos. Sugestão: projete o jogo em sala e jogue em equipes, ou use a <b>Vistoria em casa</b> como tarefa semanal com a família. O progresso fica salvo neste navegador.</p>
+      <ul><li>Faixa Mirim: linguagem simples e mais tempo no Caça aos criadouros.</li><li>Explorador e Cientista: perguntas sobre ciclo, sinais de alarme, sorotipos e transmissão.</li>
+      <li>Segurança: crianças observam e avisam. Caixa d'água, calhas, lugares altos, vidro e produtos químicos ficam com os adultos.</li>
+      <li>Fontes: <a href="https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/d/dengue" target="_blank" rel="noopener">Ministério da Saúde</a> e <a href="https://portal.fiocruz.br/" target="_blank" rel="noopener">Fiocruz</a>.</li></ul>
+      <p class="alert">Febre, dor no corpo, manchas na pele? Procure uma unidade de saúde e não tome remédio por conta própria.</p></details>`;
+  ligaGo(app); window.scrollTo(0,0);
+};
+
+/* ---------- 09 / 30 · catálogo de jogos ---------- */
+function telaJogar(filtro){
+  clearTimer(); if(typeof stopArcade==="function") stopArcade(); secao("jogar"); renderStats();
+  const f = filtro || "todos";
+  app.innerHTML = `${v2head("Qual é a aventura de hoje?","Jogos divertidos para aprender, cuidar do ambiente e combater o mosquito.","controle")}
+    <div class="v2filtro" role="group" aria-label="Filtrar jogos">${[["todos","Todos"],["acao","Ação"],["raciocinio","Raciocínio"]].map(([k,n])=>`<button type="button" data-f="${k}" aria-pressed="${f===k}">${n}</button>`).join("")}</div>
+    <div class="v2jogos">${ARCADE.filter(a=>f==="todos"||CAT_JOGO[a.id]===f).map(cardJogo).join("")}</div>`;
+  ligaGo(app); app.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>telaJogar(b.dataset.f));
+  window.scrollTo(0,0);
+}
+/* ---------- missões ---------- */
+function telaMissoes(){
+  clearTimer(); if(typeof stopArcade==="function") stopArcade(); secao("missoes"); renderStats();
+  const ok = MISSIONS.filter(m=>S.feitas[m.id]).length;
+  app.innerHTML = `${v2head("Missões de conhecimento","Aprenda sobre o Aedes, o maruim e a prevenção. Cada missão leva de 3 a 8 minutos.","bandeira")}
+    <div class="v2prog"><div class="lin"><span>${ok} de ${MISSIONS.length} missões concluídas</span><span>${Math.round(ok/MISSIONS.length*100)}%</span></div><i><b style="width:${Math.round(ok/MISSIONS.length*100)}%"></b></i></div>
+    <div class="v2missoes">${MISSIONS.map(cardMissao).join("")}</div>
+    <button type="button" class="v2quintal largo" data-go="meuquintal"><img src="jogos/capas/quintal.webp" alt="" onerror="this.remove()">
+      <span><b>Missão de todo dia: Meu Quintal</b><small>Um quintal que muda em tempo real. Cumpra as missões do dia e mantenha tudo sem criadouros.</small></span><span class="seta">${ic("seta",18)}</span></button>`;
+  ligaGo(app); window.scrollTo(0,0);
+}
+/* ---------- 24 · conquistas ---------- */
+function telaConquistas(){
+  clearTimer(); if(typeof stopArcade==="function") stopArcade(); secao("conquistas"); renderStats();
+  const nMed = Object.keys(S.medalhas).length, tMed = Object.keys(MEDALS).length;
+  const fin = MISSIONS.find(m=>m.id==="final"), tf = fin && trancada(fin);
+  app.innerHTML = `${v2head("Conquistas","Colecione medalhas e acompanhe sua jornada de prevenção.","trofeu")}
+    <div class="v2conq">
+      <div class="v2numeros dois">
+        <div class="v2num"><span class="ic">${ic("medalha",22)}</span><span><b>${nMed} de ${tMed}</b><small>medalhas</small></span></div>
+        <div class="v2num"><span class="ic">${ic("estrela",22)}</span><span><b>${S.pts}</b><small>pontos · ${LEVELS[level(S.pts)].nome}</small></span></div></div>
+      ${fin?`<button type="button" class="v2final ${tf?"tranca":""}" data-go="final" ${tf?"disabled":""}>${ic(tf?"cadeado":"trofeu",34)}<b>Desafio final</b>
+        <small>${S.feitas.final?"Concluído! Jogue de novo quando quiser.":tf?`Conclua ${fin.lock} atividades para liberar (${feitasN()}/${fin.lock}).`:"Pronto para o desafio?"}</small></button>`:""}
+    </div>
+    <h2 class="v2sec">Medalhas</h2>
+    <ul class="v2medalhas">${Object.entries(MEDALS).map(([k,v],i)=>{ const on=!!S.medalhas[k];
+      return `<li class="${on?"on":""}"><span class="moeda">${ic(on?(ICO_MEDALHA[k]||"estrela"):"cadeado",24)}</span><b>${esc(v.nome)}</b><small>${esc(v.desc)}</small><span class="st">${on?"Conquistada":"A desbloquear"}</span></li>`; }).join("")}</ul>
+    <div class="row" style="margin-top:22px"><button type="button" class="v2btn" data-go="ranking">${ic("trofeu",18)} Ver ranking</button></div>`;
+  ligaGo(app); window.scrollTo(0,0);
+}
+GAMES.jogar = ()=>telaJogar(); GAMES.missoes = telaMissoes; GAMES.conquistas = telaConquistas;
+
+/* ---------- 06 · biblioteca ---------- */
+telaBiblioteca = function(){
+  clearTimer(); if(typeof stopArcade==="function") stopArcade(); secao("biblioteca"); renderStats();
+  app.innerHTML = v2head("Biblioteca de aventuras","Leia as histórias dos BugKids com a turma ou com a família. Quem lê até o fim ganha medalha.","book") +
+    `<div class="v2livros">${LIVROS.map(l=>{ const r=(S.leitura||{})[l.id], lido=S.medalhas["livro_"+l.id];
+      const pct = lido ? 100 : r&&r.pag ? Math.round((r.pag+1)/l.n*100) : 0;
+      return `<article class="v2livro"><div class="capa"><img src="livros/${l.id}/t01.webp" alt="Capa de ${esc(l.titulo)}" loading="lazy"><span class="pg">${l.n} páginas</span></div>
+        <div class="txt"><b>${esc(l.titulo)}</b><small>${esc(l.sub)}</small>
+        <div class="v2prog mini"><div class="lin"><span>Progresso de leitura</span><span>${pct}%</span></div><i><b style="width:${pct}%"></b></i></div>
+        <button type="button" class="v2btn" data-livro="${l.id}">${ic("book",18)} ${lido?"Ler de novo":r&&r.pag?`Continuar na página ${r.pag+1}`:"Ler história"}</button></div></article>`; }).join("")}</div>`;
+  app.querySelectorAll("[data-livro]").forEach(b=>b.onclick=()=>telaLeitor(b.dataset.livro));
+  window.scrollTo(0,0);
+};
+const _leitorV2 = telaLeitor;
+telaLeitor = function(id, pg, doLogin){ const r = _leitorV2(id, pg, doLogin); if(entrou()){ V2_SECAO="biblioteca"; } return r; };
+
+/* ---------- ranking e jogos: lembram a seção ---------- */
+const _rankV2 = GAMES.ranking;
+GAMES.ranking = function(...a){ V2_SECAO = "conquistas"; NAV_AT = "ranking"; const r = _rankV2.apply(this, a); montaMenu(); const v=$("#voltar"); if(v) bindBack(); return r; };
+Object.keys(GAMES).forEach(k=>{
+  if(["jogar","missoes","conquistas","ranking","dev"].includes(k)) return;
+  const f = GAMES[k]; GAMES[k] = function(...a){ const g = grupoNav(k); if(g==="jogar"||g==="missoes") V2_SECAO = g; else if(k==="meuquintal") V2_SECAO = V2_SECAO==="meuquintal"?"painel":V2_SECAO; return f.apply(this, a); };
+});
+
+/* ---------- 01–04 · acesso ---------- */
+const _telaAcessoV2 = telaAcesso;
+telaAcesso = function(modo){
+  if(modo==="recuperar") return telaRecuperar();
+  _telaAcessoV2(modo);
+  const ac = app.querySelector(".acesso"); if(!ac) return;
+  ac.classList.add("v2acesso");
+  const pn = ac.querySelector(".acpainel"); if(pn) pn.insertAdjacentHTML("afterbegin", `<div class="v2topoac">${marcaV2()}</div>`);
+  const h = ac.querySelector(".actexto h1"); if(h) h.textContent = "Bem-vindo ao ArboGame!";
+  const es = $("#acesqueci"); if(es){ es.textContent = "Esqueci minha senha"; es.onclick = ()=>telaAcesso("recuperar"); }
+  const nota = ac.querySelector(".acpainel .nota"); if(nota) nota.innerHTML = `${ic("users",18)} <span>Conta de estudante com apoio de um adulto (responsável ou educador). Novos cadastros são liberados pela Nório.</span>`;
+};
+function telaRecuperar(){
+  clearTimer(); document.body.classList.add("semnav"); fechaMenu(); $("#stats").innerHTML=""; renderStats();
+  app.innerHTML = `<div class="acesso v2acesso">
+    <div class="acarte"><img src="${IMG["catarina-busto"]}" alt="Professora Catarina" class="v2prof"><div class="actexto"><h1>Recuperar acesso</h1><p>Enviaremos um link para você criar uma nova senha.</p></div></div>
+    <div class="panel acpainel"><div class="stack">
+      <div class="v2topoac"><button type="button" class="linkbtn" id="rcvolta">${ic("voltar",16)} Voltar ao login</button>${marcaV2()}</div>
+      <h2>Recuperar acesso</h2><p>Digite o e-mail da conta. Enviaremos um link para criar uma nova senha.</p>
+      <form class="stack" id="rcform" style="gap:12px"><label class="campo"><span>E-mail</span><input id="rcemail" type="email" required autocomplete="email" placeholder="seu@email.com"></label>
+        <button class="btn sun" type="submit" id="rcenviar">Enviar link</button></form>
+      <div id="rcmsg" aria-live="polite"></div>
+      <p class="nota simples">Entrou com o Google? Então use o botão <b>Entrar com o Google</b>: a senha é a da sua conta Google.</p></div></div></div>`;
+  $("#rcvolta").onclick=()=>telaAcesso();
+  $("#rcform").onsubmit=async e=>{ e.preventDefault(); const b=$("#rcenviar"), m=$("#rcmsg"), email=$("#rcemail").value.trim(); b.disabled=true; b.textContent="Enviando…";
+    try{ if(!FBAUTH) throw {message:"O login não carregou. Confira a internet."}; await FBAUTH.sendPasswordResetEmail(email);
+      m.innerHTML=`<p class="nota ok">Pronto! Se existir uma conta com <b>${esc(email)}</b>, o link chega em alguns minutos. Confira também o spam.</p>`; b.textContent="Enviar de novo"; }
+    catch(err){ m.innerHTML=`<p class="alert">${esc(err.code==="auth/invalid-email"?"Esse e-mail não parece certo.":err.code==="auth/too-many-requests"?"Muitas tentativas. Espere um pouco e tente de novo.":err.code==="auth/network-request-failed"?"Sem conexão. Confira a internet.":(err.message||"Não deu certo. Tente de novo."))}</p>`; b.textContent="Enviar link"; }
+    b.disabled=false; };
+  window.scrollTo(0,0);
+}
+
+/* ---------- 02 · escolha do BugKid: grupos de escolha única acessíveis ---------- */
+function radioGrupo(raiz, seletor, rotulo){
+  const itens = [...raiz.querySelectorAll(seletor)]; if(!itens.length) return;
+  const pai = itens[0].parentElement; pai.setAttribute("role","radiogroup"); pai.setAttribute("aria-label", rotulo);
+  const sync = ()=>itens.forEach(b=>{ const on = b.getAttribute("aria-pressed")==="true" || b.classList.contains("on"); b.setAttribute("role","radio"); b.setAttribute("aria-checked", on); b.removeAttribute("aria-pressed"); b.tabIndex = on ? 0 : -1; });
+  sync(); if(!itens.some(b=>b.tabIndex===0)) itens[0].tabIndex = 0;
+  itens.forEach((b,i)=>{ b.addEventListener("click", ()=>setTimeout(()=>{ itens.forEach(x=>x.setAttribute("aria-pressed", x===b)); sync(); }, 0));
+    b.addEventListener("keydown", e=>{ const d = {ArrowRight:1, ArrowDown:1, ArrowLeft:-1, ArrowUp:-1}[e.key]; if(!d) return; e.preventDefault(); const n = itens[(i+d+itens.length)%itens.length]; n.focus(); n.click(); }); });
+}
+const _telaLoginV2 = telaLogin;
+telaLogin = function(...a){
+  const r = _telaLoginV2.apply(this, a);
+  const lg = app.querySelector(".login"); if(lg){ lg.classList.add("v2perfil");
+    radioGrupo(lg, ".avopt", "Escolha seu BugKid"); radioGrupo(lg, "[data-age], .agebtn", "Sua faixa etária"); }
+  return r;
+};
+
+/* ---------- jogo em tela cheia: sem dois cabeçalhos nem dois botões de tema ---------- */
+const _telaJogoNovoV2 = telaJogoNovo;
+telaJogoNovo = function(id){
+  _telaJogoNovoV2(id);
+  const bar = app.querySelector(".mjbar"); if(!bar) return;
+  bar.querySelector(".mjtema")?.remove();
+  bindBack();
+  const som = document.createElement("span"); som.className = "mjnome"; som.innerHTML = `${V2_LOGO}`; bar.querySelector("b")?.before(som);
+};
+
+/* ---------- área do desenvolvedor: backup dos dados ---------- */
+const _painelDevV2 = painelDev;
+painelDev = function(topo, liga){
+  _painelDevV2(topo, liga);
+  const bar = app.querySelector(".devbar"); if(!bar || bar.querySelector("#v2backup")) return;
+  const b = document.createElement("button"); b.type="button"; b.className="btn ghost"; b.id="v2backup"; b.innerHTML=`${ic("baixar",16)} Baixar backup dos dados`;
+  b.title = "Cadastros (pedidos de acesso) e ranking online, num arquivo .json";
+  (bar.querySelector(".row")||bar).appendChild(b);
+  b.onclick = async ()=>{ b.disabled=true; const t=b.innerHTML; b.textContent="Gerando backup…";
+    try{ const [ranking, acessos] = await Promise.all([DEV.todos().catch(e=>({erro:String(e.message||e)})), DEV.acessos().catch(e=>({erro:String(e.message||e)}))]);
+      const pacote = {versao_site:V2_VERSAO, gerado:new Date().toISOString(), acessos, ranking, este_aparelho:{jogadores:perfis(), ranking_local:Ranking.ler()}};
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(pacote,null,1)],{type:"application/json"}));
+      a.download = `arbogame-backup-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(a); a.click(); a.remove(); toast("Backup baixado");
+    }catch(e){ toast("Não deu para gerar o backup: "+(e.message||e)); }
+    b.disabled=false; b.innerHTML=t; };
+};
+
+/* rodapé com a versão e o link para a versão anterior */
+(function rodape(){ const f=$(".foot .muted"); if(f && !f.querySelector(".v2ver")) f.insertAdjacentHTML("beforeend", ` · <a class="v2ver" href="v1/">Versão anterior</a>`); })();
+const fecharDrawer = $("#sidefundo"); if(fecharDrawer) fecharDrawer.onclick = fechaMenu;
+montaMenu(); renderStats();
 
 renderStats(); home();
 </script>

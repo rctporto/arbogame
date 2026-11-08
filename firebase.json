@@ -13,6 +13,7 @@
       "build.py",
       "scripts/**",
       "README.md",
+      "**/*.md",
       "**/node_modules/**"
     ],
     "headers": [

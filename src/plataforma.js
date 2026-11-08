@@ -45,8 +45,8 @@ Object.assign(MEDALS, {
   fuga:{m:"🏃", nome:"Fuga perfeita", desc:"Recolheu todo o lixo nas 4 fases da Fuga dos BugKids"},
 });
 Object.assign(ICO_MEDALHA, {labirinto:"alvo", fuga:"escudo", esvazia:"gota", varre:"folha", sudoku:"alvo", mahjong:"cartas"});
-const ARQ = id => id==="quintal" ? "meu-quintal" : (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
-const NOME = id => id==="quintal" ? "Meu Quintal" : (ARCADE.find(a=>a.id===id)||{}).nome || id;
+const ARQ = id => id==="meuquintal" ? "meu-quintal" : (NOVOS.find(n=>n.id===id)||{}).arquivo || TROCADOS[id];
+const NOME = id => id==="meuquintal" ? "Meu Quintal" : (ARCADE.find(a=>a.id===id)||{}).nome || id;
 
 let JOGO_AT = null;
 function telaJogoNovo(id){
@@ -69,7 +69,7 @@ addEventListener("message", e=>{
   if(d.arbo==="altura"){ fr.style.height = Math.max(420, Math.ceil(d.h)) + "px"; }
   else if(d.arbo==="pontos"){ // Meu Quintal: pontos pequenos por cuidado, no máximo 40 por dia
     const hj=new Date().toDateString(); S.quintalPts = S.quintalPts && S.quintalPts.dia===hj ? S.quintalPts : {dia:hj, n:0};
-    const n=Math.max(0, Math.min(+d.n||0, 40-S.quintalPts.n)); if(n>0){ S.quintalPts.n+=n; addPts(n); finish("quintal"); toast(`+${n} ${n===1?"ponto":"pontos"} · ${d.motivo||"Meu Quintal"}`); } else save(); }
+    const n=Math.max(0, Math.min(+d.n||0, 40-S.quintalPts.n)); if(n>0){ S.quintalPts.n+=n; addPts(n); finish("meuquintal"); toast(`+${n} ${n===1?"ponto":"pontos"} · ${d.motivo||"Meu Quintal"}`); } else save(); }
   else if(d.arbo==="medalha"){ if(MEDALS[d.id]) medal(d.id); }
   else if(d.arbo==="fim"){ const id=JOGO_AT; if(!id) return;
     const placar=Math.max(0, Math.round(+d.placar||0)), pts=Math.min(80, Math.round(placar/3));
@@ -193,7 +193,8 @@ homeNovo = function(){
 /* ---------- Meu Quintal (bichinho virtual: um quintal que muda em tempo real) ---------- */
 Object.assign(MEDALS, {quintal:{m:"🏡", nome:"Quintal sem criadouro", desc:"Deixou o Meu Quintal 100% seguro"}, quintal3:{m:"📅", nome:"Cuidador fiel", desc:"Cuidou do Meu Quintal 3 dias seguidos"}});
 Object.assign(ICO_MEDALHA, {quintal:"home", quintal3:"estrela"});
-GAMES.quintal = function(){ marcaNav("quintal"); telaJogoNovo("quintal"); };
+// Meu Quintal tem id próprio (antes ocupava "quintal" e escondia a missão Caça aos criadouros)
+GAMES.meuquintal = function(){ marcaNav("meuquintal"); telaJogoNovo("meuquintal"); };
 function resumoQuintal(){ // lê o estado salvo pelo jogo para mostrar o aviso no painel
   try{ const q=JSON.parse(localStorage.getItem("arbogame-quintal-"+(S.uid||"local"))); if(!q) return null;
     const turno=3*3600e3, agora=Date.now(); let al=0, grave=0;
@@ -203,9 +204,9 @@ function resumoQuintal(){ // lê o estado salvo pelo jogo para mostrar o aviso n
     return {al, grave, passou, dias:(q.dias||{}).seq||0}; }catch(e){ return null; } }
 const _montaMenuQ = montaMenu;
 montaMenu = function(){ _montaMenuQ(); const side=$("#side"); if(!side) return;
-  const ref=side.querySelector('[data-nav="painel"]'); if(!ref || side.querySelector('[data-nav="quintal"]')) return;
-  const b=document.createElement("button"); b.setAttribute("data-nav","quintal"); if(NAV_AT==="quintal") b.setAttribute("aria-current","page");
-  b.innerHTML=`${ic("home",18)}<span>Meu Quintal</span>`; b.onclick=()=>{ fechaMenu(); GAMES.quintal(); }; ref.after(b); };
+  const ref=side.querySelector('[data-nav="painel"]'); if(!ref || side.querySelector('[data-nav="meuquintal"]')) return;
+  const b=document.createElement("button"); b.setAttribute("data-nav","meuquintal"); if(NAV_AT==="meuquintal") b.setAttribute("aria-current","page");
+  b.innerHTML=`${ic("home",18)}<span>Meu Quintal</span>`; b.onclick=()=>{ fechaMenu(); GAMES.meuquintal(); }; ref.after(b); };
 montaMenu();
 const _homeNovoQ = homeNovo;
 homeNovo = function(){ _homeNovoQ();
@@ -216,7 +217,7 @@ homeNovo = function(){ _homeNovoQ();
     : ["Seu quintal está em ordem!",`Volte mais tarde para ver como ele está.${r.dias>1?` Você cuida dele há ${r.dias} dias seguidos.`:""}`];
   const sec=document.createElement("section"); sec.className="quintalcard"+(r&&r.grave?" urgente":"");
   sec.innerHTML=`<img src="jogos/capas/quintal.webp" alt=""><div><span class="chip claro">Meu Quintal</span><h3>${msg[0]}</h3><p>${msg[1]}</p></div><button class="btn sun" id="irquintal">${ic("home",18)} Cuidar do quintal</button>`;
-  alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.quintal(); };
+  alvo.after(sec); sec.querySelector("#irquintal").onclick=()=>GAMES.meuquintal(); };
 
 /* teclas apertadas fora do jogo (depois de um clique no site ou da pergunta) seguem para o jogo aberto */
 ["keydown","keyup"].forEach(tp=>addEventListener(tp, e=>{
