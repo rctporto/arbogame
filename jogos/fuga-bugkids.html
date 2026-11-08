@@ -121,13 +121,13 @@ html.embed,html.embed body{overscroll-behavior:none}
 html.embed .stage{width:min(100%,calc((100dvh - 70px)*1.235));justify-self:center}
 @media (max-width:820px){html.embed .stage{width:min(100%,calc((100dvh - 250px)*1.235))}}
 </style>
-</head>
+<style>.arbologo{width:auto;max-width:100%}.arbologo.dk{display:none}:root[data-theme="dark"] .arbologo.lt{display:none}:root[data-theme="dark"] .arbologo.dk{display:inline-block}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .arbologo.lt{display:none}:root:not([data-theme="light"]) .arbologo.dk{display:inline-block}}.brand .arbologo{height:32px;display:inline-block;vertical-align:middle;margin-bottom:2px}h1 small .arbologo{height:22px;display:inline-block}</style></head>
 <body>
 
 
 <div class="app">
   <header>
-    <a href="#" class="brand">ARBO<span>GAME</span><small>BUGKIDS · MISSÃO FUGA</small></a>
+    <a href="#" class="brand"><img class="arbologo lt" src="../arte/logo-wordmark.webp" alt="ArboGame"><img class="arbologo dk" src="../arte/logo-wordmark-escura.webp" alt=""><small>BUGKIDS · MISSÃO FUGA</small></a>
     <div style="display:flex;gap:8px"><button class="hbtn" id="sound" type="button">Som: desligado</button><button class="hbtn" id="pause" type="button" disabled>Pausar</button></div>
   </header>
   <section><div class="eyebrow">Missão 06 · Recolha o lixo, fuja dos bandidos</div><h1>Fuga dos <em>BugKids</em></h1></section>
