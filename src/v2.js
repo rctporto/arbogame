@@ -309,7 +309,6 @@ painelDev = function(topo, liga){
     b.disabled=false; b.innerHTML=t; };
 };
 
-/* rodapé com a versão e o link para a versão anterior */
-(function rodape(){ const f=$(".foot .muted"); if(f && !f.querySelector(".v2ver")) f.insertAdjacentHTML("beforeend", ` · <a class="v2ver" href="v1/">Versão anterior</a>`); })();
+/* o link para a versão anterior saiu do rodapé (08/11/2026); a versão 1 continua guardada em /v1/ e na branch versao-1 */
 const fecharDrawer = $("#sidefundo"); if(fecharDrawer) fecharDrawer.onclick = fechaMenu;
 montaMenu(); renderStats();
