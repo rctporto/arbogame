@@ -85,7 +85,7 @@ homeNovo = function(){
     <section class="v3hero">
       <div class="txt">
         <span class="v3tag">Aprender também é uma aventura</span>
-        <h1>Jogue, descubra e ajude a proteger a sua comunidade.</h1>
+        <h1><span>Jogue, descubra</span> <span>e ajude a proteger</span> <span>a sua comunidade.</span></h1>
         <p>Explore jogos e missões com os BugKids e aprenda sobre saúde e ambiente.</p>
         <div class="acoes"><button type="button" class="v3btn" data-go="jogar">${ic("play",20)} Vamos jogar!</button><button type="button" class="v3btn2" data-go="biblioteca">Conheça os BugKids</button></div>
         ${prox?`<button type="button" class="v3prox" data-go="${prox.id}">${ic("bandeira",16)} Próxima missão: <b>${esc(prox.nome)}</b> ${ic("flecha",16)}</button>`:""}
@@ -134,7 +134,7 @@ function v3Acesso(modo){
     : criar ? ["Vamos começar a aventura!", "Crie sua conta e jogue com os BugKids."]
     : ["Sua próxima aventura começa aqui!", "Os BugKids estão esperando por você."];
   const novo = document.createElement("div"); novo.className = "v3login";
-  novo.innerHTML = `<section class="v3l-arte"><h1>${t1}</h1><p>${t2}</p><div class="img"><img src="arte/heroi.webp" alt="Ana, Júlia, Pedro e Guto, os BugKids, no quintal"></div><b class="slogan">Jogue. Aprenda. Proteja.</b></section>`;
+  novo.innerHTML = `<section class="v3l-arte"><h1>${t1}</h1><p>${t2}</p><div class="img"><img src="arte/login.webp" alt="Ana, Júlia, Pedro e Guto, os BugKids, no quintal"></div><b class="slogan">Jogue. Aprenda. Proteja.</b></section>`;
   pn.classList.add("v3l-painel"); novo.appendChild(pn); ac.replaceWith(novo);
   const topo = pn.querySelector(".v2topoac");
   if(topo){ const volta = topo.querySelector("#rcvolta"); if(volta){ volta.innerHTML = `${ic("voltar",18)} Voltar ao login`; volta.classList.add("v3volta"); pn.querySelector(".stack")?.prepend(volta); } topo.remove(); }

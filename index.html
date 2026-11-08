@@ -1296,17 +1296,18 @@ body.v3 .btn{font-family:var(--display);font-weight:800;font-size:1.05rem}
 
 /* ---------- página inicial ---------- */
 .v3hero{position:relative;display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);background:var(--v2-mint);border-radius:30px;overflow:hidden;min-height:420px;border:1px solid var(--v2-line)}
-.v3hero .txt{position:relative;z-index:2;padding:40px 12px 40px 44px;align-self:center}
+.v3hero .txt{position:relative;z-index:2;padding:48px 16px 48px 52px;align-self:center}
 .v3tag{display:inline-block;background:var(--v3-lime);color:var(--v3-lime-ink);font:800 .9rem var(--display);letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:6px 18px}
-.v3hero h1{font-size:clamp(2.1rem,3.7vw,3.3rem);margin:16px 0 12px;color:var(--v2-forest);text-wrap:balance}
-.v3hero p{font-size:1.18rem;line-height:1.45;color:var(--v2-text);margin:0 0 24px;max-width:36ch}
+.v3hero h1{font-size:clamp(2.1rem,3.5vw,3.25rem);line-height:1.04;margin:18px 0 14px;color:var(--v2-forest)}
+.v3hero h1 span{display:block}
+.v3hero p{font-size:1.2rem;line-height:1.5;color:var(--v2-text);margin:0 0 28px;max-width:34ch}
 .v3hero .acoes{display:flex;gap:14px;flex-wrap:wrap}
-.v3prox{display:inline-flex;width:auto!important;justify-content:flex-start!important;flex-wrap:wrap;text-align:left;min-height:0!important;align-items:center;gap:6px;background:none;border:0;padding:0;margin-top:18px;font:700 1rem var(--body);color:var(--v2-primary);cursor:pointer}
+.v3prox{display:flex;width:auto!important;justify-content:flex-start!important;flex-wrap:wrap;text-align:left;min-height:0!important;align-items:center;gap:6px;background:none;border:0;padding:0;margin-top:18px;font:700 1rem var(--body);color:var(--v2-primary);cursor:pointer}
 .v3prox b{font-weight:800}
 .v3prox:hover{text-decoration:underline}
 .v3hero .arte{position:relative;min-height:360px}
-.v3hero .arte img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 60%}
-.v3hero .arte::before{content:"";position:absolute;inset:0 auto 0 -1px;width:34%;background:linear-gradient(90deg,var(--v2-mint),transparent);z-index:1}
+.v3hero .arte img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 100%}
+.v3hero .arte::before{content:"";position:absolute;inset:0 auto 0 -1px;width:16%;background:linear-gradient(90deg,var(--v2-mint),transparent);z-index:1}
 .v3selo{position:absolute;top:20px;right:20px;z-index:2;display:flex;align-items:center;gap:10px;background:var(--v2-surface);color:var(--v3-dark);border-radius:20px;padding:10px 18px 10px 14px;font:800 1.02rem/1.15 var(--display);box-shadow:0 6px 18px rgba(16,63,50,.14)}
 .v3selo svg{color:#3FA34D;flex:none}
 .v3sec{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:36px 0 16px}
@@ -1348,11 +1349,11 @@ body.v3 .v2filtro button[aria-pressed="true"]{background:var(--v3-dark);border-c
 /* ---------- login ---------- */
 .v3login{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:stretch;max-width:1180px;margin:0 auto}
 .v3login>*{margin:0!important}
-.v3l-arte{background:var(--v2-mint);border:1px solid var(--v2-line);border-radius:30px;padding:38px 40px 26px;display:flex;flex-direction:column;min-width:0}
-.v3l-arte h1{font-size:clamp(2.1rem,3.6vw,3.1rem)!important;color:var(--v2-forest);margin:0;text-wrap:balance}
-.v3l-arte p{font-size:1.28rem;color:var(--v2-text);margin:10px 0 20px}
+.v3l-arte{background:var(--v2-mint);border:1px solid var(--v2-line);border-radius:30px;padding:38px 40px 30px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.v3l-arte h1{font-size:clamp(2.1rem,3.5vw,3.05rem)!important;line-height:1.04;color:var(--v2-forest);margin:0;text-wrap:balance}
+.v3l-arte p{font-size:1.25rem;line-height:1.45;color:var(--v2-text);margin:12px 0 22px}
 .v3l-arte .img{flex:1;min-height:250px;max-height:460px;border-radius:22px;overflow:hidden;position:relative}
-.v3l-arte .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 70%}
+.v3l-arte .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%}
 .v3l-arte .slogan{display:block;text-align:center;margin-top:18px;font:800 1.65rem var(--display);color:var(--v2-forest)}
 body.v3 .v3l-painel.acpainel{background:var(--v2-surface)!important;border:1px solid var(--v2-line)!important;border-radius:30px!important;box-shadow:var(--v2-shadow)!important;padding:40px 44px!important;min-width:0;display:flex;flex-direction:column;justify-content:center}
 body.v3 .v3l-painel h2{font-size:clamp(1.9rem,3vw,2.5rem)!important;color:var(--v2-forest);margin:0}
@@ -1408,7 +1409,8 @@ body.v3 .mjbar .mjnome .v3icone{width:34px;height:34px}
   body.v3 .status .v3logo{height:32px}
   .v3hero{grid-template-columns:1fr;min-height:0}
   .v3hero .txt{padding:28px 24px 8px}
-  .v3hero .arte{min-height:240px}
+  .v3hero .arte{min-height:0;aspect-ratio:1.4}
+  .v3hero .arte img{object-position:50% 100%}
   .v3hero .arte::before{inset:-1px 0 auto 0;width:auto;height:30%;background:linear-gradient(180deg,var(--v2-mint),transparent)}
   .v3jogos{grid-template-columns:repeat(2,minmax(0,1fr))}
   .v3jornada{grid-template-columns:1fr}
@@ -1419,7 +1421,7 @@ body.v3 .mjbar .mjnome .v3icone{width:34px;height:34px}
   body.v3 .v3l-painel.acpainel{padding:28px 22px!important}
 }
 @media (max-width:640px){
-  .v3hero h1{font-size:2rem}
+  .v3hero h1{font-size:1.85rem}
   .v3hero p{font-size:1.05rem}
   .v3hero .acoes{flex-direction:column}
   .v3hero .acoes>*{width:100%}
@@ -1437,6 +1439,15 @@ body.v3 .mjbar .mjnome .v3icone{width:34px;height:34px}
   body.v3 .foot .wrap{flex-direction:column;align-items:flex-start}
   .v3norio{border-left:0;padding-left:0}
   body.v3 .chipv{font-size:.92rem}
+}
+/* tablet e notebook pequeno: texto em cima, ilustração em faixa larga embaixo (os quatro BugKids sempre inteiros) */
+@media (min-width:901px) and (max-width:1180px){
+  .v3hero{grid-template-columns:1fr;min-height:0}
+  .v3hero .txt{padding:40px 44px 28px}
+  .v3hero .arte{min-height:0;aspect-ratio:2.3}
+  .v3hero .arte img{object-position:50% 100%}
+  .v3hero .arte::before{inset:-1px 0 auto 0;width:auto;height:26%;background:linear-gradient(180deg,var(--v2-mint),transparent)}
+  .v3hero .acoes{flex-wrap:nowrap}
 }
 @media (prefers-reduced-motion:reduce){ .v3jogo:hover{transform:none} body.v3 .side{transition:none} }
 
@@ -4103,7 +4114,7 @@ homeNovo = function(){
     <section class="v3hero">
       <div class="txt">
         <span class="v3tag">Aprender também é uma aventura</span>
-        <h1>Jogue, descubra e ajude a proteger a sua comunidade.</h1>
+        <h1><span>Jogue, descubra</span> <span>e ajude a proteger</span> <span>a sua comunidade.</span></h1>
         <p>Explore jogos e missões com os BugKids e aprenda sobre saúde e ambiente.</p>
         <div class="acoes"><button type="button" class="v3btn" data-go="jogar">${ic("play",20)} Vamos jogar!</button><button type="button" class="v3btn2" data-go="biblioteca">Conheça os BugKids</button></div>
         ${prox?`<button type="button" class="v3prox" data-go="${prox.id}">${ic("bandeira",16)} Próxima missão: <b>${esc(prox.nome)}</b> ${ic("flecha",16)}</button>`:""}
@@ -4152,7 +4163,7 @@ function v3Acesso(modo){
     : criar ? ["Vamos começar a aventura!", "Crie sua conta e jogue com os BugKids."]
     : ["Sua próxima aventura começa aqui!", "Os BugKids estão esperando por você."];
   const novo = document.createElement("div"); novo.className = "v3login";
-  novo.innerHTML = `<section class="v3l-arte"><h1>${t1}</h1><p>${t2}</p><div class="img"><img src="arte/heroi.webp" alt="Ana, Júlia, Pedro e Guto, os BugKids, no quintal"></div><b class="slogan">Jogue. Aprenda. Proteja.</b></section>`;
+  novo.innerHTML = `<section class="v3l-arte"><h1>${t1}</h1><p>${t2}</p><div class="img"><img src="arte/login.webp" alt="Ana, Júlia, Pedro e Guto, os BugKids, no quintal"></div><b class="slogan">Jogue. Aprenda. Proteja.</b></section>`;
   pn.classList.add("v3l-painel"); novo.appendChild(pn); ac.replaceWith(novo);
   const topo = pn.querySelector(".v2topoac");
   if(topo){ const volta = topo.querySelector("#rcvolta"); if(volta){ volta.innerHTML = `${ic("voltar",18)} Voltar ao login`; volta.classList.add("v3volta"); pn.querySelector(".stack")?.prepend(volta); } topo.remove(); }
