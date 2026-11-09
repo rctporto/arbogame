@@ -177,6 +177,13 @@ body.v3 .foot .by .v3icone{width:34px;height:34px}
 .v3fnome b{font:800 1.1rem var(--display);color:var(--v2-forest)}
 .v3dot{color:var(--v2-primary)}
 .v3norio{display:inline-flex;align-items:center;gap:8px;color:var(--v2-muted);font-size:.9rem;padding-left:12px;border-left:1px solid var(--v2-line)}
+.v3apoio{display:inline-flex;align-items:center;gap:14px;color:var(--v2-muted);font-size:.9rem;padding-left:14px;border-left:1px solid var(--v2-line)}
+body.v3 .foot .v3apoio img{height:36px!important;width:auto!important;max-width:none!important;display:block}
+.v3apoio .dk{display:none}
+:root[data-theme="dark"] .v3apoio .lt{display:none}
+:root[data-theme="dark"] body.v3 .foot .v3apoio .dk{display:block}
+body.v3 .foot .v3apoio .dk{display:none}
+:root[data-theme="dark"] body.v3 .foot .v3apoio .lt{display:none}
 
 /* ---------- jogo em tela cheia ---------- */
 body.v3 .mjbar .mjnome .v3icone{width:34px;height:34px}
@@ -215,7 +222,8 @@ body.v3 .mjbar .mjnome .v3icone{width:34px;height:34px}
   .v3l-arte p{font-size:1.05rem;margin-bottom:14px}
   .v3l-arte .img{min-height:170px}
   body.v3 .foot .wrap{flex-direction:column;align-items:flex-start}
-  .v3norio{border-left:0;padding-left:0}
+  .v3norio,.v3apoio{border-left:0;padding-left:0}
+  body.v3 .foot .v3apoio img{height:30px!important}
   body.v3 .chipv{font-size:.92rem}
 }
 /* tablet e notebook pequeno: texto em cima, ilustração em faixa larga embaixo (os quatro BugKids sempre inteiros) */

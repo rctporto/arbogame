@@ -178,7 +178,10 @@ telaJogoNovo = function(id){ _telaJogoNovoV3(id); const n = app.querySelector(".
 (function rodapeV3(){
   const by = $(".foot .by"); if(!by || by.querySelector(".v3icone")) return;
   const imgs = [...by.querySelectorAll("img")].map(i=>i.outerHTML).join("");
-  by.innerHTML = `${LOGO.icone}<span class="v3fnome"><b>ArboGame</b><span class="v3dot">•</span><span>Jogue. Aprenda. Proteja.</span></span><span class="v3norio">Um produto da ${imgs}</span>`;
+  by.innerHTML = `${LOGO.icone}<span class="v3fnome"><b>ArboGame</b><span class="v3dot">•</span><span>Jogue. Aprenda. Proteja.</span></span><span class="v3norio">Um produto da ${imgs}</span>
+    <span class="v3apoio">Apoio:
+      <img class="lt" src="arte/apoio-fapesc.webp" alt="FAPESC, Fundação de Amparo à Pesquisa e Inovação do Estado de Santa Catarina"><img class="dk" src="arte/apoio-fapesc-escuro.webp" alt="FAPESC, Fundação de Amparo à Pesquisa e Inovação do Estado de Santa Catarina">
+      <img class="lt" src="arte/apoio-scti.webp" alt="SCTI, Secretaria da Ciência, Tecnologia e Inovação de Santa Catarina"><img class="dk" src="arte/apoio-scti-escuro.webp" alt="SCTI, Secretaria da Ciência, Tecnologia e Inovação de Santa Catarina"></span>`;
 })();
 
 montaMenu(); renderStats();
